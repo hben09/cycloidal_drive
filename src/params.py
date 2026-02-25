@@ -17,7 +17,7 @@ class GearParams:
     eccentricity: float = 1.5  # mm
     ring_pin_circle_dia: float = 108.0  # mm
     ring_pin_dia: float = 4.0  # mm, h6 ground steel
-    ring_pin_length: float = 30.0  # mm
+    ring_pin_length: float = 35.0  # mm (5mm motor plate + 25mm disc zone + 5mm shoulder)
 
     @property
     def ring_pin_circle_radius(self) -> float:

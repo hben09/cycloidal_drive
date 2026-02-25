@@ -10,7 +10,8 @@ No motor-side 625 bearing — the motor shaft passes through the plate
 and engages the eccentric shaft D-bore directly. Motor internal bearings
 and 6003 disc bearings provide adequate radial support.
 
-Ring pins are retained entirely by the ring gear body (press-fit).
+Ring pins press into blind holes on the inner face (5mm deep), providing
+dual-end retention together with the ring gear body shoulder.
 """
 
 import math
@@ -80,7 +81,35 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(motor_bolts)
 
-    # ── 5. M4 housing bolt holes (through, clearance fit) ─────────
+    # ── 5. Ring-pin blind holes (21×, press-fit from inner face) ──
+    # Pins are 35mm long; disc zone takes 25mm, leaving 10mm split
+    # evenly: 5mm into the motor plate, 5mm into the ring gear body.
+    g = cfg.gear
+    pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 3.875mm
+    pin_circle_r = g.ring_pin_circle_dia / 2.0  # 54mm
+    disc_zone = (
+        stack.input_clearance
+        + 2 * cfg.disc.thickness
+        + cfg.disc.inter_disc_spacer
+    )  # 25mm
+    pin_engagement = (g.ring_pin_length - disc_zone) / 2.0  # 5mm per side
+    pin_pts = [
+        (
+            pin_circle_r * math.cos(2 * math.pi * i / g.num_ring_pins),
+            pin_circle_r * math.sin(2 * math.pi * i / g.num_ring_pins),
+        )
+        for i in range(g.num_ring_pins)
+    ]
+    pin_holes = (
+        cq.Workplane("XY")
+        .workplane(offset=plate_thickness - pin_engagement)
+        .pushPoints(pin_pts)
+        .circle(pin_hole_dia / 2.0)
+        .extrude(pin_engagement)
+    )
+    result = result.cut(pin_holes)
+
+    # ── 6. M4 housing bolt holes (through, clearance fit) ─────────
     # Bolt angles match ring gear body — offset to avoid ring pin holes.
     m4_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
     bolt_r = h.bolt_circle_dia / 2.0  # 55mm

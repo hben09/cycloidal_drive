@@ -6,19 +6,23 @@ input face.
 
 Stepped internal bore:
   Z=0  to Z=25  — 116mm bore (full clearance for cycloidal disc orbit)
-  Z=25 to Z=27  — 70mm bore shoulder ring (retains output bearings and
-                   provides 2mm of ring-pin press-fit engagement)
+  Z=25 to Z=27  — 70mm bore shoulder ring (retains output bearings)
   Z=27 to Z=47  — 90.15mm bore (press-fit seat for 2× 6814-2RS output
-                   bearings; ring-pin holes continue through this wall
-                   for an additional 20mm of press-fit engagement)
+                   bearings)
+
+Ring-pin retention (dual-end):
+  35mm pins press 5mm into the motor plate (blind holes) and 5mm into
+  the ring gear body shoulder/bearing zone.  The middle 25mm spans the
+  disc zone (116mm bore — pins in air).  Blind holes (30mm deep) from
+  the input face avoid cutting through the bearing seat wall.
 
 Other features:
-  - 21 ring-pin through-holes on 108mm circle (3.875mm press-fit dia)
+  - 21 ring-pin blind holes on 108mm circle (3.875mm press-fit dia, 30mm deep)
   - 8 M4 housing-bolt through-holes on 110mm circle
 
-Assembly: slide the disc+shaft assembly in from the input end (116mm bore
-clears the ~108mm disc), then insert ring pins one at a time while
-rotating the discs to align lobe valleys with each pin path.
+Assembly: insert ring pins into the ring gear body from the input face,
+rotating discs to clear lobe valleys.  Then press the motor plate onto
+the protruding pin ends to lock both ends.
 """
 
 import math
@@ -100,11 +104,17 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bearing_bore)
 
-    # ── 5. Ring-pin through-holes (21×, press-fit) ───────────────
-    # Holes run full body height.  In the 116mm bore zone they pass
-    # through air (no material at 54mm radius).  In the shoulder
-    # ring and bearing zone they cut into solid material, providing
-    # up to 22mm of press-fit retention per pin.
+    # ── 5. Ring-pin blind holes (21×, press-fit) ──────────────────
+    # Holes go from Z=0 (input face) through the disc zone (25mm,
+    # air at 54mm radius inside 58mm bore) plus 5mm of press-fit
+    # engagement into the shoulder/bearing zone.  Total depth 30mm.
+    disc_zone = (
+        stack.input_clearance
+        + 2 * cfg.disc.thickness
+        + cfg.disc.inter_disc_spacer
+    )  # 25mm
+    pin_engagement = (g.ring_pin_length - disc_zone) / 2.0  # 5mm
+    pin_hole_depth = disc_zone_end + pin_engagement  # 30mm
     pin_pts = [
         (
             pin_circle_r * math.cos(2 * math.pi * i / g.num_ring_pins),
@@ -116,7 +126,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         cq.Workplane("XY")
         .pushPoints(pin_pts)
         .circle(pin_hole_dia / 2.0)
-        .extrude(body_height)
+        .extrude(pin_hole_depth)
     )
     result = result.cut(pin_holes)
 
