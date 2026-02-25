@@ -4,6 +4,7 @@ Every dimension from the spec lives here. Part files import DriveConfig
 and never hardcode numbers.
 """
 
+import math
 from dataclasses import dataclass, field
 
 
@@ -212,6 +213,47 @@ class DriveConfig:
     tolerances: PETGTolerances = field(default_factory=PETGTolerances)
     profile: ProfileParams = field(default_factory=ProfileParams)
     stack_up: StackUp = field(default_factory=StackUp)
+
+
+def compute_housing_bolt_angles(cfg: "DriveConfig") -> list[float]:
+    """Compute bolt angles that avoid overlap with ring pin holes.
+
+    Each bolt is placed at the midpoint between two adjacent ring pins,
+    choosing the midpoint nearest to the ideal equally-spaced position.
+    This guarantees maximum angular separation from pin holes.
+
+    Returns a sorted list of bolt angles in radians.
+    """
+    n_pins = cfg.gear.num_ring_pins
+    n_bolts = cfg.housing.bolt_count
+    pin_spacing = 2 * math.pi / n_pins
+
+    # All midpoint angles between adjacent pins
+    midpoints = [(i + 0.5) * pin_spacing for i in range(n_pins)]
+
+    # Ideal equally-spaced bolt angles
+    ideal_angles = [2 * math.pi * i / n_bolts for i in range(n_bolts)]
+
+    # For each ideal bolt position, snap to the nearest pin midpoint
+    chosen: list[float] = []
+    used: set[int] = set()
+    for ideal in ideal_angles:
+        best_idx = -1
+        best_dist = float("inf")
+        for j, mp in enumerate(midpoints):
+            if j in used:
+                continue
+            # Angular distance on circle
+            diff = abs(mp - ideal)
+            diff = min(diff, 2 * math.pi - diff)
+            if diff < best_dist:
+                best_dist = diff
+                best_idx = j
+        used.add(best_idx)
+        chosen.append(midpoints[best_idx])
+
+    chosen.sort()
+    return chosen
 
 
 # Default configuration instance

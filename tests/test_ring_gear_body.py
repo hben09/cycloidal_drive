@@ -13,7 +13,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from src.params import DEFAULT_CONFIG
+from src.params import DEFAULT_CONFIG, compute_housing_bolt_angles
 
 CFG = DEFAULT_CONFIG
 
@@ -78,6 +78,55 @@ class TestRingGearBodyDimensions:
             f"Pin hole outer edge at {outermost:.2f}mm exceeds housing "
             f"radius {h.od / 2.0}mm"
         )
+
+    def test_bolt_holes_do_not_overlap_pin_holes(self):
+        """No housing bolt hole should overlap with any ring pin hole."""
+        g = CFG.gear
+        h = CFG.housing
+        tol = CFG.tolerances
+
+        pin_circle_r = g.ring_pin_circle_dia / 2.0  # 54mm
+        bolt_circle_r = h.bolt_circle_dia / 2.0  # 55mm
+        pin_hole_r = (g.ring_pin_dia - tol.ring_pin_press_sub) / 2.0  # ~1.94mm
+        bolt_hole_r = (h.bolt_dia + 0.4) / 2.0  # 2.2mm
+        min_distance = pin_hole_r + bolt_hole_r  # ~4.14mm (no overlap)
+
+        bolt_angles = compute_housing_bolt_angles(CFG)
+        pin_angles = [2 * math.pi * i / g.num_ring_pins for i in range(g.num_ring_pins)]
+
+        for bi, ba in enumerate(bolt_angles):
+            bx = bolt_circle_r * math.cos(ba)
+            by = bolt_circle_r * math.sin(ba)
+            for pi_, pa in enumerate(pin_angles):
+                px = pin_circle_r * math.cos(pa)
+                py = pin_circle_r * math.sin(pa)
+                dist = math.sqrt((bx - px) ** 2 + (by - py) ** 2)
+                assert dist >= min_distance, (
+                    f"Bolt {bi} (angle {math.degrees(ba):.1f}°) overlaps "
+                    f"pin {pi_} (angle {math.degrees(pa):.1f}°): "
+                    f"distance {dist:.2f}mm < min {min_distance:.2f}mm"
+                )
+
+    def test_bolt_holes_do_not_overlap_each_other(self):
+        """No two housing bolt holes should overlap."""
+        h = CFG.housing
+        bolt_circle_r = h.bolt_circle_dia / 2.0
+        bolt_hole_r = (h.bolt_dia + 0.4) / 2.0
+        min_distance = 2 * bolt_hole_r  # 4.4mm
+
+        bolt_angles = compute_housing_bolt_angles(CFG)
+
+        for i in range(len(bolt_angles)):
+            for j in range(i + 1, len(bolt_angles)):
+                ax = bolt_circle_r * math.cos(bolt_angles[i])
+                ay = bolt_circle_r * math.sin(bolt_angles[i])
+                bx = bolt_circle_r * math.cos(bolt_angles[j])
+                by = bolt_circle_r * math.sin(bolt_angles[j])
+                dist = math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
+                assert dist >= min_distance, (
+                    f"Bolt {i} and bolt {j} overlap: "
+                    f"distance {dist:.2f}mm < min {min_distance:.2f}mm"
+                )
 
     def test_shoulder_bore_clears_output_hub(self):
         """Shoulder ring bore must be >= output hub OD for assembly clearance."""

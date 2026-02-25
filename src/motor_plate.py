@@ -21,7 +21,7 @@ import cadquery as cq
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from src.params import DriveConfig, DEFAULT_CONFIG
+from src.params import DriveConfig, DEFAULT_CONFIG, compute_housing_bolt_angles
 
 
 def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
@@ -81,14 +81,13 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     result = result.cut(motor_bolts)
 
     # ── 5. M4 housing bolt holes (through, clearance fit) ─────────
+    # Bolt angles match ring gear body — offset to avoid ring pin holes.
     m4_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
     bolt_r = h.bolt_circle_dia / 2.0  # 55mm
+    bolt_angles = compute_housing_bolt_angles(cfg)
     bolt_pts = [
-        (
-            bolt_r * math.cos(2 * math.pi * i / h.bolt_count),
-            bolt_r * math.sin(2 * math.pi * i / h.bolt_count),
-        )
-        for i in range(h.bolt_count)
+        (bolt_r * math.cos(a), bolt_r * math.sin(a))
+        for a in bolt_angles
     ]
     bolt_holes = (
         cq.Workplane("XY")
