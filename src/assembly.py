@@ -16,6 +16,7 @@ from src.params import DEFAULT_CONFIG
 from src.cycloidal_disc import build_cycloidal_disc
 from src.eccentric_shaft import build_eccentric_shaft
 from src.motor_plate import build_motor_plate
+from src.ring_gear_body import build_ring_gear_body
 from src.purchased_parts import (
     build_bearing_6003,
     build_bearing_6814,
@@ -65,9 +66,9 @@ shaft = build_eccentric_shaft()
 show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
 
 # ── Ring pins ──────────────────────────────────────────────────
-# pins = build_ring_pins()
-# pins = pins.translate((0, 0, stack.z_disc1))
-# show_object(pins, name="ring_pins", options={"color": "gray"})
+pins = build_ring_pins()
+pins = pins.translate((0, 0, stack.z_disc1))
+show_object(pins, name="ring_pins", options={"color": "gray"})
 
 # ── Output pins ────────────────────────────────────────────────
 # output = build_output_pins()
@@ -81,3 +82,8 @@ show_object(motor, name="nema17_motor", options={"color": "dimgray"})
 # ── Motor plate ──────────────────────────────────────────────────
 motor_plate = build_motor_plate()
 show_object(motor_plate, name="motor_plate", options={"color": "slategray", "alpha": 0.4})
+
+# ── Ring gear body ─────────────────────────────────────────────
+ring_body = build_ring_gear_body()
+ring_body = ring_body.translate((0, 0, stack.z_motor_plate_inner))
+show_object(ring_body, name="ring_gear_body", options={"color": "slategray", "alpha": 0.3})
