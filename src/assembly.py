@@ -17,9 +17,11 @@ from src.cycloidal_disc import build_cycloidal_disc
 from src.eccentric_shaft import build_eccentric_shaft
 from src.motor_plate import build_motor_plate
 from src.ring_gear_body import build_ring_gear_body
+from src.output_hub import build_output_hub
 from src.purchased_parts import (
     build_bearing_6003,
     build_bearing_6814,
+    build_bearing_625,
     build_nema17_motor,
     build_ring_pins,
     build_output_pins,
@@ -53,13 +55,13 @@ show_object(disc2, name="disc_2", options={"color": "lightblue", "alpha": 0.6})
 show_object(bearing_6003_2, name="bearing_6003_2", options={"color": "orange"})
 
 # ── 6814 output bearings ─────────────────────────────────────
-# bearing_6814_1 = build_bearing_6814()
-# bearing_6814_1 = bearing_6814_1.translate((0, 0, stack.z_output_bearings))
-# show_object(bearing_6814_1, name="bearing_6814_1", options={"color": "coral"})
+bearing_6814_1 = build_bearing_6814()
+bearing_6814_1 = bearing_6814_1.translate((0, 0, stack.z_output_bearings))
+show_object(bearing_6814_1, name="bearing_6814_1", options={"color": "coral"})
 
-# bearing_6814_2 = build_bearing_6814()
-# bearing_6814_2 = bearing_6814_2.translate((0, 0, stack.z_output_bearings + cfg.bearings.out_width))
-# show_object(bearing_6814_2, name="bearing_6814_2", options={"color": "coral"})
+bearing_6814_2 = build_bearing_6814()
+bearing_6814_2 = bearing_6814_2.translate((0, 0, stack.z_output_bearings + cfg.bearings.out_width))
+show_object(bearing_6814_2, name="bearing_6814_2", options={"color": "coral"})
 
 # ── Eccentric shaft ────────────────────────────────────────────
 shaft = build_eccentric_shaft()
@@ -79,9 +81,9 @@ pins = pins.translate((0, 0, z_pins))
 show_object(pins, name="ring_pins", options={"color": "gray"})
 
 # ── Output pins ────────────────────────────────────────────────
-# output = build_output_pins()
-# output = output.translate((0, 0, stack.z_disc1))
-# show_object(output, name="output_pins", options={"color": "darkgray"})
+output = build_output_pins()
+output = output.translate((0, 0, stack.z_disc1))
+show_object(output, name="output_pins", options={"color": "darkgray"})
 
 # ── Motor ──────────────────────────────────────────────────────
 motor = build_nema17_motor()
@@ -95,3 +97,14 @@ show_object(motor_plate, name="motor_plate", options={"color": "slategray", "alp
 ring_body = build_ring_gear_body()
 ring_body = ring_body.translate((0, 0, stack.z_motor_plate_inner))
 show_object(ring_body, name="ring_gear_body", options={"color": "slategray", "alpha": 0.3})
+
+# ── Output hub ────────────────────────────────────────────────
+output_hub = build_output_hub()
+output_hub = output_hub.translate((0, 0, stack.z_output_bearings))
+show_object(output_hub, name="output_hub", options={"color": "goldenrod", "alpha": 0.6})
+
+# ── 625 bearing (output-side shaft support) ───────────────────
+# Sits in the output hub's inner-face pocket at z_output_bearings
+bearing_625 = build_bearing_625()
+bearing_625 = bearing_625.translate((0, 0, stack.z_output_bearings))
+show_object(bearing_625, name="bearing_625", options={"color": "orange"})
