@@ -131,7 +131,7 @@ def main() -> None:
     print("  Building full assembly...")
     assy = build_assembly()
     assy_path = os.path.join(STEP_DIR, "cycloidal_drive_assembly.step")
-    assy.save(assy_path)
+    assy.exportStep(assy_path)
     print("  cycloidal_drive_assembly.step")
 
     print("Done.")
