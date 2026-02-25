@@ -36,7 +36,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     stack = cfg.stack_up
 
     plate_thickness = stack.motor_plate_wall + stack.inp_bearing_seat  # 10mm
-    housing_r = h.od / 2.0  # 60mm
+    housing_r = h.od / 2.0  # 67mm
 
     # ── 1. Base disc ────────────────────────────────────────────────
     result = (
@@ -112,7 +112,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # ── 6. M4 housing bolt holes (through, clearance fit) ─────────
     # Bolt angles match ring gear body — offset to avoid ring pin holes.
     m4_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
-    bolt_r = h.bolt_circle_dia / 2.0  # 55mm
+    bolt_r = h.bolt_circle_dia / 2.0  # 62.5mm
     bolt_angles = compute_housing_bolt_angles(cfg)
     bolt_pts = [
         (bolt_r * math.cos(a), bolt_r * math.sin(a))

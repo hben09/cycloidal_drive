@@ -49,7 +49,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
     # ── Dimensions ────────────────────────────────────────────────
     body_height = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
-    housing_r = h.od / 2.0  # 60mm
+    housing_r = h.od / 2.0  # 67mm
     bore_r = h.bore_dia / 2.0  # 58mm (116mm bore)
     bearing_seat_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
     shoulder_bore_r = b.out_bore / 2.0  # 35mm (70mm — clears output hub)
@@ -134,7 +134,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # Bolt angles are offset to sit at midpoints between adjacent
     # ring pins, preventing hole overlap on the shared annular wall.
     m4_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
-    bolt_r = h.bolt_circle_dia / 2.0  # 55mm
+    bolt_r = h.bolt_circle_dia / 2.0  # 62.5mm
     bolt_angles = compute_housing_bolt_angles(cfg)
     bolt_pts = [
         (bolt_r * math.cos(a), bolt_r * math.sin(a))

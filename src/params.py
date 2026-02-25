@@ -87,13 +87,13 @@ class BearingParams:
 class HousingParams:
     """Housing dimensions — spec Section 5."""
 
-    od: float = 120.0  # mm
+    od: float = 134.0  # mm (sized for 2mm+ wall around bolt holes outside bore)
     bore_dia: float = 116.0  # mm
-    wall_thickness: float = 2.0  # mm
+    wall_thickness: float = 9.0  # mm (134 - 116) / 2
     motor_plate_wall: float = 5.0  # mm
     output_wall: float = 3.0  # mm
     bolt_count: int = 8
-    bolt_circle_dia: float = 110.0  # mm
+    bolt_circle_dia: float = 125.0  # mm (outside 116mm bore, 2.3mm wall each side)
     bolt_dia: float = 4.0  # mm (M4)
     output_bearing_seat_dia: float = 90.15  # mm (press fit for 6814 outer race)
 

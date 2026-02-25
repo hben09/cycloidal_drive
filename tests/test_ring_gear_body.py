@@ -160,6 +160,67 @@ class TestRingGearBodyDimensions:
             f"Bearing seat gap {gap:.2f}mm too large for press fit"
         )
 
+    def test_housing_bolts_outside_bore(self):
+        """Housing bolt holes must sit entirely outside the 116mm bore.
+
+        Bolts at radius < bore_radius would be unsupported in the disc zone
+        and would physically interfere with the orbiting cycloidal discs.
+        """
+        h = CFG.housing
+        bolt_r = h.bolt_circle_dia / 2.0
+        hole_r = (h.bolt_dia + 0.4) / 2.0
+        bore_r = h.bore_dia / 2.0
+
+        bolt_inner_edge = bolt_r - hole_r
+        assert bolt_inner_edge > bore_r, (
+            f"Housing bolt inner edge at {bolt_inner_edge:.1f}mm is inside "
+            f"bore radius {bore_r:.1f}mm — bolts would be unsupported and "
+            f"interfere with disc orbit"
+        )
+
+    def test_housing_bolts_have_wall_to_bore(self):
+        """Housing bolt holes must leave >=1mm wall between bore and bolt edge."""
+        h = CFG.housing
+        bolt_r = h.bolt_circle_dia / 2.0
+        hole_r = (h.bolt_dia + 0.4) / 2.0
+        bore_r = h.bore_dia / 2.0
+
+        wall = (bolt_r - hole_r) - bore_r
+        assert wall >= 1.0, (
+            f"Wall from bore to bolt hole = {wall:.1f}mm, need >= 1mm"
+        )
+
+    def test_housing_bolts_clear_disc_sweep(self):
+        """Housing bolt hole inner edge must clear the disc sweep envelope.
+
+        The disc's max radius plus eccentricity gives the swept radius.
+        Bolt holes must be entirely outside this zone.
+        """
+        from src.profiles import compute_epitrochoid, compute_profile_radii
+
+        g = CFG.gear
+        h = CFG.housing
+
+        pts = compute_epitrochoid(
+            R=g.ring_pin_circle_dia / 2.0,
+            r=g.ring_pin_dia / 2.0,
+            N=g.num_ring_pins,
+            e=g.eccentricity,
+        )
+        _, max_r = compute_profile_radii(pts)
+        disc_sweep_r = max_r + g.eccentricity
+
+        bolt_r = h.bolt_circle_dia / 2.0
+        hole_r = (h.bolt_dia + 0.4) / 2.0
+        bolt_inner_edge = bolt_r - hole_r
+
+        clearance = bolt_inner_edge - disc_sweep_r
+        assert clearance > 0, (
+            f"Disc sweep radius {disc_sweep_r:.2f}mm reaches bolt hole "
+            f"inner edge at {bolt_inner_edge:.2f}mm — interference of "
+            f"{-clearance:.2f}mm"
+        )
+
     def test_disc_fits_through_main_bore(self):
         """Cycloidal disc (with eccentricity) must fit through the 116mm bore."""
         from src.profiles import compute_epitrochoid
