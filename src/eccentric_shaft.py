@@ -75,7 +75,23 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(disc_t)
     )
 
-    result = spine.union(collar).union(lobe1).union(lobe2)
+    # ── Bridge: smooth loft between lobe 1 end and lobe 2 start ──
+    # Transitions the eccentric center from (+e, 0) to (-e, 0) through
+    # the inter-disc spacer zone, eliminating the weak 5mm spine gap.
+    spacer_t = cfg.disc.inter_disc_spacer
+    z_bridge_start = z_lobe1 + disc_t  # where lobe 1 ends
+    bridge = (
+        cq.Workplane("XY")
+        .workplane(offset=z_bridge_start)
+        .center(e, 0)
+        .circle(lobe_r)
+        .workplane(offset=spacer_t)
+        .center(-2 * e, 0)
+        .circle(lobe_r)
+        .loft(ruled=True)
+    )
+
+    result = spine.union(collar).union(lobe1).union(lobe2).union(bridge)
 
     # ── D-bore: motor shaft socket from input face ──────────────────
     # Round bore + D-flat key matching the motor shaft profile
