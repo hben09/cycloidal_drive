@@ -9,7 +9,7 @@
 | Gear Ratio | 20:1 (20 lobes, 21 ring pins) |
 | Motor | NEMA 17, 48mm body, 20mm shaft, 5mm ⌀ |
 | Eccentricity | 1.5mm |
-| Housing OD | ~120mm |
+| Housing OD | ~134mm |
 | Print Material | PETG, 100% infill on discs |
 
 ---
@@ -24,7 +24,7 @@
 | Ring pin diameter | 4.00mm | Ground steel dowel, h6 tolerance |
 | Ring pin circle ⌀ | 108.00mm | Centered in housing bore |
 | Ring pin length | 35mm | 5mm motor plate + 25mm disc zone + 5mm ring gear body |
-| Housing bore ⌀ | 116.00mm | 120mm OD − 2 × 2mm wall |
+| Housing bore ⌀ | 116.00mm | 134mm OD − 2 × 9mm wall |
 
 ### 1.2 Cycloidal Disc
 
@@ -208,7 +208,7 @@ Measured from motor mounting face inward:
 
 | Dimension | Value |
 |---|---|
-| OD | 120mm |
+| OD | 134mm |
 | Depth | ~60mm (housing only) |
 | Housing bore (ring pin area) | 116mm |
 | Output bearing seat OD | 90.15mm (press fit for 6814 outer race) |
@@ -222,7 +222,7 @@ Recommend splitting the housing into 3 printed parts:
 2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (30mm deep), output bearing seat bore
 3. **Output cap** — Retains output bearings, seals housing, second 625 bearing seat
 
-Parts joined with M4 through-bolts around the perimeter (6–8 bolts on a ~110mm bolt circle).
+Parts joined with M4 through-bolts around the perimeter (8 bolts on a 125mm bolt circle, outside the 116mm bore).
 
 ### 5.3 Output Hub / Plate
 
@@ -250,7 +250,7 @@ A separate printed or aluminum part that:
 - Print all cycloidal discs flat (lobes in XY plane) at 100% infill
 - Use 0.16mm or finer layer height for bearing seats
 - Test-print a bearing fit gauge before committing to full parts
-- PETG shrinks ~0.3–0.5% — account for this on large dimensions (120mm housing may need to be designed at ~120.4mm)
+- PETG shrinks ~0.3–0.5% — account for this on large dimensions (134mm housing may need to be designed at ~134.5mm)
 
 ---
 
