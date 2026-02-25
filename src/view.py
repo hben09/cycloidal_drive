@@ -27,30 +27,34 @@ from src.purchased_parts import (
 
 cfg = DEFAULT_CONFIG
 stack = cfg.stack_up
+e = cfg.gear.eccentricity  # 1.5mm
+
+# At input angle φ=0, disc 1 center is at (+e, 0) and disc 2 at (-e, 0).
+# Each disc + bearing is concentric with its shaft lobe.
 
 # ── Disc 1 + its 6003 bearing ──────────────────────────────────
 disc1 = build_cycloidal_disc()
-disc1 = disc1.translate((0, 0, stack.z_disc1))
+disc1 = disc1.translate((e, 0, stack.z_disc1))
 
 bearing_6003_1 = build_bearing_6003()
-bearing_6003_1 = bearing_6003_1.translate((0, 0, stack.z_disc1))
+bearing_6003_1 = bearing_6003_1.translate((e, 0, stack.z_disc1))
 
 show_object(disc1, name="disc_1", options={"color": "steelblue", "alpha": 0.6})
 show_object(bearing_6003_1, name="bearing_6003_1", options={"color": "orange"})
 
 # ── Disc 2 + its 6003 bearing (180° offset) ────────────────────
-# disc2 = build_cycloidal_disc()
-# disc2 = disc2.rotateAboutCenter((0, 0, 1), 180).translate((0, 0, stack.z_disc2))
+disc2 = build_cycloidal_disc()
+disc2 = disc2.rotateAboutCenter((0, 0, 1), 180).translate((-e, 0, stack.z_disc2))
 
-# bearing_6003_2 = build_bearing_6003()
-# bearing_6003_2 = bearing_6003_2.translate((0, 0, stack.z_disc2))
+bearing_6003_2 = build_bearing_6003()
+bearing_6003_2 = bearing_6003_2.translate((-e, 0, stack.z_disc2))
 
-# show_object(disc2, name="disc_2", options={"color": "lightblue", "alpha": 0.6})
-# show_object(bearing_6003_2, name="bearing_6003_2", options={"color": "orange"})
+show_object(disc2, name="disc_2", options={"color": "lightblue", "alpha": 0.6})
+show_object(bearing_6003_2, name="bearing_6003_2", options={"color": "orange"})
 
 # ── Eccentric shaft ────────────────────────────────────────────
-# shaft = build_eccentric_shaft()
-# show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
+shaft = build_eccentric_shaft()
+show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
 
 # ── Ring pins ──────────────────────────────────────────────────
 # pins = build_ring_pins()
