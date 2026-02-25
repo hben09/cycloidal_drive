@@ -135,11 +135,14 @@ One in the motor-side housing plate, one in the output-side housing plate (or in
 | Parameter | Value |
 |---|---|
 | Type | NEMA 17 |
-| Body length | 48mm |
-| Shaft diameter | 5mm |
-| Shaft length | 20mm |
+| Faceplate size | 42.3mm × 42.3mm |
+| Body length | 48mm (excluding shaft) |
+| Shaft diameter | 5mm (with D-cut flat at 4.5mm across) |
+| Shaft length | 20mm (18mm D-cut from tip, 2mm round base) |
+| Pilot / centering boss | 22mm ⌀ × 2mm |
+| Mounting hole spacing | 31mm × 31mm (center-to-center) |
+| Mounting hole thread | M3, tapped 4.5mm deep |
 | Holding torque | ~0.45 Nm (typical) |
-| Mounting pattern | 31mm square, M3 |
 
 ### 3.2 Shaft Coupler
 

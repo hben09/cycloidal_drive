@@ -99,8 +99,11 @@ class MotorParams:
 
     shaft_dia: float = 5.0  # mm
     shaft_length: float = 20.0  # mm
-    bolt_pattern_square: float = 31.0  # mm (corner-to-corner)
+    shaft_dcut_flat: float = 4.5  # mm, D-cut flat-to-round width
+    shaft_dcut_length: float = 18.0  # mm, D-cut extends from shaft tip inward
+    bolt_pattern_square: float = 31.0  # mm (center-to-center)
     bolt_dia: float = 3.0  # mm (M3)
+    bolt_hole_depth: float = 4.5  # mm, threaded blind holes in mounting face
     pilot_dia: float = 22.0  # mm (NEMA 17 centering boss)
     body_width: float = 42.3  # mm (NEMA 17 standard)
     body_length: float = 48.0  # mm
