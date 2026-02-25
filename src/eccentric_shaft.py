@@ -27,7 +27,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     spine_r = shaft.spine_od / 2.0
 
     # Z positions from stack-up
-    z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat  # 5mm
+    z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length  # 3mm
     z_lobe1 = stack.z_disc1  # 13mm
     z_lobe2 = stack.z_disc2  # 25mm
     z_end = z_lobe2 + disc_t + shaft.output_stub_length  # 42mm
