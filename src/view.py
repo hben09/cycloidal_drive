@@ -71,6 +71,7 @@ show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
 # show_object(motor, name="nema17_motor", options={"color": "dimgray"})
 
 # ── Coupler ────────────────────────────────────────────────────
-# coupler = build_coupler()
-# coupler = coupler.translate((0, 0, stack.motor_plate_wall + stack.inp_bearing_seat))
-# show_object(coupler, name="coupler", options={"color": "gold"})
+# Coupler ends at z_motor_plate_inner (Z=10mm), extends 25mm back toward motor
+coupler = build_coupler()
+coupler = coupler.translate((0, 0, stack.z_motor_plate_inner - cfg.coupler.length))
+show_object(coupler, name="coupler", options={"color": "gold"})
