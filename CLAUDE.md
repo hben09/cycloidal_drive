@@ -23,7 +23,7 @@
 | Number of ring pins | 21 | N + 1 where N = 20 lobes |
 | Ring pin diameter | 4.00mm | Ground steel dowel, h6 tolerance |
 | Ring pin circle ⌀ | 108.00mm | Centered in housing bore |
-| Ring pin length | 30mm | Spans both discs + spacer + press-fit |
+| Ring pin length | 35mm | 5mm motor plate + 25mm disc zone + 5mm ring gear body |
 | Housing bore ⌀ | 116.00mm | 120mm OD − 2 × 2mm wall |
 
 ### 1.2 Cycloidal Disc
@@ -157,7 +157,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 |---|---|
 | Quantity | 21 (buy 25) |
 | Diameter | 4.00mm, h6 ground |
-| Length | 30mm |
+| Length | 35mm |
 | Material | Hardened steel dowel pin |
 
 ### 3.4 Output Pins
@@ -218,8 +218,8 @@ Measured from motor mounting face inward:
 
 Recommend splitting the housing into 3 printed parts:
 
-1. **Motor plate** — NEMA 17 bolt pattern, shaft bore for D-shaft pass-through
-2. **Ring gear body** — Main cylinder with 21 ring pin through-holes, output bearing seat bore
+1. **Motor plate** — NEMA 17 bolt pattern, shaft bore for D-shaft pass-through, 21 ring-pin blind holes (5mm deep) on inner face
+2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (30mm deep), output bearing seat bore
 3. **Output cap** — Retains output bearings, seals housing, second 625 bearing seat
 
 Parts joined with M4 through-bolts around the perimeter (6–8 bolts on a ~110mm bolt circle).
@@ -241,7 +241,7 @@ A separate printed or aluminum part that:
 |---|---|---|
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
-| Ring pin press-fit holes | −0.10 to −0.15mm on hole ⌀ | 4mm pins into housing plates |
+| Ring pin press-fit holes | −0.10 to −0.15mm on hole ⌀ | 4mm pins into motor plate & ring gear body |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
 
@@ -303,7 +303,7 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 2 | Eccentric bearing | 6003-2RS (17 × 35 × 10mm) | 2 | $4–8 |
 | 3 | Output bearing | 6814-2RS (70 × 90 × 10mm) | 2 | $16–40 |
 | 4 | Input shaft bearing | 625-2RS (5 × 16 × 5mm) | 1 | $1–2 |
-| 5 | Ring pins | 4mm × 30mm ground dowel h6 | 25 | $8–12 |
+| 5 | Ring pins | 4mm × 35mm ground dowel h6 | 25 | $8–12 |
 | 6 | Output pins | M4 × 35mm shoulder bolt | 4 | $3–6 |
 | 7 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 50mm socket head | 8 | $2–4 |
@@ -318,7 +318,7 @@ Recommended order of CAD operations:
 1. ~~Model the eccentric shaft~~ ✅ — D-bore socket, input collar, two lobes, output stub
 2. ~~Generate the cycloidal disc profile~~ ✅ — epitrochoid with 20 lobes
 3. ~~Add center bore and output pin holes to disc~~ ✅
-4. Model the ring gear body with 21× pin holes on 108mm circle and output bearing seat
+4. ~~Model the ring gear body~~ ✅ — 21× pin blind holes (30mm deep) on 108mm circle, output bearing seat
 5. Model the output hub to fit through 2× 6814 inner races with pin mounting
 6. ~~Model the motor plate~~ ✅ — NEMA 17 pattern, shaft bore (no 625 bearing, direct D-shaft)
 7. Model the output cap with 625 bearing seat and housing bolt holes
