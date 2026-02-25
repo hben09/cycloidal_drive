@@ -51,17 +51,6 @@ bearing_6003_2 = bearing_6003_2.translate((-e, 0, stack.z_disc2))
 show_object(disc2, name="disc_2", options={"color": "lightblue", "alpha": 0.6})
 show_object(bearing_6003_2, name="bearing_6003_2", options={"color": "orange"})
 
-# ── 625 input bearings ────────────────────────────────────────
-# Motor-side 625 eliminated — direct D-shaft engagement, motor
-# internal bearings provide input support.
-
-# Output-side: sits at end of disc 2 + output stub region
-# bearing_625_output = build_bearing_625()
-# bearing_625_output = bearing_625_output.translate(
-#     (0, 0, stack.z_disc2 + cfg.disc.thickness + cfg.shaft.output_stub_length - cfg.bearings.inp_width)
-# )
-# show_object(bearing_625_output, name="bearing_625_output", options={"color": "darkorange"})
-
 # ── 6814 output bearings ─────────────────────────────────────
 # bearing_6814_1 = build_bearing_6814()
 # bearing_6814_1 = bearing_6814_1.translate((0, 0, stack.z_output_bearings))
@@ -88,12 +77,6 @@ show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
 # ── Motor ──────────────────────────────────────────────────────
 motor = build_nema17_motor()
 show_object(motor, name="nema17_motor", options={"color": "dimgray"})
-
-# ── Coupler ────────────────────────────────────────────────────
-# Eliminated — direct D-shaft engagement between motor and eccentric shaft
-# coupler = build_coupler()
-# coupler = coupler.translate((0, 0, stack.z_motor_plate_inner - cfg.coupler.length))
-# show_object(coupler, name="coupler", options={"color": "gold"})
 
 # ── Motor plate ──────────────────────────────────────────────────
 motor_plate = build_motor_plate()
