@@ -60,11 +60,11 @@ bearing_625_motor = bearing_625_motor.translate((0, 0, stack.motor_plate_wall))
 show_object(bearing_625_motor, name="bearing_625_motor", options={"color": "darkorange"})
 
 # Output-side: sits at end of disc 2 + output stub region
-bearing_625_output = build_bearing_625()
-bearing_625_output = bearing_625_output.translate(
-    (0, 0, stack.z_disc2 + cfg.disc.thickness + cfg.shaft.output_stub_length - cfg.bearings.inp_width)
-)
-show_object(bearing_625_output, name="bearing_625_output", options={"color": "darkorange"})
+# bearing_625_output = build_bearing_625()
+# bearing_625_output = bearing_625_output.translate(
+#     (0, 0, stack.z_disc2 + cfg.disc.thickness + cfg.shaft.output_stub_length - cfg.bearings.inp_width)
+# )
+# show_object(bearing_625_output, name="bearing_625_output", options={"color": "darkorange"})
 
 # ── 6814 output bearings ─────────────────────────────────────
 # bearing_6814_1 = build_bearing_6814()
@@ -90,8 +90,8 @@ show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
 # show_object(output, name="output_pins", options={"color": "darkgray"})
 
 # ── Motor ──────────────────────────────────────────────────────
-# motor = build_nema17_motor()
-# show_object(motor, name="nema17_motor", options={"color": "dimgray"})
+motor = build_nema17_motor()
+show_object(motor, name="nema17_motor", options={"color": "dimgray"})
 
 # ── Coupler ────────────────────────────────────────────────────
 # Coupler ends at z_motor_plate_inner (Z=10mm), extends 25mm back toward motor
