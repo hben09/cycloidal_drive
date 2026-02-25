@@ -41,7 +41,7 @@ class DiscParams:
     inter_disc_spacer: float = 2.0  # mm
     output_pin_count: int = 4
     output_pin_circle_dia: float = 60.0  # mm
-    output_pin_dia: float = 4.0  # mm (M4)
+    output_pin_dia: float = 4.0  # mm (M3 shoulder bolt, 45mm shoulder)
     output_pin_hole_dia: float = 8.0  # mm (4mm + 2*1.5mm ecc + 1mm clearance)
 
 

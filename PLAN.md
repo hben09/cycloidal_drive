@@ -87,7 +87,7 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 - 69.925mm OD cylinder (light press into 6814 bore), ~25mm long
 - 625 bearing seat counterbore from inner face
 - 5.4mm through-bore for shaft clearance
-- 4x M4 tap holes on 60mm circle (inner face, for output pins/shoulder bolts)
+- 4x M3 tap holes on 60mm circle (inner face, for output pins/shoulder bolts)
 - 4x arm mounting holes on outer face
 
 ### 9. `src/purchased_parts.py` — Simplified models for all purchased components
@@ -97,7 +97,7 @@ Simple cylinder/box models for visualization only (not for manufacturing):
 - **NEMA 17 motor**: 42.3mm square body, 48mm long, 5mm shaft stub
 - **Shaft coupler**: 19mm OD x 25mm cylinder
 - **Ring pins**: 21x 4mm x 30mm cylinders on 108mm circle
-- **Output pins**: 4x 4mm x 25mm cylinders on 60mm circle
+- **Output pins**: 4x M3 shoulder bolts (4mm × 45mm shoulder + M3 × 6mm thread) on 60mm circle
 
 Each returns a `cq.Workplane` solid, colored distinctly in the assembly (bearings = red, motor = dark gray, pins = silver).
 
@@ -250,7 +250,7 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 | `test_hub_od` | 69.925mm (press into 6814 bore) |
 | `test_625_bearing_seat` | Counterbore on inner face for input shaft support |
 | `test_shaft_clearance_bore` | 5.4mm through-bore |
-| `test_output_pin_tap_holes` | 4× M4 holes on 60mm circle |
+| `test_output_pin_tap_holes` | 4× M3 holes on 60mm circle |
 | `test_mounting_holes_on_output_face` | Arm attachment holes present |
 | `test_hub_length` | ~25mm (spans bearing stack) |
 

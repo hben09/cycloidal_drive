@@ -179,11 +179,17 @@ def build_ring_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """4× M4 shoulder bolts (4mm × 25mm) on the 60mm output pin circle."""
+    """4× M3 shoulder bolts on the 60mm output pin circle.
+
+    Actual bolt: 7mm head, 4mm × 45mm shoulder, M3×0.5 × 6mm thread.
+    Head bears on hub output face, shoulder passes through hub (20mm) +
+    disc zone (24mm), M3 thread pokes out for a nut.
+    Total length: 54.5mm.
+    """
     d = cfg.disc
     r = d.output_pin_circle_dia / 2.0
-    # Shoulder length spans both discs + spacer
-    shoulder_length = 2 * d.thickness + d.inter_disc_spacer  # 22mm
+    shoulder_length = 45.0  # mm, actual bolt shoulder length
+    thread_length = 6.0  # mm, actual M3 thread length
     positions = [
         (
             r * math.cos(2 * math.pi * i / d.output_pin_count),
@@ -191,12 +197,22 @@ def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         )
         for i in range(d.output_pin_count)
     ]
-    return (
+    # Shoulder section (4mm)
+    shoulder = (
         cq.Workplane("XY")
         .pushPoints(positions)
         .circle(d.output_pin_dia / 2.0)
         .extrude(shoulder_length)
     )
+    # Threaded section (2.5mm, stepped down from shoulder)
+    thread = (
+        cq.Workplane("XY")
+        .workplane(offset=shoulder_length)
+        .pushPoints(positions)
+        .circle(2.5 / 2.0)
+        .extrude(thread_length)
+    )
+    return shoulder.union(thread)
 
 
 if __name__ == "__main__":

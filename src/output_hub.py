@@ -5,7 +5,7 @@
 
 Features:
   - 625 bearing pocket on inner face (supports eccentric shaft output stub)
-  - 4× output pin holes on 60mm circle (M4 shoulder bolt seats)
+  - 4× output pin holes on 60mm circle (M3 shoulder bolt seats)
   - 4× arm mount bolt holes on 50mm circle (M4 clearance, 45° offset)
   - Central shaft clearance bore (5.4mm)
 

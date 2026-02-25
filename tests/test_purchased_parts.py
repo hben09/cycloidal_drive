@@ -314,9 +314,8 @@ class TestOutputPins:
         )
 
     def test_bounding_box_z(self, output_pins):
-        """Pin height should span 2 discs + spacer = 22mm."""
-        d = CFG.disc
-        expected_z = 2 * d.thickness + d.inter_disc_spacer
+        """Pin height should span shoulder + thread = 45 + 6 = 51mm."""
+        expected_z = 45.0 + 6.0  # shoulder + thread
         bb = output_pins.val().BoundingBox()
         z = bb.zmax - bb.zmin
         assert abs(z - expected_z) < 0.1, f"Z {z:.2f}mm, expected {expected_z:.2f}mm"
@@ -332,11 +331,14 @@ class TestOutputPins:
         )
 
     def test_single_pin_volume(self, output_pins):
-        """Total volume should equal 4 × single pin cylinder volume."""
+        """Total volume should equal 4 × (shoulder cylinder + thread cylinder)."""
         d = CFG.disc
-        shoulder_length = 2 * d.thickness + d.inter_disc_spacer
-        single_vol = math.pi * (d.output_pin_dia / 2) ** 2 * shoulder_length
-        expected_total = d.output_pin_count * single_vol
+        shoulder_length = 45.0  # actual bolt shoulder
+        thread_length = 6.0  # actual M3 thread
+        thread_dia = 2.5  # M3 tap drill
+        shoulder_vol = math.pi * (d.output_pin_dia / 2) ** 2 * shoulder_length
+        thread_vol = math.pi * (thread_dia / 2) ** 2 * thread_length
+        expected_total = d.output_pin_count * (shoulder_vol + thread_vol)
         total_vol = sum(s.Volume() for s in output_pins.solids().vals())
         assert abs(total_vol - expected_total) < 5.0, (
             f"Total volume {total_vol:.0f}mm³, expected {expected_total:.0f}mm³"

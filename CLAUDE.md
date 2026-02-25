@@ -44,7 +44,7 @@
 |---|---|---|
 | Output pin count | 4 | Equally spaced at 90° |
 | Output pin circle ⌀ | 60.00mm | Increased from 52mm for better torque arm |
-| Output pin ⌀ | 4.00mm (M4) | Shoulder bolt or ground dowel |
+| Output pin ⌀ | 4.00mm | M3 shoulder bolt (45mm shoulder) + nut |
 | Disc pin hole ⌀ | 8.00mm | 4mm pin + 2 × 1.5mm ecc + 1mm clearance |
 | Pin hole approach | Oversized, no bearings | Greased sliding fit |
 
@@ -165,10 +165,13 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 | Parameter | Value |
 |---|---|
 | Quantity | 4 |
-| Type | M4 shoulder bolt (preferred) or 4mm ground dowel |
+| Type | M3 shoulder bolt (4mm shoulder, M3×0.5 thread) |
 | Shoulder ⌀ | 4.00mm |
-| Shoulder length | ≥25mm (spans both discs + spacer) |
-| Thread | M4 (for fastening to output plate) |
+| Shoulder length | 45mm |
+| Thread | M3×0.5, 6mm long |
+| Head ⌀ | 7mm (3mm hex socket) |
+| Total length | 54.5mm |
+| Retained by | Head on hub output face, M3 nut on disc 1 side |
 
 ### 3.5 Fasteners
 
@@ -228,7 +231,7 @@ Parts joined with M4 through-bolts around the perimeter (8 bolts on a 125mm bolt
 
 A separate printed or aluminum part that:
 
-- Has 4× M4 threaded holes (or shoulder bolt seats) on the 60mm pin circle
+- Has 4× clearance holes (4mm + tolerance) on the 60mm pin circle for shoulder bolts
 - Passes through the 2× 6814 bearing inner races (hub OD = 70mm, light press)
 - Has a flat output face with mounting holes for the next arm link
 - Houses a 625 bearing seat on the inner side to support the eccentric shaft output end
@@ -304,7 +307,8 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 3 | Output bearing | 6814-2RS (70 × 90 × 10mm) | 2 | $16–40 |
 | 4 | Input shaft bearing | 625-2RS (5 × 16 × 5mm) | 1 | $1–2 |
 | 5 | Ring pins | 4mm × 35mm ground dowel h6 | 25 | $8–12 |
-| 6 | Output pins | M4 × 35mm shoulder bolt | 4 | $3–6 |
+| 6 | Output pins | M3 × 54.5mm shoulder bolt (4mm × 45mm shoulder) | 4 | $3–6 |
+| 6a | Output pin nuts | M3 nut | 4 | $1 |
 | 7 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 50mm socket head | 8 | $2–4 |
 | | | | **Total** | **~$45–85** |
