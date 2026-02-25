@@ -4,11 +4,6 @@ Run this file to visualize parts together in OCP CAD Viewer.
 Comment/uncomment sections to show what you want to see.
 """
 
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
 import cadquery as cq
 from ocp_vscode import show_object
 
