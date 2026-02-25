@@ -151,7 +151,7 @@ One in the motor-side housing plate, one in the output-side housing plate (or in
 | Type | Flexible jaw coupler (spider type) |
 | Bore 1 | 5mm (motor shaft) |
 | Bore 2 | 5mm (eccentric shaft) |
-| Size | D20 × L25 (20mm OD × 25mm long) |
+| Size | D19 × L25 (19mm OD × 25mm long) |
 
 ### 3.3 Ring Pins
 
@@ -302,7 +302,7 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | # | Part | Specification | Qty | Est. Cost |
 |---|---|---|---|---|
 | 1 | NEMA 17 stepper | 48mm body, 5mm × 20mm shaft | 1 | $10–15 |
-| 2 | Shaft coupler | 5mm–5mm flexible jaw, D20L25 | 1 | $3–5 |
+| 2 | Shaft coupler | 5mm–5mm flexible jaw, D19L25 | 1 | $3–5 |
 | 3 | Eccentric bearing | 6003-2RS (17 × 35 × 10mm) | 2 | $4–8 |
 | 4 | Output bearing | 6814-2RS (70 × 90 × 10mm) | 2 | $16–40 |
 | 5 | Input shaft bearing | 625-2RS (5 × 16 × 5mm) | 2 | $2–4 |

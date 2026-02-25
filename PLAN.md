@@ -95,7 +95,7 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 Simple cylinder/box models for visualization only (not for manufacturing):
 - **Bearings** (6003-2RS x2, 6814-2RS x2, 625-2RS x2): annular cylinders with correct bore/OD/width
 - **NEMA 17 motor**: 42.3mm square body, 48mm long, 5mm shaft stub
-- **Shaft coupler**: 20mm OD x 25mm cylinder
+- **Shaft coupler**: 19mm OD x 25mm cylinder
 - **Ring pins**: 21x 4mm x 30mm cylinders on 108mm circle
 - **Output pins**: 4x 4mm x 25mm cylinders on 60mm circle
 
@@ -275,7 +275,7 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 |---|---|
 | `test_bearing_dimensions` | Each bearing model matches bore/OD/width from spec |
 | `test_motor_body_size` | 42.3mm square × 48mm body, 5mm shaft |
-| `test_coupler_size` | 20mm OD × 25mm length |
+| `test_coupler_size` | 19mm OD × 25mm length |
 | `test_ring_pin_count_and_size` | 21× 4mm × 30mm cylinders |
 | `test_output_pin_count_and_size` | 4× 4mm × 25mm cylinders |
 

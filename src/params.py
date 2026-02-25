@@ -113,7 +113,7 @@ class MotorParams:
 class CouplerParams:
     """Shaft coupler dimensions — spec Section 3.2."""
 
-    od: float = 20.0  # mm
+    od: float = 19.0  # mm
     length: float = 25.0  # mm
     bore: float = 5.0  # mm
 

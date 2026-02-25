@@ -139,7 +139,7 @@ def build_nema17_motor(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 def build_coupler(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """Flexible jaw coupler: 20mm OD × 25mm, 5mm bore."""
+    """Flexible jaw coupler: 19mm OD × 25mm, 5mm bore."""
     c = cfg.coupler
     return (
         cq.Workplane("XY")
