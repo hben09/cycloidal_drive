@@ -1,0 +1,417 @@
+"""Validation test suite for the cycloidal disc geometry.
+
+Tests cover:
+  1. Profile geometry — lobe count, radii, closure, smoothness, self-intersection
+  2. Clearance checks — bore-to-pin wall, pin-to-lobe wall, disc-fits-housing
+  3. Meshing simulation — ring pin interference and contact at sampled input angles
+  4. CadQuery solid — valid topology, bounding box, volume sanity
+"""
+
+import math
+import sys
+import os
+
+import numpy as np
+import pytest
+
+# Allow imports from project root
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from src.params import DEFAULT_CONFIG
+from src.profiles import compute_epitrochoid, compute_profile_radii
+
+# ---------------------------------------------------------------------------
+# Shared fixtures
+# ---------------------------------------------------------------------------
+
+CFG = DEFAULT_CONFIG
+
+
+@pytest.fixture(scope="module")
+def profile_points():
+    """Generate the epitrochoid profile once for all tests."""
+    return compute_epitrochoid(
+        R=CFG.gear.ring_pin_circle_radius,
+        r=CFG.gear.ring_pin_radius,
+        N=CFG.gear.num_ring_pins,
+        e=CFG.gear.eccentricity,
+        num_points=CFG.profile.num_points,
+    )
+
+
+@pytest.fixture(scope="module")
+def profile_array(profile_points):
+    """Profile as an (N, 2) numpy array."""
+    return np.array(profile_points)
+
+
+@pytest.fixture(scope="module")
+def profile_radii(profile_array):
+    """Radial distance from origin for each profile point."""
+    return np.sqrt(profile_array[:, 0] ** 2 + profile_array[:, 1] ** 2)
+
+
+# ===================================================================
+# 1. Profile geometry
+# ===================================================================
+
+
+class TestProfileGeometry:
+
+    def test_lobe_count(self, profile_radii):
+        """The number of radial-distance local maxima must equal num_lobes (20)."""
+        # Detect peaks: point[i] > point[i-1] AND point[i] > point[i+1]
+        # Use circular comparison (wrap around)
+        r = profile_radii
+        n = len(r)
+        peaks = 0
+        for i in range(n):
+            if r[i] > r[(i - 1) % n] and r[i] > r[(i + 1) % n]:
+                peaks += 1
+        assert peaks == CFG.gear.num_lobes, (
+            f"Expected {CFG.gear.num_lobes} lobes, found {peaks} radial peaks"
+        )
+
+    def test_profile_radii_range(self, profile_points):
+        """Min/max radii should be within expected bounds.
+
+        Approximate bounds:
+          max_radius ≈ R - r + e  (lobe tip approaches ring pin circle minus pin radius plus ecc)
+          min_radius ≈ R - r - e  (lobe valley)
+        With R=54, r=2, e=1.5:  max ≈ 53.5, min ≈ 50.5
+        Allow ±2mm tolerance since these are approximations.
+        """
+        R = CFG.gear.ring_pin_circle_radius  # 54
+        r = CFG.gear.ring_pin_radius  # 2
+        e = CFG.gear.eccentricity  # 1.5
+
+        min_r, max_r = compute_profile_radii(profile_points)
+
+        expected_max = R - r + e  # 53.5
+        expected_min = R - r - e  # 50.5
+
+        assert abs(max_r - expected_max) < 2.0, (
+            f"Max radius {max_r:.2f} too far from expected {expected_max:.2f}"
+        )
+        assert abs(min_r - expected_min) < 2.0, (
+            f"Min radius {min_r:.2f} too far from expected {expected_min:.2f}"
+        )
+
+    def test_profile_closure(self, profile_array):
+        """Profile should be periodic — first point close to the extrapolated wrap point."""
+        # Since endpoint=False in linspace, check that the first and last points
+        # form a smooth transition (distance ≈ one step's arc length)
+        step_distances = np.linalg.norm(np.diff(profile_array, axis=0), axis=1)
+        avg_step = np.mean(step_distances)
+
+        wrap_distance = np.linalg.norm(profile_array[0] - profile_array[-1])
+        # Wrap distance should be similar to a normal step (within 3x)
+        assert wrap_distance < 3.0 * avg_step, (
+            f"Profile not closed: wrap gap {wrap_distance:.4f}mm vs avg step {avg_step:.4f}mm"
+        )
+
+    def test_profile_smoothness(self, profile_array):
+        """No sharp angle changes between consecutive segments (no cusps/kinks).
+
+        The angle between consecutive tangent vectors should never exceed a
+        reasonable threshold. For 2000 points on a 20-lobe profile, the
+        expected angle change per step is ~360°*20/2000 = 3.6° for the
+        fastest-varying component. Allow up to 15° as a generous bound.
+        """
+        pts = profile_array
+        n = len(pts)
+
+        # Tangent vectors (with circular wrap)
+        tangents = np.empty_like(pts)
+        tangents[:-1] = pts[1:] - pts[:-1]
+        tangents[-1] = pts[0] - pts[-1]
+
+        # Angle between consecutive tangents
+        max_angle_deg = 0.0
+        for i in range(n):
+            t1 = tangents[(i - 1) % n]
+            t2 = tangents[i]
+            cos_a = np.dot(t1, t2) / (np.linalg.norm(t1) * np.linalg.norm(t2) + 1e-15)
+            cos_a = np.clip(cos_a, -1.0, 1.0)
+            angle = math.degrees(math.acos(cos_a))
+            if angle > max_angle_deg:
+                max_angle_deg = angle
+
+        assert max_angle_deg < 15.0, (
+            f"Profile has sharp kink: max angle change = {max_angle_deg:.2f}°"
+        )
+
+    def test_no_self_intersection(self, profile_array):
+        """The profile should not cross itself.
+
+        Uses a winding-number approach: the signed area of the polygon should
+        be non-zero and the polygon should have consistent winding (all cross
+        products of consecutive edges same sign for a convex-ish curve, but
+        cycloidal profiles are not convex). Instead, we do a sampled segment
+        intersection check on every 10th segment pair to keep runtime reasonable.
+        """
+        pts = profile_array
+        n = len(pts)
+        step = 10  # check every 10th segment pair for speed
+
+        def segments_intersect(p1, p2, p3, p4):
+            """Test if segment p1-p2 intersects segment p3-p4."""
+            d1 = p2 - p1
+            d2 = p4 - p3
+            cross_d = d1[0] * d2[1] - d1[1] * d2[0]
+            if abs(cross_d) < 1e-12:
+                return False  # parallel
+            d3 = p3 - p1
+            t = (d3[0] * d2[1] - d3[1] * d2[0]) / cross_d
+            u = (d3[0] * d1[1] - d3[1] * d1[0]) / cross_d
+            return 0.0 < t < 1.0 and 0.0 < u < 1.0
+
+        for i in range(0, n, step):
+            p1 = pts[i]
+            p2 = pts[(i + 1) % n]
+            # Only check against non-adjacent segments
+            for j in range(i + 2 * step, n - step, step):
+                # Skip adjacent segments at wrap-around
+                if i == 0 and j >= n - 2 * step:
+                    continue
+                p3 = pts[j]
+                p4 = pts[(j + 1) % n]
+                assert not segments_intersect(p1, p2, p3, p4), (
+                    f"Self-intersection detected between segments {i} and {j}"
+                )
+
+
+# ===================================================================
+# 2. Clearance checks
+# ===================================================================
+
+
+class TestClearances:
+
+    def test_center_bore_to_pin_hole_wall(self):
+        """Wall between center bore and output pin holes must be >= 5mm.
+
+        Inner edge of pin hole = pin_circle_r - pin_hole_r
+        Outer edge of bore = center_bore_dia / 2
+        Wall = inner_edge - outer_edge
+        Spec says 8.4mm.
+        """
+        pin_circle_r = CFG.disc.output_pin_circle_dia / 2.0  # 30
+        pin_hole_r = CFG.disc.output_pin_hole_dia / 2.0  # 4
+        bore_r = CFG.disc.center_bore_dia / 2.0  # 17.6
+
+        wall = (pin_circle_r - pin_hole_r) - bore_r
+        assert wall >= 5.0, (
+            f"Bore-to-pin-hole wall = {wall:.2f}mm, need >= 5mm"
+        )
+
+    def test_pin_hole_to_lobe_valley_wall(self, profile_points):
+        """Wall between output pin hole outer edge and disc profile inner radius >= 10mm.
+
+        Outer edge of pin hole = pin_circle_r + pin_hole_r
+        Disc min radius = profile min radius
+        Wall = min_radius - outer_edge
+        Spec says ~15mm.
+        """
+        pin_circle_r = CFG.disc.output_pin_circle_dia / 2.0  # 30
+        pin_hole_r = CFG.disc.output_pin_hole_dia / 2.0  # 4
+        min_r, _ = compute_profile_radii(profile_points)
+
+        wall = min_r - (pin_circle_r + pin_hole_r)
+        assert wall >= 10.0, (
+            f"Pin-hole-to-lobe-valley wall = {wall:.2f}mm, need >= 10mm"
+        )
+
+    def test_disc_fits_in_housing(self, profile_points):
+        """Max disc radius + eccentricity must not exceed housing bore radius.
+
+        During operation the disc center wobbles by ±e, so the swept
+        envelope radius = max_profile_radius + e.
+        """
+        _, max_r = compute_profile_radii(profile_points)
+        e = CFG.gear.eccentricity
+        housing_bore_r = CFG.housing.bore_dia / 2.0  # 58
+
+        swept_r = max_r + e
+        assert swept_r < housing_bore_r, (
+            f"Disc swept radius {swept_r:.2f}mm exceeds housing bore {housing_bore_r:.2f}mm"
+        )
+
+
+# ===================================================================
+# 3. Meshing / engagement simulation
+# ===================================================================
+
+
+def _transform_profile_to_housing(profile_array, input_angle_rad):
+    """Transform disc profile points to housing frame for a given input angle.
+
+    Kinematics:
+      - Disc center orbits at (e·cos(φ), e·sin(φ))
+      - Disc body rotates by -φ / N_lobes relative to housing
+    """
+    e = CFG.gear.eccentricity
+    n_lobes = CFG.gear.num_lobes
+    phi = input_angle_rad
+
+    # Disc rotation angle
+    disc_rot = -phi / n_lobes
+
+    # Rotation matrix
+    c, s = math.cos(disc_rot), math.sin(disc_rot)
+    rot = np.array([[c, -s], [s, c]])
+
+    # Rotate then translate
+    rotated = profile_array @ rot.T
+    offset = np.array([e * math.cos(phi), e * math.sin(phi)])
+    return rotated + offset
+
+
+def _ring_pin_centers():
+    """Return (N, 2) array of ring pin center positions in housing frame."""
+    R = CFG.gear.ring_pin_circle_radius
+    N = CFG.gear.num_ring_pins
+    angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
+    return np.column_stack([R * np.cos(angles), R * np.sin(angles)])
+
+
+def _min_distances_to_profile(pin_center, profile_pts):
+    """Minimum distance from a single pin center to the closest profile segment.
+
+    Computes point-to-segment distance for all segments and returns the minimum.
+    """
+    # Vector approach for all segments at once
+    p = pin_center
+    a = profile_pts
+    b = np.roll(profile_pts, -1, axis=0)
+
+    ab = b - a
+    ap = p - a
+    # Parameter t clamped to [0, 1]
+    t = np.sum(ap * ab, axis=1) / (np.sum(ab * ab, axis=1) + 1e-15)
+    t = np.clip(t, 0.0, 1.0)
+    # Closest point on each segment
+    closest = a + t[:, np.newaxis] * ab
+    dists = np.linalg.norm(p - closest, axis=1)
+    return dists.min()
+
+
+class TestMeshing:
+
+    NUM_ANGLES = 360  # sample one full input revolution
+
+    def test_ring_pin_no_interference(self, profile_array):
+        """No ring pin should penetrate the disc profile at any input angle.
+
+        For each sampled input angle, the minimum distance from every ring pin
+        center to the disc profile must be >= pin_radius (minus small tolerance
+        for numerical error).
+        """
+        pin_r = CFG.gear.ring_pin_radius  # 2.0
+        pin_centers = _ring_pin_centers()
+        tolerance = 0.15  # mm, numerical tolerance
+
+        for step in range(self.NUM_ANGLES):
+            phi = 2 * math.pi * step / self.NUM_ANGLES
+            transformed = _transform_profile_to_housing(profile_array, phi)
+
+            for k, pc in enumerate(pin_centers):
+                d = _min_distances_to_profile(pc, transformed)
+                assert d >= pin_r - tolerance, (
+                    f"Ring pin {k} penetrates disc at input angle "
+                    f"{math.degrees(phi):.1f}°: distance={d:.3f}mm < pin_r={pin_r}mm"
+                )
+
+    def test_ring_pin_contact_exists(self, profile_array):
+        """At each input angle, at least one ring pin should be near-contact.
+
+        Near-contact means distance from pin center to profile ≈ pin_radius
+        (within a contact tolerance band).
+        """
+        pin_r = CFG.gear.ring_pin_radius
+        pin_centers = _ring_pin_centers()
+        contact_tolerance = 0.5  # mm — how close counts as "in contact"
+
+        for step in range(self.NUM_ANGLES):
+            phi = 2 * math.pi * step / self.NUM_ANGLES
+            transformed = _transform_profile_to_housing(profile_array, phi)
+
+            min_gap = float("inf")
+            for pc in pin_centers:
+                d = _min_distances_to_profile(pc, transformed)
+                gap = abs(d - pin_r)
+                if gap < min_gap:
+                    min_gap = gap
+
+            assert min_gap < contact_tolerance, (
+                f"No ring pin in contact at input angle {math.degrees(phi):.1f}°: "
+                f"closest gap = {min_gap:.3f}mm"
+            )
+
+
+# ===================================================================
+# 4. CadQuery solid validation
+# ===================================================================
+
+
+class TestCadQuerySolid:
+
+    @pytest.fixture(scope="class")
+    def disc_solid(self):
+        cq = pytest.importorskip("cadquery")
+        from src.cycloidal_disc import build_cycloidal_disc
+
+        return build_cycloidal_disc()
+
+    def test_solid_is_valid(self, disc_solid):
+        """The built solid should be non-null and have exactly one solid."""
+        solids = disc_solid.solids().vals()
+        assert len(solids) == 1, f"Expected 1 solid, got {len(solids)}"
+
+    def test_bounding_box_dimensions(self, disc_solid):
+        """Bounding box should match expected disc envelope.
+
+        XY extent ≈ disc OD (~108mm), Z extent = disc thickness (10mm).
+        """
+        bb = disc_solid.val().BoundingBox()
+        x_size = bb.xmax - bb.xmin
+        y_size = bb.ymax - bb.ymin
+        z_size = bb.zmax - bb.zmin
+
+        expected_od = 108.0  # approximate disc OD
+        assert abs(x_size - expected_od) < 5.0, (
+            f"X extent {x_size:.2f}mm, expected ~{expected_od}mm"
+        )
+        assert abs(y_size - expected_od) < 5.0, (
+            f"Y extent {y_size:.2f}mm, expected ~{expected_od}mm"
+        )
+        assert abs(z_size - CFG.disc.thickness) < 0.1, (
+            f"Z extent {z_size:.2f}mm, expected {CFG.disc.thickness}mm"
+        )
+
+    def test_volume_sanity(self, disc_solid):
+        """Volume should be between reasonable bounds.
+
+        Lower bound: a thin annulus (bore to min_radius) × thickness
+        Upper bound: full circle at max_radius × thickness
+        Both minus the 4 output pin holes.
+        """
+        import cadquery as cq
+
+        vol = disc_solid.val().Volume()  # mm³
+
+        # Rough bounds
+        min_r = 49.0  # approximate lobe valley radius
+        max_r = 55.0  # approximate lobe tip radius
+        bore_r = CFG.disc.center_bore_dia / 2.0
+        t = CFG.disc.thickness
+        pin_hole_r = CFG.disc.output_pin_hole_dia / 2.0
+        n_pins = CFG.disc.output_pin_count
+
+        lower = math.pi * (min_r**2 - bore_r**2) * t * 0.7  # 70% fill factor for lobes
+        lower -= n_pins * math.pi * pin_hole_r**2 * t
+        upper = math.pi * max_r**2 * t
+
+        assert lower < vol < upper, (
+            f"Volume {vol:.0f}mm³ outside expected range [{lower:.0f}, {upper:.0f}]"
+        )
