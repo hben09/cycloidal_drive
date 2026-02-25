@@ -323,7 +323,7 @@ Recommended order of CAD operations:
 2. ~~Generate the cycloidal disc profile~~ ✅ — epitrochoid with 20 lobes
 3. ~~Add center bore and output pin holes to disc~~ ✅
 4. ~~Model the ring gear body~~ ✅ — 21× pin blind holes (30mm deep) on 108mm circle, output bearing seat
-5. Model the output hub to fit through 2× 6814 inner races with pin mounting
+5. ~~Model the output hub~~ ✅ — fit through 2× 6814 inner races with pin mounting
 6. ~~Model the motor plate~~ ✅ — NEMA 17 pattern, shaft bore (no 625 bearing, direct D-shaft)
-7. Model the output cap with 625 bearing seat and housing bolt holes
+7. ~~Model the output cap~~ ✅ — bearing retention lid, hub clearance bore, housing bolt holes
 8. Verify all clearances in assembly

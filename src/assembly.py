@@ -18,6 +18,7 @@ from src.eccentric_shaft import build_eccentric_shaft
 from src.motor_plate import build_motor_plate
 from src.ring_gear_body import build_ring_gear_body
 from src.output_hub import build_output_hub
+from src.output_cap import build_output_cap
 from src.purchased_parts import (
     build_bearing_6003,
     build_bearing_6814,
@@ -102,6 +103,11 @@ show_object(ring_body, name="ring_gear_body", options={"color": "slategray", "al
 output_hub = build_output_hub()
 output_hub = output_hub.translate((0, 0, stack.z_output_bearings))
 show_object(output_hub, name="output_hub", options={"color": "goldenrod", "alpha": 0.6})
+
+# ── Output cap ──────────────────────────────────────────────────
+output_cap = build_output_cap()
+output_cap = output_cap.translate((0, 0, stack.z_output_cap))
+show_object(output_cap, name="output_cap", options={"color": "slategray", "alpha": 0.4})
 
 # ── 625 bearing (output-side shaft support) ───────────────────
 # Sits in the output hub's inner-face pocket at z_output_bearings
