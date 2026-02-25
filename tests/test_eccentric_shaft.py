@@ -1,7 +1,7 @@
 """Validation test suite for the eccentric shaft geometry.
 
 Tests cover:
-  1. Dimensional checks — thin wall, lobe offsets, bearing fits (numpy only)
+  1. Dimensional checks — thin wall, lobe offsets, bearing fits, D-bore (no CadQuery)
   2. CadQuery solid — valid topology, bounding box, volume sanity
 """
 
@@ -57,20 +57,13 @@ class TestShaftDimensions:
             f"6003 bore {CFG.bearings.ecc_bore}mm"
         )
 
-    def test_spine_fits_in_625_bearing(self):
-        """Spine OD must match the 625 bearing bore."""
-        assert CFG.shaft.spine_od == CFG.bearings.inp_bore, (
-            f"Spine OD {CFG.shaft.spine_od}mm != "
-            f"625 bore {CFG.bearings.inp_bore}mm"
-        )
-
     def test_shaft_spans_both_discs(self):
         """Shaft Z range must cover both disc positions from StackUp."""
         stack = CFG.stack_up
         shaft = CFG.shaft
         disc_t = CFG.disc.thickness
 
-        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length  # 3mm
+        z_start = stack.z_motor_plate_inner  # 10mm
         z_end = stack.z_disc2 + disc_t + shaft.output_stub_length  # 42mm
 
         # Shaft must start before disc 1 and end after disc 2
@@ -89,6 +82,53 @@ class TestShaftDimensions:
         assert lobe_r > shaft.eccentricity + spine_r, (
             f"Lobe radius {lobe_r}mm <= eccentricity {shaft.eccentricity}mm + "
             f"spine radius {spine_r}mm — union will have a gap"
+        )
+
+
+class TestDBore:
+    """Checks for the direct D-shaft engagement bore."""
+
+    def test_collar_contains_bore(self):
+        """Input collar must have wall around the D-bore."""
+        shaft = CFG.shaft
+        tol = CFG.tolerances
+        bore_r = (shaft.d_bore_dia + tol.sliding_clearance_add * 2) / 2.0
+        collar_r = shaft.input_collar_od / 2.0
+        wall = collar_r - bore_r
+        assert wall >= 1.5, (
+            f"Collar wall around D-bore = {wall:.2f}mm, need >= 1.5mm"
+        )
+
+    def test_bore_does_not_break_lobe_thin_side(self):
+        """D-bore must not break through the lobe on its thin side.
+
+        The lobe center is offset by eccentricity from shaft axis.
+        The D-bore is centered on the shaft axis. On the thin side,
+        the wall = lobe_radius - eccentricity - bore_radius.
+        """
+        shaft = CFG.shaft
+        tol = CFG.tolerances
+        lobe_r = shaft.bearing_seat_od / 2.0  # 8.5mm
+        bore_r = (shaft.d_bore_dia + tol.sliding_clearance_add * 2) / 2.0  # 2.75mm
+        e = shaft.eccentricity  # 1.5mm
+        thin_wall = lobe_r - e - bore_r
+        assert thin_wall >= 2.0, (
+            f"Lobe thin-side wall around D-bore = {thin_wall:.2f}mm, need >= 2mm"
+        )
+
+    def test_bore_matches_motor_shaft(self):
+        """D-bore diameter must accommodate the motor shaft."""
+        shaft = CFG.shaft
+        tol = CFG.tolerances
+        bore_dia = shaft.d_bore_dia + tol.sliding_clearance_add * 2
+        assert bore_dia > CFG.motor.shaft_dia, (
+            f"D-bore {bore_dia:.2f}mm <= motor shaft {CFG.motor.shaft_dia}mm"
+        )
+
+    def test_bore_depth_gives_adequate_engagement(self):
+        """D-bore must provide at least 8mm of motor shaft engagement."""
+        assert CFG.shaft.d_bore_depth >= 8.0, (
+            f"D-bore depth {CFG.shaft.d_bore_depth}mm < 8mm minimum engagement"
         )
 
 
@@ -117,9 +157,9 @@ class TestCadQuerySolid:
         shaft = CFG.shaft
         disc_t = CFG.disc.thickness
 
-        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length
+        z_start = stack.z_motor_plate_inner
         z_end = stack.z_disc2 + disc_t + shaft.output_stub_length
-        expected_length = z_end - z_start  # 37mm
+        expected_length = z_end - z_start  # 32mm
 
         bb = shaft_solid.val().BoundingBox()
         z_size = bb.zmax - bb.zmin
@@ -156,7 +196,7 @@ class TestCadQuerySolid:
     def test_volume_sanity(self, shaft_solid):
         """Volume should be between reasonable bounds.
 
-        Lower bound: just the spine cylinder (no lobes).
+        Lower bound: just the spine cylinder (no lobes, no collar).
         Upper bound: a full 17mm OD cylinder spanning the whole length.
         """
         shaft = CFG.shaft
@@ -165,7 +205,7 @@ class TestCadQuerySolid:
 
         lobe_r = shaft.bearing_seat_od / 2.0
         spine_r = shaft.spine_od / 2.0
-        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length
+        z_start = stack.z_motor_plate_inner
         z_end = stack.z_disc2 + disc_t + shaft.output_stub_length
         total_length = z_end - z_start
 

@@ -19,9 +19,7 @@ from src.motor_plate import build_motor_plate
 from src.purchased_parts import (
     build_bearing_6003,
     build_bearing_6814,
-    build_bearing_625,
     build_nema17_motor,
-    build_coupler,
     build_ring_pins,
     build_output_pins,
 )
@@ -54,10 +52,8 @@ show_object(disc2, name="disc_2", options={"color": "lightblue", "alpha": 0.6})
 show_object(bearing_6003_2, name="bearing_6003_2", options={"color": "orange"})
 
 # ── 625 input bearings ────────────────────────────────────────
-# Motor-side: sits in motor plate at z_motor_plate_wall
-bearing_625_motor = build_bearing_625()
-bearing_625_motor = bearing_625_motor.translate((0, 0, stack.motor_plate_wall))
-show_object(bearing_625_motor, name="bearing_625_motor", options={"color": "darkorange"})
+# Motor-side 625 eliminated — direct D-shaft engagement, motor
+# internal bearings provide input support.
 
 # Output-side: sits at end of disc 2 + output stub region
 # bearing_625_output = build_bearing_625()
@@ -94,10 +90,10 @@ motor = build_nema17_motor()
 show_object(motor, name="nema17_motor", options={"color": "dimgray"})
 
 # ── Coupler ────────────────────────────────────────────────────
-# Coupler ends at z_motor_plate_inner (Z=10mm), extends 25mm back toward motor
-coupler = build_coupler()
-coupler = coupler.translate((0, 0, stack.z_motor_plate_inner - cfg.coupler.length))
-show_object(coupler, name="coupler", options={"color": "gold"})
+# Eliminated — direct D-shaft engagement between motor and eccentric shaft
+# coupler = build_coupler()
+# coupler = coupler.translate((0, 0, stack.z_motor_plate_inner - cfg.coupler.length))
+# show_object(coupler, name="coupler", options={"color": "gold"})
 
 # ── Motor plate ──────────────────────────────────────────────────
 motor_plate = build_motor_plate()

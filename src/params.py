@@ -48,13 +48,15 @@ class DiscParams:
 class ShaftParams:
     """Eccentric shaft dimensions — spec Section 1.4."""
 
-    input_bore_dia: float = 5.0  # mm, matches motor shaft and 625 bearing bore
     bearing_seat_od: float = 17.0  # mm, matches 6003 bore
     eccentricity: float = 1.5  # mm
     spine_od: float = 5.0  # mm, shaft OD outside the lobe regions
-    dcut_flat: float = 4.5  # mm, D-cut flat-to-round width (matches motor shaft)
-    input_stub_length: float = 2.0  # mm, extends past motor-side 625 into coupler
     output_stub_length: float = 7.0  # mm, extends past disc 2 for output-side 625
+    # Direct D-shaft engagement with motor shaft
+    input_collar_od: float = 10.0  # mm, enlarged input section for D-bore wall
+    d_bore_dia: float = 5.0  # mm, matches motor shaft (tolerance applied in builder)
+    d_bore_flat: float = 4.5  # mm, D-flat width (matches motor shaft D-cut)
+    d_bore_depth: float = 10.0  # mm, motor shaft engagement length
 
 
 @dataclass(frozen=True)
@@ -163,7 +165,7 @@ class StackUp:
 
     motor_plate_wall: float = 5.0
     inp_bearing_seat: float = 5.0  # 625 bearing depth in motor plate
-    coupler_clearance: float = 3.0
+    input_clearance: float = 3.0  # gap between motor plate inner face and disc 1
     disc_thickness: float = 10.0
     inter_disc_spacer: float = 2.0
     output_clearance: float = 2.0
@@ -176,7 +178,7 @@ class StackUp:
 
     @property
     def z_disc1(self) -> float:
-        return self.z_motor_plate_inner + self.coupler_clearance  # 13mm
+        return self.z_motor_plate_inner + self.input_clearance  # 13mm
 
     @property
     def z_disc2(self) -> float:

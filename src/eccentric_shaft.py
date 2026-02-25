@@ -3,6 +3,10 @@
 Machined steel or aluminum. Two 17mm OD lobes offset 180° from each
 other (one per disc), connected by a 5mm OD spine. The lobe centers
 are offset ±eccentricity from the shaft axis.
+
+The input end has a D-bore socket that receives the motor shaft directly
+(no coupler). A 10mm OD collar at the input provides wall thickness
+around the D-bore.
 """
 
 import sys
@@ -19,21 +23,24 @@ from src.params import DriveConfig, DEFAULT_CONFIG
 def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     """Build the eccentric shaft with two offset lobes and a central spine."""
     shaft = cfg.shaft
+    motor = cfg.motor
+    tol = cfg.tolerances
     stack = cfg.stack_up
     disc_t = cfg.disc.thickness
 
     e = shaft.eccentricity
     lobe_r = shaft.bearing_seat_od / 2.0
     spine_r = shaft.spine_od / 2.0
+    collar_r = shaft.input_collar_od / 2.0
 
     # Z positions from stack-up
-    z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length  # 3mm
+    z_start = stack.z_motor_plate_inner  # 10mm — shaft starts at motor plate inner face
     z_lobe1 = stack.z_disc1  # 13mm
     z_lobe2 = stack.z_disc2  # 25mm
     z_end = z_lobe2 + disc_t + shaft.output_stub_length  # 42mm
     total_length = z_end - z_start
 
-    # Spine: full-length 5mm OD cylinder on the shaft axis, with D-cut flat
+    # ── Spine: 5mm OD cylinder from collar end to output ────────────
     spine = (
         cq.Workplane("XY")
         .workplane(offset=z_start)
@@ -41,19 +48,16 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(total_length)
     )
 
-    # D-cut flat on the spine (matches motor shaft D-flat for coupler engagement)
-    dcut_offset = shaft.dcut_flat / 2.0  # 2.25mm from center to flat
-    cut_depth = spine_r - dcut_offset  # 2.5 - 2.25 = 0.25mm removed
-    dcut_block = (
+    # ── Input collar: enlarged section for D-bore wall thickness ────
+    collar_length = z_lobe1 - z_start  # 3mm (input_clearance)
+    collar = (
         cq.Workplane("XY")
         .workplane(offset=z_start)
-        .transformed(offset=(0, spine_r - cut_depth / 2.0, 0))
-        .rect(shaft.spine_od, cut_depth)
-        .extrude(total_length)
+        .circle(collar_r)
+        .extrude(collar_length)
     )
-    spine = spine.cut(dcut_block)
 
-    # Lobe 1: 17mm OD, center offset +e in X
+    # ── Lobe 1: 17mm OD, center offset +e in X ─────────────────────
     lobe1 = (
         cq.Workplane("XY")
         .workplane(offset=z_lobe1)
@@ -62,7 +66,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(disc_t)
     )
 
-    # Lobe 2: 17mm OD, center offset -e in X (180° from lobe 1)
+    # ── Lobe 2: 17mm OD, center offset -e in X (180° from lobe 1) ──
     lobe2 = (
         cq.Workplane("XY")
         .workplane(offset=z_lobe2)
@@ -71,7 +75,42 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(disc_t)
     )
 
-    result = spine.union(lobe1).union(lobe2)
+    result = spine.union(collar).union(lobe1).union(lobe2)
+
+    # ── D-bore: motor shaft socket from input face ──────────────────
+    # Round bore + D-flat key matching the motor shaft profile
+    bore_dia = shaft.d_bore_dia + tol.sliding_clearance_add * 2  # 5.50mm
+    bore_r = bore_dia / 2.0
+    bore_depth = shaft.d_bore_depth  # 10mm
+
+    d_bore_round = (
+        cq.Workplane("XY")
+        .workplane(offset=z_start)
+        .circle(bore_r)
+        .extrude(bore_depth)
+    )
+    result = result.cut(d_bore_round)
+
+    # D-flat key: fill the bore flat zone so the motor shaft D-cut locks in
+    # The motor shaft has a flat at 4.5mm across. The bore needs a matching
+    # protrusion (key) that the flat slides against. We model this by cutting
+    # only the D-shaped profile (round minus the keyed area).
+    # Actually: cut a full round bore, then add back a key block on one side.
+    # Simpler: cut only a D-shaped bore (circle intersected with flat).
+    # The bore is the D-profile: a circle with material left where the flat is.
+    dcut_offset = shaft.d_bore_flat / 2.0 + tol.sliding_clearance_add  # 2.50mm
+    cut_depth = bore_r - dcut_offset  # amount to NOT cut (the key)
+    if cut_depth > 0:
+        # Add back a key block (material the D-bore leaves in place)
+        key_block = (
+            cq.Workplane("XY")
+            .workplane(offset=z_start)
+            .transformed(offset=(0, bore_r - cut_depth / 2.0, 0))
+            .rect(bore_dia, cut_depth)
+            .extrude(bore_depth)
+        )
+        result = result.union(key_block)
+
     return result
 
 

@@ -62,14 +62,17 @@
 
 | Parameter | Value | Notes |
 |---|---|---|
-| Input bore | 5.00mm | Matches motor shaft via coupler |
 | Shaft OD at bearing seats | 17.00mm | Matches 6003 bearing bore |
 | Eccentricity | 1.50mm | Offset between shaft center and bearing seat center |
-| Thin side wall | 4.50mm | (17 − 5) / 2 − 1.5 = 4.5mm ✓ exceeds 4mm min |
-| Thick side wall | 7.50mm | (17 − 5) / 2 + 1.5 = 7.5mm |
+| Spine OD | 5.00mm | Between lobes and at output stub |
+| Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
+| D-bore ⌀ | 5.00mm + tolerance | Receives motor shaft directly |
+| D-bore flat | 4.50mm | Matches motor shaft D-cut |
+| D-bore depth | 10.00mm | Motor shaft engagement length |
+| Output stub length | 7.00mm | Extends past disc 2 for output-side 625 |
 | Material | Steel or aluminum | Recommend machined; do NOT 3D print this part |
 
-The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis.
+The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis. The input end has a D-bore socket that receives the motor shaft directly (no coupler). A 10mm OD collar at the input provides wall thickness around the D-bore.
 
 ---
 
@@ -111,20 +114,20 @@ Two bearings mounted end-to-end in the housing. The inner races sit on the outpu
 - Output pin hole outer edge: 34.00mm from center
 - **Clearance between pin holes and bearing bore: 1.00mm** — Note: this is the clearance on the output plate hub, not the disc. The pin holes in the discs do not interact with the output bearing. The output pins pass through the discs and thread into the output plate, which passes through the bearing bore. The 60mm pin circle sits well inside the 70mm bearing bore.
 
-### 2.3 Input Shaft Support Bearings — 625-2RS
+### 2.3 Input Shaft Support Bearing — 625-2RS
 
 | Parameter | Value |
 |---|---|
-| Quantity | 2 |
+| Quantity | 1 |
 | Designation | 625-2RS |
 | Bore (d) | 5mm |
 | OD (D) | 16mm |
 | Width (B) | 5mm |
 | Type | Deep groove ball bearing, sealed |
 | Dynamic load rating | ~1.0 kN (typical) |
-| Purpose | Supports eccentric shaft at motor side and output side |
+| Purpose | Supports eccentric shaft at output side |
 
-One in the motor-side housing plate, one in the output-side housing plate (or internal support wall).
+Motor-side 625 eliminated — direct D-shaft engagement means the motor's internal bearings and the 6003 disc bearings provide adequate input-side radial support. One 625 remains in the output-side housing plate (or output hub).
 
 ---
 
@@ -144,14 +147,9 @@ One in the motor-side housing plate, one in the output-side housing plate (or in
 | Mounting hole thread | M3, tapped 4.5mm deep |
 | Holding torque | ~0.45 Nm (typical) |
 
-### 3.2 Shaft Coupler
+### 3.2 ~~Shaft Coupler~~ — ELIMINATED
 
-| Parameter | Value |
-|---|---|
-| Type | Flexible jaw coupler (spider type) |
-| Bore 1 | 5mm (motor shaft) |
-| Bore 2 | 5mm (eccentric shaft) |
-| Size | D19 × L25 (19mm OD × 25mm long) |
+Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-bore in the eccentric shaft input end. No separate coupler needed.
 
 ### 3.3 Ring Pins
 
@@ -189,8 +187,8 @@ Measured from motor mounting face inward:
 | Layer | Thickness | Running Total |
 |---|---|---|
 | Motor-side housing plate wall | 5mm | 5mm |
-| 625 bearing seat (motor side) | 5mm | 10mm |
-| Shaft coupler clearance | 3mm | 13mm |
+| Motor plate inner wall | 5mm | 10mm |
+| Input clearance (D-shaft collar) | 3mm | 13mm |
 | Cycloidal disc 1 + 6003 bearing | 10mm | 23mm |
 | Inter-disc spacer | 2mm | 25mm |
 | Cycloidal disc 2 + 6003 bearing | 10mm | 35mm |
@@ -220,7 +218,7 @@ Measured from motor mounting face inward:
 
 Recommend splitting the housing into 3 printed parts:
 
-1. **Motor plate** — NEMA 17 bolt pattern, 625 bearing seat, ring pin holes (one end)
+1. **Motor plate** — NEMA 17 bolt pattern, shaft bore for D-shaft pass-through
 2. **Ring gear body** — Main cylinder with 21 ring pin through-holes, output bearing seat bore
 3. **Output cap** — Retains output bearings, seals housing, second 625 bearing seat
 
@@ -302,15 +300,14 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | # | Part | Specification | Qty | Est. Cost |
 |---|---|---|---|---|
 | 1 | NEMA 17 stepper | 48mm body, 5mm × 20mm shaft | 1 | $10–15 |
-| 2 | Shaft coupler | 5mm–5mm flexible jaw, D19L25 | 1 | $3–5 |
-| 3 | Eccentric bearing | 6003-2RS (17 × 35 × 10mm) | 2 | $4–8 |
-| 4 | Output bearing | 6814-2RS (70 × 90 × 10mm) | 2 | $16–40 |
-| 5 | Input shaft bearing | 625-2RS (5 × 16 × 5mm) | 2 | $2–4 |
-| 6 | Ring pins | 4mm × 30mm ground dowel h6 | 25 | $8–12 |
-| 7 | Output pins | M4 × 35mm shoulder bolt | 4 | $3–6 |
-| 8 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
-| 9 | Housing bolts | M4 × 50mm socket head | 8 | $2–4 |
-| | | | **Total** | **~$50–95** |
+| 2 | Eccentric bearing | 6003-2RS (17 × 35 × 10mm) | 2 | $4–8 |
+| 3 | Output bearing | 6814-2RS (70 × 90 × 10mm) | 2 | $16–40 |
+| 4 | Input shaft bearing | 625-2RS (5 × 16 × 5mm) | 1 | $1–2 |
+| 5 | Ring pins | 4mm × 30mm ground dowel h6 | 25 | $8–12 |
+| 6 | Output pins | M4 × 35mm shoulder bolt | 4 | $3–6 |
+| 7 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
+| 8 | Housing bolts | M4 × 50mm socket head | 8 | $2–4 |
+| | | | **Total** | **~$45–85** |
 
 ---
 
@@ -318,11 +315,11 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 
 Recommended order of CAD operations:
 
-1. Model the eccentric shaft around the 6003 bearing dimensions and 5mm input bore
-2. Generate the cycloidal disc profile from the equations in Section 8
-3. Add center bore (35.2mm) and 4× output pin holes (8mm on 60mm circle) to disc
+1. ~~Model the eccentric shaft~~ ✅ — D-bore socket, input collar, two lobes, output stub
+2. ~~Generate the cycloidal disc profile~~ ✅ — epitrochoid with 20 lobes
+3. ~~Add center bore and output pin holes to disc~~ ✅
 4. Model the ring gear body with 21× pin holes on 108mm circle and output bearing seat
 5. Model the output hub to fit through 2× 6814 inner races with pin mounting
-6. Model the motor plate with NEMA 17 pattern and 625 bearing seat
+6. ~~Model the motor plate~~ ✅ — NEMA 17 pattern, shaft bore (no 625 bearing, direct D-shaft)
 7. Model the output cap with 625 bearing seat and housing bolt holes
 8. Verify all clearances in assembly

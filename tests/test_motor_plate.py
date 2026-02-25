@@ -1,7 +1,7 @@
 """Validation test suite for the motor plate geometry.
 
 Tests cover:
-  1. Dimensional checks — feature clearances, bolt patterns, bearing seat (no CadQuery)
+  1. Dimensional checks — feature clearances, bolt patterns (no CadQuery)
   2. CadQuery solid — valid topology, bounding box, volume sanity
 """
 
@@ -57,17 +57,6 @@ class TestMotorPlateDimensions:
         wall = h.od / 2.0 - (bolt_r + hole_r)
         assert wall >= 2.0, (
             f"Wall from bolt edge to OD = {wall:.1f}mm, need >= 2mm"
-        )
-
-    def test_bearing_seat_fits_in_plate(self):
-        """625 bearing seat must be smaller than housing bore."""
-        b = CFG.bearings
-        h = CFG.housing
-        tol = CFG.tolerances
-        bearing_seat_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.075mm
-        assert bearing_seat_dia < h.bore_dia, (
-            f"625 bearing seat {bearing_seat_dia:.2f}mm >= "
-            f"housing bore {h.bore_dia}mm"
         )
 
     def test_pilot_recess_smaller_than_bore(self):
@@ -166,9 +155,9 @@ class TestCadQuerySolid:
         full_disc_vol = math.pi * (h.od / 2.0) ** 2 * plate_t
         vol = plate_solid.val().Volume()
 
-        # Plate with all holes should be at least 70% of a solid disc
-        assert vol > full_disc_vol * 0.70, (
-            f"Volume {vol:.0f}mm³ too small, expected > {full_disc_vol * 0.70:.0f}"
+        # Plate with bolt holes only should be at least 90% of a solid disc
+        assert vol > full_disc_vol * 0.90, (
+            f"Volume {vol:.0f}mm³ too small, expected > {full_disc_vol * 0.90:.0f}"
         )
         assert vol < full_disc_vol, (
             f"Volume {vol:.0f}mm³ exceeds full disc {full_disc_vol:.0f}"

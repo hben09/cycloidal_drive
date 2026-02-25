@@ -3,12 +3,14 @@
 3D-printed PETG housing part. Sits at Z=0 (outer/motor face) to Z=10mm
 (inner face). Features:
   - Motor pilot recess and M3 bolt pattern on the outer face
-  - 625-2RS bearing seat on the inner face
+  - Central shaft bore for motor shaft pass-through (direct D-shaft engagement)
   - 8 M4 housing-bolt through-holes on the perimeter
 
+No motor-side 625 bearing — the motor shaft passes through the plate
+and engages the eccentric shaft D-bore directly. Motor internal bearings
+and 6003 disc bearings provide adequate radial support.
+
 Ring pins are retained entirely by the ring gear body (press-fit).
-The bolt circle (110mm) and pin circle (108mm) are too close radially
-for both hole patterns in the same plate.
 """
 
 import math
@@ -29,7 +31,6 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     """
     h = cfg.housing
     m = cfg.motor
-    b = cfg.bearings
     tol = cfg.tolerances
     stack = cfg.stack_up
 
@@ -62,17 +63,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(shaft_bore)
 
-    # ── 4. 625 bearing seat (inner face, 5mm deep pocket) ──────────
-    bearing_seat_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.075mm
-    bearing_pocket = (
-        cq.Workplane("XY")
-        .workplane(offset=stack.motor_plate_wall)  # Z=5
-        .circle(bearing_seat_dia / 2.0)
-        .extrude(stack.inp_bearing_seat)  # 5mm → Z=10
-    )
-    result = result.cut(bearing_pocket)
-
-    # ── 5. M3 motor bolt holes (through, clearance fit) ─────────────
+    # ── 4. M3 motor bolt holes (through, clearance fit) ──────────────
     m3_clearance_dia = m.bolt_dia + 0.4  # 3.4mm
     half_pat = m.bolt_pattern_square / 2.0  # 15.5mm
     motor_bolt_pts = [
@@ -89,7 +80,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(motor_bolts)
 
-    # ── 6. M4 housing bolt holes (through, clearance fit) ─────────
+    # ── 5. M4 housing bolt holes (through, clearance fit) ─────────
     m4_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
     bolt_r = h.bolt_circle_dia / 2.0  # 55mm
     bolt_pts = [
