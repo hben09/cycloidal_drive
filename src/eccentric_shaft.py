@@ -33,13 +33,25 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     z_end = z_lobe2 + disc_t + shaft.output_stub_length  # 42mm
     total_length = z_end - z_start
 
-    # Spine: full-length 5mm OD cylinder on the shaft axis
+    # Spine: full-length 5mm OD cylinder on the shaft axis, with D-cut flat
     spine = (
         cq.Workplane("XY")
         .workplane(offset=z_start)
         .circle(spine_r)
         .extrude(total_length)
     )
+
+    # D-cut flat on the spine (matches motor shaft D-flat for coupler engagement)
+    dcut_offset = shaft.dcut_flat / 2.0  # 2.25mm from center to flat
+    cut_depth = spine_r - dcut_offset  # 2.5 - 2.25 = 0.25mm removed
+    dcut_block = (
+        cq.Workplane("XY")
+        .workplane(offset=z_start)
+        .transformed(offset=(0, spine_r - cut_depth / 2.0, 0))
+        .rect(shaft.spine_od, cut_depth)
+        .extrude(total_length)
+    )
+    spine = spine.cut(dcut_block)
 
     # Lobe 1: 17mm OD, center offset +e in X
     lobe1 = (

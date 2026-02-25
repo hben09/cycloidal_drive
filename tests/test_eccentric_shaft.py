@@ -70,7 +70,7 @@ class TestShaftDimensions:
         shaft = CFG.shaft
         disc_t = CFG.disc.thickness
 
-        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat  # 5mm
+        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length  # 3mm
         z_end = stack.z_disc2 + disc_t + shaft.output_stub_length  # 42mm
 
         # Shaft must start before disc 1 and end after disc 2
@@ -117,7 +117,7 @@ class TestCadQuerySolid:
         shaft = CFG.shaft
         disc_t = CFG.disc.thickness
 
-        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat
+        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length
         z_end = stack.z_disc2 + disc_t + shaft.output_stub_length
         expected_length = z_end - z_start  # 37mm
 
@@ -165,7 +165,7 @@ class TestCadQuerySolid:
 
         lobe_r = shaft.bearing_seat_od / 2.0
         spine_r = shaft.spine_od / 2.0
-        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat
+        z_start = stack.z_motor_plate_inner - stack.inp_bearing_seat - shaft.input_stub_length
         z_end = stack.z_disc2 + disc_t + shaft.output_stub_length
         total_length = z_end - z_start
 
