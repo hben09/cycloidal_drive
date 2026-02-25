@@ -415,3 +415,77 @@ class TestCadQuerySolid:
         assert lower < vol < upper, (
             f"Volume {vol:.0f}mm³ outside expected range [{lower:.0f}, {upper:.0f}]"
         )
+
+
+# ===================================================================
+# 5. Part fitment — disc ↔ purchased parts
+# ===================================================================
+
+
+class TestDiscFitment:
+    """Verify that purchased parts mate correctly with the cycloidal disc."""
+
+    # -- Parametric checks (fast) ------------------------------------
+
+    def test_6003_bearing_od_fits_disc_bore(self):
+        """6003 bearing OD must be smaller than disc center bore (clearance fit)."""
+        bearing_od = CFG.bearings.ecc_od  # 35.0mm
+        bore_dia = CFG.disc.center_bore_dia  # 35.2mm
+        clearance = bore_dia - bearing_od
+        assert clearance > 0, (
+            f"6003 bearing OD ({bearing_od}mm) exceeds disc bore ({bore_dia}mm)"
+        )
+        assert clearance < 1.0, (
+            f"Excessive clearance {clearance:.2f}mm between bearing and bore"
+        )
+
+    def test_6003_bearing_width_matches_disc_thickness(self):
+        """6003 bearing width must equal disc thickness (both 10mm)."""
+        assert CFG.bearings.ecc_width == CFG.disc.thickness, (
+            f"Bearing width {CFG.bearings.ecc_width}mm != "
+            f"disc thickness {CFG.disc.thickness}mm"
+        )
+
+    def test_output_pin_fits_disc_hole(self):
+        """Output pin diameter must be smaller than disc pin hole."""
+        pin_dia = CFG.disc.output_pin_dia  # 4.0mm
+        hole_dia = CFG.disc.output_pin_hole_dia  # 8.0mm
+        clearance = hole_dia - pin_dia
+        assert clearance > 0, (
+            f"Output pin ({pin_dia}mm) won't fit disc hole ({hole_dia}mm)"
+        )
+        # Clearance must accommodate eccentricity: need >= 2*e
+        min_clearance = 2 * CFG.gear.eccentricity  # 3.0mm
+        assert clearance >= min_clearance, (
+            f"Pin hole clearance {clearance:.2f}mm < 2*eccentricity {min_clearance}mm"
+        )
+
+    def test_eccentric_shaft_seat_matches_6003_bore(self):
+        """Shaft bearing seat OD must match 6003 bearing bore."""
+        assert CFG.shaft.bearing_seat_od == CFG.bearings.ecc_bore, (
+            f"Shaft seat OD {CFG.shaft.bearing_seat_od}mm != "
+            f"6003 bore {CFG.bearings.ecc_bore}mm"
+        )
+
+    # -- CadQuery boolean interference check (thorough) --------------
+
+    @pytest.fixture(scope="class")
+    def disc_and_bearing(self):
+        cq = pytest.importorskip("cadquery")
+        from src.cycloidal_disc import build_cycloidal_disc
+        from src.purchased_parts import build_bearing_6003
+
+        return build_cycloidal_disc(), build_bearing_6003()
+
+    def test_6003_bearing_no_interference_with_disc(self, disc_and_bearing):
+        """Boolean intersection of bearing and disc solids must be empty.
+
+        Both parts are built at origin — the bearing sits inside the
+        disc bore, so their solid volumes must not overlap.
+        """
+        disc, bearing = disc_and_bearing
+        interference = disc.intersect(bearing)
+        vol = interference.val().Volume()
+        assert vol < 1.0, (
+            f"Bearing/disc interference volume = {vol:.1f}mm³ (should be ~0)"
+        )
