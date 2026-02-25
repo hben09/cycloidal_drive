@@ -123,30 +123,34 @@ class TestHousingAlignment:
         assert angles[-1] < 2 * math.pi
 
     def test_housing_bolts_clear_ring_pins(self):
-        """Housing bolts must not overlap ring pin positions angularly."""
+        """Housing bolts must not overlap ring pin holes (2D distance check).
+
+        Bolts and pins sit at different radii (62.5mm vs 54mm), so the
+        real clearance is the Euclidean distance between hole centers
+        minus the sum of hole radii.
+        """
         g = CFG.gear
         h = CFG.housing
         bolt_angles = compute_housing_bolt_angles(CFG)
-        pin_spacing = 2 * math.pi / g.num_ring_pins
+        bolt_r = h.bolt_circle_dia / 2.0  # 62.5mm
+        pin_r = g.ring_pin_circle_dia / 2.0  # 54mm
+
+        bolt_hole_r = (h.bolt_dia + 0.4) / 2.0  # 2.2mm
+        pin_hole_r = g.ring_pin_dia / 2.0  # 2.0mm
+        min_center_dist = bolt_hole_r + pin_hole_r  # 4.2mm
 
         for ba in bolt_angles:
-            # Find nearest pin angle
-            nearest_pin = round(ba / pin_spacing) * pin_spacing
-            angular_sep = abs(ba - nearest_pin)
-            angular_sep = min(angular_sep, 2 * math.pi - angular_sep)
-
-            # Convert to linear distance at bolt circle
-            bolt_r = h.bolt_circle_dia / 2.0
-            linear_sep = bolt_r * angular_sep
-
-            # Must clear bolt radius + pin radius
-            bolt_hole_r = (h.bolt_dia + 0.4) / 2.0
-            pin_hole_r = g.ring_pin_dia / 2.0
-            min_sep = bolt_hole_r + pin_hole_r
-            assert linear_sep > min_sep, (
-                f"Bolt at {math.degrees(ba):.1f}° is only {linear_sep:.2f}mm "
-                f"from nearest pin (need > {min_sep:.2f}mm)"
-            )
+            bx = bolt_r * math.cos(ba)
+            by = bolt_r * math.sin(ba)
+            for i in range(g.num_ring_pins):
+                pa = 2 * math.pi * i / g.num_ring_pins
+                px = pin_r * math.cos(pa)
+                py = pin_r * math.sin(pa)
+                dist = math.hypot(bx - px, by - py)
+                assert dist > min_center_dist, (
+                    f"Bolt at {math.degrees(ba):.1f}° is only {dist:.2f}mm "
+                    f"from pin {i} (need > {min_center_dist:.2f}mm)"
+                )
 
 
 # ===================================================================
