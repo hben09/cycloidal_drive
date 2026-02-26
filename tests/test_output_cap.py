@@ -59,13 +59,40 @@ class TestOutputCapDimensions:
     def test_cap_od_matches_housing(self):
         """Cap OD must match the housing OD."""
         h = CFG.housing
-        assert h.od == 134.0, f"Housing OD {h.od}mm != 134mm"
+        assert h.od == 140.0, f"Housing OD {h.od}mm != 140mm"
 
     def test_cap_thickness(self):
         """Cap thickness must equal the output wall from the stack-up."""
         stack = CFG.stack_up
-        assert stack.output_wall == 3.0, (
-            f"Output wall {stack.output_wall}mm != 3mm"
+        assert stack.output_wall == 8.0, (
+            f"Output wall {stack.output_wall}mm != 8mm"
+        )
+
+    def test_nut_pocket_fits_in_cap(self):
+        """Nut pocket depth must be less than cap thickness."""
+        h = CFG.housing
+        stack = CFG.stack_up
+        assert h.bolt_nut_depth < stack.output_wall, (
+            f"Nut pocket {h.bolt_nut_depth}mm >= cap thickness {stack.output_wall}mm"
+        )
+
+    def test_nut_pocket_floor_thickness(self):
+        """Floor under nut pocket must be at least 2mm for PETG."""
+        h = CFG.housing
+        stack = CFG.stack_up
+        floor = stack.output_wall - h.bolt_nut_depth
+        assert floor >= 2.0, (
+            f"Nut pocket floor {floor:.1f}mm < 2mm"
+        )
+
+    def test_nut_pocket_wall_to_od(self):
+        """Hex nut pocket must leave adequate wall to housing OD."""
+        h = CFG.housing
+        bolt_r = h.bolt_circle_dia / 2.0
+        nut_circ_r = (h.bolt_nut_af / 2.0) / math.cos(math.radians(30))
+        wall = h.od / 2.0 - (bolt_r + nut_circ_r)
+        assert wall >= 2.0, (
+            f"Nut pocket wall to OD = {wall:.2f}mm, need >= 2mm"
         )
 
     def test_bolt_count_matches_housing(self):

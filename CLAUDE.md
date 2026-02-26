@@ -9,7 +9,7 @@
 | Gear Ratio | 20:1 (20 lobes, 21 ring pins) |
 | Motor | NEMA 17, 48mm body, 20mm shaft, 5mm ⌀ |
 | Eccentricity | 1.5mm |
-| Housing OD | ~134mm |
+| Housing OD | ~140mm |
 | Print Material | PETG, 100% infill on discs |
 
 ---
@@ -24,7 +24,7 @@
 | Ring pin diameter | 4.00mm | Ground steel dowel, h6 tolerance |
 | Ring pin circle ⌀ | 108.00mm | Centered in housing bore |
 | Ring pin length | 35mm | 5mm motor plate + 25mm disc zone + 5mm ring gear body |
-| Housing bore ⌀ | 116.00mm | 134mm OD − 2 × 9mm wall |
+| Housing bore ⌀ | 116.00mm | 140mm OD − 2 × 12mm wall |
 
 ### 1.2 Cycloidal Disc
 
@@ -173,12 +173,33 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 | Total length | 54.5mm |
 | Retained by | Head on hub output face, M3 nut on disc 1 side |
 
-### 3.5 Fasteners
+### 3.5 Housing Bolts
+
+| Parameter | Value |
+|---|---|
+| Quantity | 8 |
+| Type | M4 × 60mm socket head cap screw (ISO 4762) |
+| Head ⌀ | 7.0mm |
+| Head height | 4.0mm |
+| Shank ⌀ | 4.0mm |
+| Shank length | 60mm |
+| Retained by | Counterbore in motor plate, M4 hex nut in output cap |
+
+### 3.6 Housing Nuts
+
+| Parameter | Value |
+|---|---|
+| Quantity | 8 |
+| Type | M4 hex nut |
+| Width across flats | 7.0mm |
+| Thickness | 3.2mm |
+| Captured in | Hex nut pocket in output cap outer face |
+
+### 3.7 Other Fasteners
 
 | Item | Spec | Qty | Purpose |
 |---|---|---|---|
 | Motor mounting bolts | M3 × 8mm socket head | 4 | Mount motor to housing |
-| Housing assembly bolts | M4 × 40–50mm socket head | 6–8 | Clamp housing halves |
 | Output plate bolts | Per application | — | Attach arm link to output |
 
 ---
@@ -197,11 +218,11 @@ Measured from motor mounting face inward:
 | Cycloidal disc 2 + 6003 bearing | 10mm | 35mm |
 | Clearance to output bearing | 2mm | 37mm |
 | Output bearings (2 × 6814) | 20mm | 57mm |
-| Output-side housing wall | 3mm | 60mm |
+| Output-side housing wall | 8mm | 65mm |
 
-**Total housing depth: ~60mm** (not including motor body protrusion)
+**Total housing depth: ~65mm** (not including motor body protrusion)
 
-**Total assembly depth including NEMA 17:** ~60mm + 48mm motor + 5mm standoff = **~113mm**
+**Total assembly depth including NEMA 17:** ~65mm + 48mm motor + 5mm standoff = **~118mm**
 
 ---
 
@@ -211,8 +232,8 @@ Measured from motor mounting face inward:
 
 | Dimension | Value |
 |---|---|
-| OD | 134mm |
-| Depth | ~60mm (housing only) |
+| OD | 140mm |
+| Depth | ~65mm (housing only) |
 | Housing bore (ring pin area) | 116mm |
 | Output bearing seat OD | 90.15mm (press fit for 6814 outer race) |
 | Output bearing seat depth | 20mm (for 2 × 6814) |
@@ -221,11 +242,11 @@ Measured from motor mounting face inward:
 
 Recommend splitting the housing into 3 printed parts:
 
-1. **Motor plate** — NEMA 17 bolt pattern, shaft bore for D-shaft pass-through, 21 ring-pin blind holes (5mm deep) on inner face
-2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (30mm deep), output bearing seat bore
-3. **Output cap** — Retains output bearings, seals housing, second 625 bearing seat
+1. **Motor plate** — NEMA 17 bolt pattern, shaft bore for D-shaft pass-through, 21 ring-pin blind holes (5mm deep) on inner face, 8× M4 counterbore holes (7.4mm ⌀ × 4.5mm deep) on outer face
+2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (30mm deep), output bearing seat bore, 8× M4 clearance through-holes
+3. **Output cap** — Retains output bearings, seals housing, 8× hex nut pockets (7.2mm AF × 4.0mm deep) on outer face
 
-Parts joined with M4 through-bolts around the perimeter (8 bolts on a 125mm bolt circle, outside the 116mm bore).
+Parts joined with 8× M4 × 60mm socket head cap screws on a 125mm bolt circle. Bolt heads sit in counterbores on the motor plate; M4 hex nuts captured in hex pockets on the output cap.
 
 ### 5.3 Output Hub / Plate
 
@@ -253,7 +274,7 @@ A separate printed or aluminum part that:
 - Print all cycloidal discs flat (lobes in XY plane) at 100% infill
 - Use 0.16mm or finer layer height for bearing seats
 - Test-print a bearing fit gauge before committing to full parts
-- PETG shrinks ~0.3–0.5% — account for this on large dimensions (134mm housing may need to be designed at ~134.5mm)
+- PETG shrinks ~0.3–0.5% — account for this on large dimensions (140mm housing may need to be designed at ~140.5mm)
 
 ---
 
@@ -310,8 +331,9 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 6 | Output pins | M3 × 54.5mm shoulder bolt (4mm × 45mm shoulder) | 4 | $3–6 |
 | 6a | Output pin nuts | M3 nut | 4 | $1 |
 | 7 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
-| 8 | Housing bolts | M4 × 50mm socket head | 8 | $2–4 |
-| | | | **Total** | **~$45–85** |
+| 8 | Housing bolts | M4 × 60mm socket head cap screw | 8 | $2–4 |
+| 8a | Housing nuts | M4 hex nut | 8 | $1 |
+| | | | **Total** | **~$46–86** |
 
 ---
 

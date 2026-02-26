@@ -12,7 +12,7 @@ import cadquery as cq
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from src.params import DriveConfig, DEFAULT_CONFIG
+from src.params import DriveConfig, DEFAULT_CONFIG, compute_housing_bolt_angles
 
 
 # -------------------------------------------------------------------
@@ -215,6 +215,76 @@ def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     return shoulder.union(thread)
 
 
+# -------------------------------------------------------------------
+# Housing bolts — 8× M4 × 60mm SHCS on 125mm bolt circle
+# -------------------------------------------------------------------
+
+
+def build_housing_bolts(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
+    """8× M4 × 60mm socket head cap screws on the housing bolt circle.
+
+    Built with head top at Z=0 (motor plate outer face).  Head sits in
+    the counterbore; shank extends in +Z through the housing.
+    """
+    h = cfg.housing
+    bolt_r = h.bolt_circle_dia / 2.0
+    bolt_angles = compute_housing_bolt_angles(cfg)
+    positions = [
+        (bolt_r * math.cos(a), bolt_r * math.sin(a))
+        for a in bolt_angles
+    ]
+
+    # Cylindrical head: 7mm ⌀ × 4mm, from Z=0 to Z=head_height
+    heads = (
+        cq.Workplane("XY")
+        .pushPoints(positions)
+        .circle(h.bolt_head_dia / 2.0)
+        .extrude(h.bolt_head_height)
+    )
+
+    # Cylindrical shank: 4mm ⌀ × 60mm, from Z=head_height onward
+    shanks = (
+        cq.Workplane("XY")
+        .workplane(offset=h.bolt_head_height)
+        .pushPoints(positions)
+        .circle(h.bolt_dia / 2.0)
+        .extrude(h.bolt_length)
+    )
+
+    return heads.union(shanks)
+
+
+# -------------------------------------------------------------------
+# Housing nuts — 8× M4 hex nuts on 125mm bolt circle
+# -------------------------------------------------------------------
+
+
+def build_housing_nuts(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
+    """8× M4 hex nuts on the housing bolt circle.
+
+    Built at Z=0; caller translates to the nut pocket floor position.
+    """
+    h = cfg.housing
+    bolt_r = h.bolt_circle_dia / 2.0
+    bolt_angles = compute_housing_bolt_angles(cfg)
+    nut_circ_dia = 7.0 / math.cos(math.radians(30))  # nominal M4 nut
+
+    result = None
+    for a in bolt_angles:
+        x = bolt_r * math.cos(a)
+        y = bolt_r * math.sin(a)
+        nut = (
+            cq.Workplane("XY")
+            .center(x, y)
+            .transformed(rotate=(0, 0, math.degrees(a)))
+            .polygon(6, nut_circ_dia)
+            .extrude(h.bolt_nut_thickness)
+        )
+        result = nut if result is None else result.union(nut)
+
+    return result
+
+
 if __name__ == "__main__":
     from ocp_vscode import show_object
 
@@ -225,3 +295,5 @@ if __name__ == "__main__":
     show_object(build_coupler(), name="coupler")
     show_object(build_ring_pins(), name="ring_pins")
     show_object(build_output_pins(), name="output_pins")
+    show_object(build_housing_bolts(), name="housing_bolts")
+    show_object(build_housing_nuts(), name="housing_nuts")

@@ -59,6 +59,37 @@ class TestMotorPlateDimensions:
             f"Wall from bolt edge to OD = {wall:.1f}mm, need >= 2mm"
         )
 
+    def test_counterbore_wall_to_od(self):
+        """Counterbore must leave adequate wall to the housing OD."""
+        h = CFG.housing
+        bolt_r = h.bolt_circle_dia / 2.0
+        cb_r = h.bolt_counterbore_dia / 2.0
+        wall = h.od / 2.0 - (bolt_r + cb_r)
+        assert wall >= 2.0, (
+            f"Counterbore wall to OD = {wall:.2f}mm, need >= 2mm"
+        )
+
+    def test_counterbore_fits_in_plate(self):
+        """Counterbore depth must be less than plate thickness."""
+        h = CFG.housing
+        stack = CFG.stack_up
+        plate_t = stack.motor_plate_wall + stack.inp_bearing_seat
+        assert h.bolt_counterbore_depth < plate_t, (
+            f"Counterbore {h.bolt_counterbore_depth}mm >= plate {plate_t}mm"
+        )
+
+    def test_counterbore_clears_ring_pins(self):
+        """Counterbore must not overlap with ring pin holes radially."""
+        h = CFG.housing
+        g = CFG.gear
+        bolt_r = h.bolt_circle_dia / 2.0
+        cb_r = h.bolt_counterbore_dia / 2.0
+        pin_outer_r = g.ring_pin_circle_dia / 2.0 + g.ring_pin_dia / 2.0
+        inner_edge = bolt_r - cb_r
+        assert inner_edge > pin_outer_r, (
+            f"Counterbore inner edge {inner_edge:.2f}mm <= pin outer {pin_outer_r:.2f}mm"
+        )
+
     def test_pilot_recess_smaller_than_bore(self):
         """Motor pilot recess must be smaller than the housing bore."""
         m = CFG.motor

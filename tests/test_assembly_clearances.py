@@ -50,9 +50,9 @@ class TestAxialStackUp:
             f"Total depth {s.total_housing_depth}mm != sum {expected}mm"
         )
 
-    def test_total_depth_is_60mm(self):
-        """Spec says ~60mm housing depth."""
-        assert abs(CFG.stack_up.total_housing_depth - 60.0) < 0.01
+    def test_total_depth_is_65mm(self):
+        """Housing depth: 10mm plate + 47mm body + 8mm cap = 65mm."""
+        assert abs(CFG.stack_up.total_housing_depth - 65.0) < 0.01
 
     def test_disc1_before_disc2(self):
         """Disc 1 must sit at a lower Z than disc 2."""
@@ -110,7 +110,7 @@ class TestHousingAlignment:
     def test_all_housing_parts_same_od(self):
         """Motor plate, ring gear body, and output cap should share the housing OD."""
         # This is enforced by all parts using cfg.housing.od, but verify the value
-        assert CFG.housing.od == 134.0
+        assert CFG.housing.od == 140.0
 
     def test_housing_bolt_angles_consistent(self):
         """All housing parts use the same bolt angle computation."""
@@ -366,7 +366,72 @@ class TestRingPinSpan:
 
 
 # ===================================================================
-# 7. CadQuery interference checks — key mating pairs
+# 7. Housing bolt engagement
+# ===================================================================
+
+
+class TestHousingBoltEngagement:
+    """Verify M4 × 60mm bolt fits the housing stack with counterbore and nut pocket."""
+
+    def test_bolt_reaches_nut(self):
+        """Bolt shank must extend past the nut pocket floor."""
+        h = CFG.housing
+        s = CFG.stack_up
+        bolt_tip_z = h.bolt_counterbore_depth + h.bolt_length
+        nut_floor_z = s.total_housing_depth - h.bolt_nut_depth
+        assert bolt_tip_z > nut_floor_z, (
+            f"Bolt tip at {bolt_tip_z}mm doesn't reach nut floor at {nut_floor_z}mm"
+        )
+
+    def test_full_nut_engagement(self):
+        """Bolt must pass through the full nut thickness."""
+        h = CFG.housing
+        s = CFG.stack_up
+        bolt_tip_z = h.bolt_counterbore_depth + h.bolt_length
+        nut_floor_z = s.total_housing_depth - h.bolt_nut_depth
+        engagement = bolt_tip_z - nut_floor_z
+        assert engagement >= h.bolt_nut_thickness, (
+            f"Thread engagement {engagement:.1f}mm < nut thickness {h.bolt_nut_thickness}mm"
+        )
+
+    def test_bolt_does_not_protrude(self):
+        """Bolt tip must not extend past the output cap outer face."""
+        h = CFG.housing
+        s = CFG.stack_up
+        bolt_tip_z = h.bolt_counterbore_depth + h.bolt_length
+        assert bolt_tip_z <= s.total_housing_depth, (
+            f"Bolt tip at {bolt_tip_z}mm protrudes past cap at {s.total_housing_depth}mm"
+        )
+
+    def test_counterbore_recesses_head(self):
+        """Counterbore must be at least as deep as the bolt head height."""
+        h = CFG.housing
+        assert h.bolt_counterbore_depth >= h.bolt_head_height, (
+            f"Counterbore {h.bolt_counterbore_depth}mm < head height {h.bolt_head_height}mm"
+        )
+
+    def test_counterbore_wall_to_od(self):
+        """Counterbore must leave adequate wall to housing OD."""
+        h = CFG.housing
+        bolt_r = h.bolt_circle_dia / 2.0
+        cb_r = h.bolt_counterbore_dia / 2.0
+        wall = h.od / 2.0 - (bolt_r + cb_r)
+        assert wall >= 2.0, (
+            f"Counterbore wall to OD = {wall:.2f}mm, need >= 2mm"
+        )
+
+    def test_counterbore_fits_in_motor_plate(self):
+        """Counterbore depth must be less than motor plate thickness."""
+        h = CFG.housing
+        s = CFG.stack_up
+        plate_t = s.motor_plate_wall + s.inp_bearing_seat
+        assert h.bolt_counterbore_depth < plate_t, (
+            f"Counterbore {h.bolt_counterbore_depth}mm >= plate thickness {plate_t}mm"
+        )
+
+
+# ===================================================================
+# 8. CadQuery interference checks — key mating pairs
 # ===================================================================
 
 

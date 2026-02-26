@@ -75,6 +75,21 @@ def build_output_cap(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bolt_holes)
 
+    # ── 4. Hex nut pockets (outer face, Z = cap_thickness side) ─────
+    # Each hex oriented with a flat facing radially outward to maximise
+    # wall thickness toward the housing perimeter.
+    nut_circ_dia = h.bolt_nut_af / math.cos(math.radians(30))  # ~8.31mm
+    for angle, pt in zip(bolt_angles, bolt_pts):
+        hex_pocket = (
+            cq.Workplane("XY")
+            .workplane(offset=cap_thickness - h.bolt_nut_depth)
+            .center(pt[0], pt[1])
+            .transformed(rotate=(0, 0, math.degrees(angle)))
+            .polygon(6, nut_circ_dia)
+            .extrude(h.bolt_nut_depth)
+        )
+        result = result.cut(hex_pocket)
+
     return result
 
 

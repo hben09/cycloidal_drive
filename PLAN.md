@@ -62,25 +62,23 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 
 ### 5. `src/ring_gear_body.py` — Main housing cylinder
 
-- Tube: 120mm OD, 116mm bore, height = 47mm (from coupler clearance through output bearings per stack-up)
+- Tube: 140mm OD, 116mm bore, height = 47mm (from coupler clearance through output bearings per stack-up)
 - Output bearing seat: 90.15mm counterbore, 20mm deep from output end
-- 8x M4 housing bolt through-holes on 110mm circle
+- 8x M4 housing bolt through-holes (4.4mm clearance) on 125mm circle
 
 ### 6. `src/motor_plate.py` — Motor-side housing plate
 
-- 120mm OD disc, 10mm thick (5mm wall + 5mm for 625 bearing seat)
-- Center bore clears coupler (~22mm)
-- 625 bearing seat: counterbore from inner face (16.075mm dia, 5mm deep)
+- 140mm OD disc, 10mm thick (5mm wall + 5mm for 625 bearing seat)
+- Center bore clears motor shaft (~5.5mm)
 - NEMA 17 bolt pattern: 4x M3 clearance holes on 31mm square
 - 21x ring pin press-fit blind holes (3.875mm dia) on 108mm circle
-- 8x housing bolt holes
+- 8x M4 housing bolt through-holes on 125mm circle with 7.4mm ⌀ × 4.5mm counterbores on outer face
 
 ### 7. `src/output_cap.py` — Output-side cap
 
-- 120mm OD disc, 3mm thick
+- 140mm OD disc, 8mm thick
 - Center bore clears output hub (70.25mm)
-- 21x ring pin press-fit holes on 108mm circle
-- 8x housing bolt holes
+- 8x M4 housing bolt through-holes on 125mm circle with hex nut pockets (7.2mm AF × 4.0mm deep) on outer face
 
 ### 8. `src/output_hub.py` — Output plate
 
@@ -94,12 +92,14 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 
 Simple cylinder/box models for visualization only (not for manufacturing):
 - **Bearings** (6003-2RS x2, 6814-2RS x2, 625-2RS x2): annular cylinders with correct bore/OD/width
-- **NEMA 17 motor**: 42.3mm square body, 48mm long, 5mm shaft stub
+- **NEMA 17 motor**: 42.3mm square body, 48mm long, 5mm shaft stub with D-cut
 - **Shaft coupler**: 19mm OD x 25mm cylinder
-- **Ring pins**: 21x 4mm x 30mm cylinders on 108mm circle
+- **Ring pins**: 21x 4mm x 35mm cylinders on 108mm circle
 - **Output pins**: 4x M3 shoulder bolts (4mm × 45mm shoulder + M3 × 6mm thread) on 60mm circle
+- **Housing bolts**: 8x M4 × 60mm SHCS (7mm head + 4mm shank) on 125mm circle
+- **Housing nuts**: 8x M4 hex nuts (7mm AF × 3.2mm) on 125mm circle
 
-Each returns a `cq.Workplane` solid, colored distinctly in the assembly (bearings = red, motor = dark gray, pins = silver).
+Each returns a `cq.Workplane` solid, colored distinctly in the assembly.
 
 ### 10. `src/assembly.py` — Full assembly with all components
 
@@ -111,8 +111,10 @@ Position all parts along Z axis per the axial stack-up (spec Section 4):
 | Disc 1 (offset +1.5mm X) | 13mm |
 | Disc 2 (rotated 180-deg, offset -1.5mm X) | 25mm |
 | Output bearings region | 37mm |
-| Output cap | 57mm |
+| Output cap | 57mm (8mm thick) |
 | Output hub | 37mm |
+| Housing bolts | Z=0.5 (head recessed in counterbore) |
+| Housing nuts | Z=61 (in nut pocket floor) |
 | Eccentric shaft | spans full length |
 | Motor (external) | -48mm (behind motor plate) |
 | All bearings, pins, coupler | at their respective Z positions |
@@ -180,7 +182,7 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 | `test_gear_ratio` | `num_ring_pins - 1 == num_lobes` (21 − 1 = 20) |
 | `test_eccentricity_wall_thickness` | Thin wall = (bearing_seat_od − input_bore) / 2 − e >= 4mm |
 | `test_output_pin_hole_clearance` | Hole dia >= pin dia + 2×eccentricity + clearance |
-| `test_stack_up_total` | Sum of all stack-up layers == total housing depth (60mm) |
+| `test_stack_up_total` | Sum of all stack-up layers == total housing depth (65mm) |
 | `test_bearing_fit_tolerances` | Press-fit dims < nominal, clearance-fit dims > nominal |
 
 ---
@@ -204,41 +206,45 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 | Test | What it checks |
 |---|---|
 | `test_solid_is_valid` | Single valid solid |
-| `test_outer_diameter` | OD = 120mm |
+| `test_outer_diameter` | OD = 140mm |
 | `test_bore_diameter` | Inner bore = 116mm |
 | `test_ring_pin_hole_count` | 21 through-holes present |
 | `test_ring_pin_hole_positions` | All holes on 108mm circle, equally spaced |
 | `test_output_bearing_seat` | Counterbore dia = 90.15mm, depth = 20mm |
-| `test_housing_bolt_holes` | 8 holes on 110mm circle |
+| `test_housing_bolt_holes` | 8 holes on 125mm circle |
 | `test_height` | Matches stack-up (47mm body section) |
 
 ---
 
-### `tests/test_motor_plate.py` — Motor-side plate (TODO)
+### `tests/test_motor_plate.py` — Motor-side plate (DONE)
 
 | Test | What it checks |
 |---|---|
 | `test_solid_is_valid` | Single valid solid |
-| `test_outer_diameter` | OD = 120mm |
+| `test_outer_diameter` | OD = 140mm |
 | `test_thickness` | 10mm (5mm wall + 5mm bearing seat) |
 | `test_nema17_bolt_pattern` | 4× M3 holes on 31mm square |
-| `test_625_bearing_seat` | Counterbore dia = 16.075mm, depth = 5mm |
 | `test_ring_pin_holes` | 21 blind holes on 108mm circle, press-fit diameter (3.875mm) |
-| `test_center_bore_clears_coupler` | Center bore >= 22mm |
-| `test_housing_bolt_holes` | 8 holes on 110mm circle |
+| `test_center_bore_clears_motor_shaft` | Center bore >= 5mm motor shaft |
+| `test_housing_bolt_holes` | 8 holes on 125mm circle |
+| `test_counterbore_wall_to_od` | Counterbore leaves ≥2mm wall to OD |
+| `test_counterbore_fits_in_plate` | Counterbore depth < plate thickness |
+| `test_counterbore_clears_ring_pins` | Counterbore inner edge clears ring pin outer edge |
 
 ---
 
-### `tests/test_output_cap.py` — Output-side cap (TODO)
+### `tests/test_output_cap.py` — Output-side cap (DONE)
 
 | Test | What it checks |
 |---|---|
 | `test_solid_is_valid` | Single valid solid |
-| `test_outer_diameter` | OD = 120mm |
-| `test_thickness` | 3mm |
+| `test_outer_diameter` | OD = 140mm |
+| `test_thickness` | 8mm |
 | `test_center_bore_clears_hub` | Center bore = 70.25mm |
-| `test_ring_pin_holes` | 21 holes on 108mm circle, press-fit diameter |
-| `test_housing_bolt_holes` | 8 holes on 110mm circle |
+| `test_housing_bolt_holes` | 8 holes on 125mm circle |
+| `test_nut_pocket_fits_in_cap` | Nut pocket depth < cap thickness |
+| `test_nut_pocket_floor_thickness` | Floor ≥ 2mm for PETG |
+| `test_nut_pocket_wall_to_od` | Hex pocket leaves ≥2mm wall to OD |
 
 ---
 
@@ -269,15 +275,17 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 
 ---
 
-### `tests/test_purchased_parts.py` — Simplified visualization parts (TODO)
+### `tests/test_purchased_parts.py` — Simplified visualization parts (DONE)
 
 | Test | What it checks |
 |---|---|
 | `test_bearing_dimensions` | Each bearing model matches bore/OD/width from spec |
-| `test_motor_body_size` | 42.3mm square × 48mm body, 5mm shaft |
+| `test_motor_body_size` | 42.3mm square × 48mm body, 5mm shaft with D-cut |
 | `test_coupler_size` | 19mm OD × 25mm length |
-| `test_ring_pin_count_and_size` | 21× 4mm × 30mm cylinders |
-| `test_output_pin_count_and_size` | 4× 4mm × 25mm cylinders |
+| `test_ring_pin_count_and_size` | 21× 4mm × 35mm cylinders |
+| `test_output_pin_count_and_size` | 4× M3 shoulder bolts on 60mm circle |
+| `test_housing_bolt_solid_valid` | 8× M4 SHCS solids, correct Z extent (64mm) |
+| `test_housing_nut_solid_valid` | 8× hex nut solids, correct Z extent (3.2mm) |
 
 ---
 

@@ -82,6 +82,22 @@ def output_pins():
     return build_output_pins()
 
 
+@pytest.fixture(scope="module")
+def housing_bolts():
+    cq = pytest.importorskip("cadquery")
+    from src.purchased_parts import build_housing_bolts
+
+    return build_housing_bolts()
+
+
+@pytest.fixture(scope="module")
+def housing_nuts():
+    cq = pytest.importorskip("cadquery")
+    from src.purchased_parts import build_housing_nuts
+
+    return build_housing_nuts()
+
+
 # ===================================================================
 # Bearing tests
 # ===================================================================
@@ -342,4 +358,61 @@ class TestOutputPins:
         total_vol = sum(s.Volume() for s in output_pins.solids().vals())
         assert abs(total_vol - expected_total) < 5.0, (
             f"Total volume {total_vol:.0f}mm³, expected {expected_total:.0f}mm³"
+        )
+
+
+# ===================================================================
+# Housing bolt tests
+# ===================================================================
+
+
+class TestHousingBolts:
+
+    def test_solid_valid(self, housing_bolts):
+        solids = housing_bolts.solids().vals()
+        assert len(solids) == CFG.housing.bolt_count, (
+            f"Expected {CFG.housing.bolt_count} solids, got {len(solids)}"
+        )
+
+    def test_bounding_box_z(self, housing_bolts):
+        """Z extent should be head_height + bolt_length."""
+        h = CFG.housing
+        expected_z = h.bolt_head_height + h.bolt_length  # 4 + 60 = 64mm
+        bb = housing_bolts.val().BoundingBox()
+        z = bb.zmax - bb.zmin
+        assert abs(z - expected_z) < 0.2, (
+            f"Z extent {z:.2f}mm, expected {expected_z:.2f}mm"
+        )
+
+    def test_bounding_box_xy_span(self, housing_bolts):
+        """XY extent should span the bolt circle + head diameter."""
+        h = CFG.housing
+        expected_span = h.bolt_circle_dia + h.bolt_head_dia
+        bb = housing_bolts.val().BoundingBox()
+        x_span = bb.xmax - bb.xmin
+        assert abs(x_span - expected_span) < 0.5, (
+            f"X span {x_span:.2f}mm, expected ~{expected_span:.2f}mm"
+        )
+
+
+# ===================================================================
+# Housing nut tests
+# ===================================================================
+
+
+class TestHousingNuts:
+
+    def test_solid_valid(self, housing_nuts):
+        solids = housing_nuts.solids().vals()
+        assert len(solids) == CFG.housing.bolt_count, (
+            f"Expected {CFG.housing.bolt_count} solids, got {len(solids)}"
+        )
+
+    def test_bounding_box_z(self, housing_nuts):
+        """Z extent should be the nut thickness."""
+        h = CFG.housing
+        bb = housing_nuts.val().BoundingBox()
+        z = bb.zmax - bb.zmin
+        assert abs(z - h.bolt_nut_thickness) < 0.1, (
+            f"Z extent {z:.2f}mm, expected {h.bolt_nut_thickness}mm"
         )

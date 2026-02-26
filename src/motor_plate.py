@@ -126,6 +126,15 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bolt_holes)
 
+    # ── 7. Counterbore pockets for M4 bolt heads (outer face, Z=0) ──
+    counterbores = (
+        cq.Workplane("XY")
+        .pushPoints(bolt_pts)
+        .circle(h.bolt_counterbore_dia / 2.0)
+        .extrude(h.bolt_counterbore_depth)
+    )
+    result = result.cut(counterbores)
+
     return result
 
 

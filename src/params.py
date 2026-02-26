@@ -87,14 +87,22 @@ class BearingParams:
 class HousingParams:
     """Housing dimensions — spec Section 5."""
 
-    od: float = 134.0  # mm (sized for 2mm+ wall around bolt holes outside bore)
+    od: float = 140.0  # mm (sized for 3mm+ wall around counterbores/nut pockets)
     bore_dia: float = 116.0  # mm
-    wall_thickness: float = 9.0  # mm (134 - 116) / 2
+    wall_thickness: float = 12.0  # mm (140 - 116) / 2
     motor_plate_wall: float = 5.0  # mm
-    output_wall: float = 3.0  # mm
+    output_wall: float = 8.0  # mm (thickened for hex nut pockets)
     bolt_count: int = 8
-    bolt_circle_dia: float = 125.0  # mm (outside 116mm bore, 2.3mm wall each side)
+    bolt_circle_dia: float = 125.0  # mm (outside 116mm bore)
     bolt_dia: float = 4.0  # mm (M4)
+    bolt_length: float = 60.0  # mm (M4 × 60 SHCS)
+    bolt_head_dia: float = 7.0  # mm (M4 SHCS head)
+    bolt_head_height: float = 4.0  # mm (M4 SHCS head)
+    bolt_counterbore_dia: float = 7.4  # mm (head 7mm + 0.4mm clearance)
+    bolt_counterbore_depth: float = 4.5  # mm (4mm head + 0.5mm recess)
+    bolt_nut_af: float = 7.2  # mm (M4 nut 7mm AF + 0.2mm clearance)
+    bolt_nut_thickness: float = 3.2  # mm (M4 hex nut)
+    bolt_nut_depth: float = 4.0  # mm (pocket depth in output cap)
     output_bearing_seat_dia: float = 90.15  # mm (press fit for 6814 outer race)
 
 
@@ -171,7 +179,7 @@ class StackUp:
     inter_disc_spacer: float = 2.0
     output_clearance: float = 2.0
     output_bearing_total: float = 20.0  # 2 x 6814 width
-    output_wall: float = 3.0
+    output_wall: float = 8.0
 
     @property
     def z_motor_plate_inner(self) -> float:

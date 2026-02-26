@@ -21,6 +21,8 @@ from src.purchased_parts import (
     build_nema17_motor,
     build_ring_pins,
     build_output_pins,
+    build_housing_bolts,
+    build_housing_nuts,
 )
 
 cfg = DEFAULT_CONFIG
@@ -109,3 +111,19 @@ show_object(output_cap, name="output_cap", options={"color": "slategray", "alpha
 bearing_625 = build_bearing_625()
 bearing_625 = bearing_625.translate((0, 0, stack.z_output_bearings))
 show_object(bearing_625, name="bearing_625", options={"color": "orange"})
+
+# ── Housing bolts (M4 × 60mm SHCS) ──────────────────────────
+# Head top at Z=0 (motor plate outer face), recessed in counterbore.
+# Translate so head bottom aligns with counterbore depth.
+h = cfg.housing
+cb_recess = h.bolt_counterbore_depth - h.bolt_head_height  # 0.5mm recess
+housing_bolts = build_housing_bolts()
+housing_bolts = housing_bolts.translate((0, 0, cb_recess))
+show_object(housing_bolts, name="housing_bolts", options={"color": "dimgray"})
+
+# ── Housing nuts (M4 hex) ────────────────────────────────────
+# Sit at nut pocket floor inside output cap.
+z_nut = stack.z_output_cap + stack.output_wall - h.bolt_nut_depth
+housing_nuts = build_housing_nuts()
+housing_nuts = housing_nuts.translate((0, 0, z_nut))
+show_object(housing_nuts, name="housing_nuts", options={"color": "dimgray"})
