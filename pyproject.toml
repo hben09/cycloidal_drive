@@ -7,7 +7,7 @@ dependencies = [
     "numpy",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest",
     "ocp-vscode",
