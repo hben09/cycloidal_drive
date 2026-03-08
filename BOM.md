@@ -11,7 +11,8 @@
 | 7 | Output Pin Nuts | M3 hex nut | 4 | $0.25 | $1 | Retains shoulder bolts on disc 1 side |
 | 8 | Motor Mounting Bolts | M3 × 8mm socket head cap screw | 4 | $0.25–0.50 | $1–2 | Mounts motor to housing plate |
 | 9 | Housing Assembly Bolts | M4 × 60mm socket head cap screw | 8 | $0.25–0.50 | $2–4 | Clamps housing halves on 125mm bolt circle |
+| 10 | Housing Assembly Nuts | M4 hex nut (7mm AF × 3.2mm) | 8 | $0.10–0.25 | $1–2 | Captured in hex pockets on output cap |
 
-**Estimated Total: ~$45–85**
+**Estimated Total: ~$46–87**
 
 > Excludes 3D-printed parts (discs, housing, output hub) and the machined eccentric shaft.

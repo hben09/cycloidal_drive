@@ -21,9 +21,9 @@ cycloidal_drive/
     output_cap.py          # Output-side cap + ring pin holes
     output_hub.py          # Output plate through 6814 bearings
     purchased_parts.py     # Simplified bearings, motor, pins for visualization
-    assembly.py            # All parts positioned per axial stack-up
-  build.py                 # CLI entry: builds all parts, exports STEP + STL
-  output/                  # Generated files (gitignored)
+  assembly.py              # Interactive viewer — compose and display parts in OCP CAD Viewer
+  export.py                # Export all parts to STL/STEP + full assembly STEP
+  export/                  # Generated files (gitignored)
     step/
     stl/
 ```
@@ -55,7 +55,7 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 
 ### 4. `src/eccentric_shaft.py` — Machined part (no PETG tolerances)
 
-- Central spine cylinder (full shaft length, ~10mm OD, 5mm bore)
+- Central spine cylinder (full shaft length, 5mm OD) with 10mm OD input collar for D-bore wall
 - Lobe 1: 17mm OD cylinder offset +1.5mm in X, extruded 10mm at disc 1 Z position
 - Lobe 2: 17mm OD cylinder offset -1.5mm in X (180-degree), extruded 10mm at disc 2 Z position
 - Union all sections, subtract 5mm through-bore
@@ -102,9 +102,10 @@ Simple cylinder/box models for visualization only (not for manufacturing):
 
 Each returns a `cq.Workplane` solid, colored distinctly in the assembly.
 
-### 10. `src/assembly.py` — Full assembly with all components
+### 10. `assembly.py` — Interactive assembly viewer
 
-Position all parts along Z axis per the axial stack-up (spec Section 4):
+Position all parts along Z axis per the axial stack-up (spec Section 4) and display in OCP CAD Viewer. Comment/uncomment sections to show specific parts.
+
 | Part | Z start |
 |---|---|
 | Motor plate | 0mm |
@@ -118,16 +119,13 @@ Position all parts along Z axis per the axial stack-up (spec Section 4):
 | Housing nuts | Z=61 (in nut pocket floor) |
 | Eccentric shaft | spans full length |
 | Motor (external) | -48mm (behind motor plate) |
-| All bearings, pins, coupler | at their respective Z positions |
+| All bearings, pins | at their respective Z positions |
 
-Use `cq.Assembly` with `cq.Location` for positioning and `cq.Color` for visual distinction.
+### 11. `export.py` — Export script
 
-### 11. `build.py` — Build script
-
-- Builds all parts from `DEFAULT_CONFIG`
-- Exports individual STEP + STL to `output/step/` and `output/stl/`
-- Exports combined `output/assembly.step`
-- Prints clearance verification report
+- Builds all custom parts from `DEFAULT_CONFIG`
+- Exports individual STEP + STL to `export/step/` and `export/stl/`
+- Exports combined `export/assembly.step`
 
 ---
 
@@ -174,31 +172,68 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 
 ---
 
-### `tests/test_params.py` — Parameter validation (TODO)
+### `tests/test_cam_bearing_fitment.py` — Cam-to-bearing fitment (DONE)
 
+**TestCamBearingFitment** (5 tests)
 | Test | What it checks |
 |---|---|
-| `test_default_config_exists` | `DEFAULT_CONFIG` is a valid `DriveConfig` instance |
-| `test_all_fields_frozen` | Every dataclass rejects attribute mutation |
-| `test_gear_ratio` | `num_ring_pins - 1 == num_lobes` (21 − 1 = 20) |
-| `test_eccentricity_wall_thickness` | Thin wall = (bearing_seat_od − input_bore) / 2 − e >= 4mm |
-| `test_output_pin_hole_clearance` | Hole dia >= pin dia + 2×eccentricity + clearance |
-| `test_stack_up_total` | Sum of all stack-up layers == total housing depth (65mm) |
-| `test_bearing_fit_tolerances` | Press-fit dims < nominal, clearance-fit dims > nominal |
+| `test_cam_od_matches_bearing_bore` | Cam lobe OD = 6003 bore (17mm) |
+| `test_bearing_od_fits_disc_bore` | 6003 OD fits disc center bore with clearance |
+| `test_bearing_width_matches_disc_thickness` | Bearing width = disc thickness (10mm) |
+| `test_cam_eccentricity_consistent` | Shaft and gear eccentricity match |
+| `test_cam_does_not_protrude_past_bearing` | Cam + eccentricity ≤ bearing OD |
+
+**TestCamAxialAlignment** (3 tests)
+| Test | What it checks |
+|---|---|
+| `test_lobe1_z_matches_disc1` | Lobe 1 Z position matches disc 1 |
+| `test_lobe2_z_matches_disc2` | Lobe 2 Z position matches disc 2 |
+| `test_inter_disc_gap_free_of_lobes` | No lobe material in inter-disc spacer zone |
+
+**TestEccentricOrbit** (3 tests)
+| Test | What it checks |
+|---|---|
+| `test_disc_bearing_swept_envelope_fits_housing` | Swept envelope fits housing bore |
+| `test_cam_center_orbit_radius_equals_eccentricity` | Cam orbit radius = eccentricity |
+| `test_cam_fills_bearing_bore` | Cam fills bearing bore (no excessive play) |
+
+**TestCadQueryCamBearingInterference** (5 tests)
+| Test | What it checks |
+|---|---|
+| `test_lobe1_no_interference_with_bearing1` | No boolean intersection between lobe 1 and bearing 1 |
+| `test_lobe2_no_interference_with_bearing2` | No boolean intersection between lobe 2 and bearing 2 |
+| `test_shaft_passes_through_both_bearing_bores` | Shaft fits through both bearing bores |
+| `test_full_stack_no_shaft_disc_interference` | No shaft-to-disc interference |
+| `test_full_stack_no_bearing_disc_interference` | No bearing-to-disc interference |
 
 ---
 
-### `tests/test_eccentric_shaft.py` — Shaft geometry (TODO)
+### `tests/test_eccentric_shaft.py` — Shaft geometry (DONE)
 
+**TestShaftDimensions** (5 tests)
+| Test | What it checks |
+|---|---|
+| `test_thin_wall_minimum` | Lobe radius − spine radius − eccentricity ≥ 4mm |
+| `test_lobes_180_degrees_apart` | Shaft eccentricity == gear eccentricity (consistent offset) |
+| `test_lobe_fits_in_6003_bearing` | Lobe OD matches 6003 bore exactly |
+| `test_shaft_spans_both_discs` | Z range covers both disc positions from stack-up |
+| `test_lobe_engulfs_spine` | Lobe radius > eccentricity + spine radius (watertight union) |
+
+**TestDBore** (4 tests)
+| Test | What it checks |
+|---|---|
+| `test_collar_contains_bore` | ≥ 1.5mm wall around D-bore in input collar |
+| `test_bore_does_not_break_lobe_thin_side` | ≥ 2mm wall on lobe thin side around D-bore |
+| `test_bore_matches_motor_shaft` | D-bore diameter accommodates motor shaft |
+| `test_bore_depth_gives_adequate_engagement` | D-bore depth ≥ 8mm engagement |
+
+**TestCadQuerySolid** (4 tests)
 | Test | What it checks |
 |---|---|
 | `test_solid_is_valid` | Single valid solid |
-| `test_through_bore_diameter` | 5mm bore runs full length |
-| `test_lobe_offset` | Each lobe center offset exactly 1.5mm from shaft axis |
-| `test_lobe_180_separation` | Lobe 2 offset is 180° from lobe 1 |
-| `test_lobe_od` | Each lobe OD = 17mm (6003 bearing bore) |
-| `test_thin_wall_minimum` | Minimum wall between bore and lobe OD >= 4mm (spec: 4.5mm) |
-| `test_total_length` | Shaft spans the full axial stack-up |
+| `test_bounding_box_z` | Z height matches computed shaft length |
+| `test_bounding_box_xy` | XY extent reflects 17mm lobe + eccentricity offset |
+| `test_volume_sanity` | Volume between spine-only lower and full-lobe upper bounds |
 
 ---
 
@@ -270,30 +305,107 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 
 ---
 
-### `tests/test_output_hub.py` — Output plate (TODO)
+### `tests/test_output_hub.py` — Output plate (DONE)
 
+**TestOutputHubDimensions** (12 tests)
+| Test | What it checks |
+|---|---|
+| `test_hub_od_fits_bearing_bore` | Hub OD (with tolerance) ≤ 6814 bore |
+| `test_hub_od_is_light_press` | Hub-to-bearing gap < 0.2mm |
+| `test_hub_height_matches_bearing_stack` | Height = output bearing total (20mm) |
+| `test_shaft_bore_clears_spine` | Shaft bore > spine OD with ≥ 0.2mm clearance |
+| `test_625_pocket_clears_shaft_bore` | 625 pocket dia > shaft clearance bore |
+| `test_625_pocket_inside_hub` | ≥ 5mm wall from 625 pocket to hub OD |
+| `test_output_pin_holes_inside_hub` | Pin hole edges inside hub OD |
+| `test_output_pin_holes_clear_625_pocket` | ≥ 2mm wall from pin holes to 625 pocket |
+| `test_arm_mount_holes_inside_hub` | Arm mount edges inside hub OD |
+| `test_arm_mount_holes_clear_shaft_bore` | ≥ 2mm wall from arm mounts to shaft bore |
+| `test_output_pins_clear_arm_mounts` | No overlap between pin and arm mount holes (45° offset) |
+| `test_output_pin_holes_clear_bearing_bore` | Pin edges inside 6814 bore |
+
+**TestCadQuerySolid** (4 tests)
 | Test | What it checks |
 |---|---|
 | `test_solid_is_valid` | Single valid solid |
-| `test_hub_od` | 69.925mm (press into 6814 bore) |
-| `test_625_bearing_seat` | Counterbore on inner face for input shaft support |
-| `test_shaft_clearance_bore` | 5.4mm through-bore |
-| `test_output_pin_tap_holes` | 4× M3 holes on 60mm circle |
-| `test_mounting_holes_on_output_face` | Arm attachment holes present |
-| `test_hub_length` | ~25mm (spans bearing stack) |
+| `test_outer_diameter` | XY extent = 69.925mm |
+| `test_height` | Z = 20mm (output bearing total) |
+| `test_volume_sanity` | Volume between reasonable bounds |
 
 ---
 
-### `tests/test_assembly.py` — Full assembly (TODO)
+### `tests/test_assembly_clearances.py` — Assembly-level clearance verification (DONE)
 
+**TestAxialStackUp** (8 tests)
 | Test | What it checks |
 |---|---|
-| `test_assembly_builds` | `cq.Assembly` completes without error |
-| `test_part_count` | All expected parts present in assembly |
-| `test_disc_180_offset` | Disc 2 rotated 180° relative to disc 1 |
-| `test_z_positions` | Each part at correct Z per axial stack-up table |
-| `test_no_interference` | Bounding box overlap check between adjacent parts |
-| `test_eccentric_offset_directions` | Disc 1 offset +X, disc 2 offset −X |
+| `test_total_housing_depth` | Stack-up layers sum to total housing depth |
+| `test_total_depth_is_65mm` | Total depth = 65mm |
+| `test_disc1_before_disc2` | Disc 1 Z < disc 2 Z |
+| `test_disc2_ends_before_output_bearings` | Disc 2 end Z < output bearings Z |
+| `test_output_clearance_gap` | 2mm gap between disc 2 and output bearings |
+| `test_output_bearings_end_at_output_cap` | Bearings end at output cap Z |
+| `test_motor_plate_inner_face` | Motor plate inner face at correct Z |
+| `test_ring_gear_body_height` | Body height matches stack-up |
+
+**TestHousingAlignment** (3 tests)
+| Test | What it checks |
+|---|---|
+| `test_all_housing_parts_same_od` | Motor plate, ring body, output cap share OD |
+| `test_housing_bolt_angles_consistent` | Bolt angles match across all housing parts |
+| `test_housing_bolts_clear_ring_pins` | Bolt holes don't overlap ring pin holes |
+
+**TestRadialClearances** (6 tests)
+| Test | What it checks |
+|---|---|
+| `test_disc_orbit_clears_housing_bore` | Disc sweep fits inside 116mm bore |
+| `test_output_pins_inside_6814_bore` | Output pin circle inside bearing bore |
+| `test_output_hub_clears_output_cap_bore` | Hub OD < output cap bore |
+| `test_output_hub_fits_6814_inner` | Hub OD matches 6814 bore (light press) |
+| `test_6814_outer_fits_housing_seat` | 6814 OD fits housing seat |
+| `test_ring_pins_inside_housing_bore` | Ring pins inside 116mm bore |
+| `test_disc_output_pin_holes_clear_center_bore` | Pin holes don't breach center bore |
+
+**TestBearingRetention** (4 tests)
+| Test | What it checks |
+|---|---|
+| `test_6814_retained_by_shoulder` | 6814 can't pass through 70mm shoulder |
+| `test_6814_retained_by_output_cap` | Output cap retains 6814 |
+| `test_6003_retained_by_disc_bore` | 6003 retained by disc center bore |
+| `test_625_retained_by_output_hub_pocket` | 625 retained by hub pocket |
+
+**TestShaftReach** (3 tests)
+| Test | What it checks |
+|---|---|
+| `test_motor_shaft_reaches_through_plate` | Motor shaft reaches D-bore |
+| `test_eccentric_shaft_reaches_625_bearing` | Shaft stub reaches 625 pocket |
+| `test_eccentric_shaft_stub_fits_625_bore` | Stub OD fits 625 bore |
+
+**TestRingPinSpan** (3 tests)
+| Test | What it checks |
+|---|---|
+| `test_pin_length_spans_disc_zone_plus_engagement` | Pin length = disc zone + 2× engagement |
+| `test_pin_length_equals_35mm` | Pin length = 35mm |
+| `test_disc_zone_is_25mm` | Disc zone = 25mm |
+
+**TestHousingBoltEngagement** (5 tests)
+| Test | What it checks |
+|---|---|
+| `test_bolt_reaches_nut` | Bolt length spans full housing stack |
+| `test_full_nut_engagement` | Full nut thickness engaged by bolt thread |
+| `test_bolt_does_not_protrude` | Bolt doesn't protrude past nut pocket |
+| `test_counterbore_recesses_head` | Counterbore recesses bolt head |
+| `test_counterbore_wall_to_od` | Counterbore leaves ≥ 2mm wall to OD |
+| `test_counterbore_fits_in_motor_plate` | Counterbore depth < motor plate thickness |
+
+**TestCadQueryAssemblyInterference** (4 tests)
+| Test | What it checks |
+|---|---|
+| `test_motor_plate_ring_body_no_interference` | No boolean intersection between motor plate and ring body |
+| `test_ring_body_output_cap_no_interference` | No boolean intersection between ring body and output cap |
+| `test_motor_plate_output_cap_no_interference` | No boolean intersection between motor plate and output cap |
+| `test_output_hub_clears_output_cap` | Output hub doesn't interfere with output cap |
+| `test_disc_clears_ring_gear_shoulder` | Disc doesn't interfere with ring gear shoulder |
+| `test_output_hub_clears_ring_body` | Output hub doesn't interfere with ring body |
 
 ---
 
@@ -311,19 +423,16 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 
 ---
 
-### `tests/test_build.py` — Build script integration (TODO)
+---
 
-| Test | What it checks |
-|---|---|
-| `test_build_completes` | `build.py` runs without error |
-| `test_step_files_exported` | All individual STEP files created in `output/step/` |
-| `test_stl_files_exported` | All individual STL files created in `output/stl/` |
-| `test_assembly_step_exported` | Combined `output/assembly.step` exists and is non-empty |
-| `test_clearance_report` | Clearance verification report prints with all checks passing |
+## Remaining TODO
+
+- `tests/test_export.py` — Integration tests for the export script
 
 ---
 
 ## Verification (non-test)
 
-- **Visual**: Open `output/assembly.step` in a CAD viewer to check part fitment
-- **Run**: `python build.py` from the repo root (with `cad_env` activated)
+- **Visual**: `python assembly.py` to view in OCP CAD Viewer, or open `export/step/*.step` in external CAD viewer
+- **Export**: `python export.py` to generate STL + STEP files in `export/`
+- **Run individual parts**: Each `src/*.py` file has an `if __name__ == "__main__"` block using `ocp_vscode.show_object`
