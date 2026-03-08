@@ -73,7 +73,7 @@ class TestMotorPlateDimensions:
         """Counterbore depth must be less than plate thickness."""
         h = CFG.housing
         stack = CFG.stack_up
-        plate_t = stack.motor_plate_wall + stack.inp_bearing_seat
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
         assert h.bolt_counterbore_depth < plate_t, (
             f"Counterbore {h.bolt_counterbore_depth}mm >= plate {plate_t}mm"
         )
@@ -124,9 +124,9 @@ class TestMotorPlateDimensions:
         )
 
     def test_plate_thickness_matches_stackup(self):
-        """Plate thickness must equal motor_plate_wall + bearing seat depth."""
+        """Plate thickness must equal motor_plate_wall + inner wall."""
         stack = CFG.stack_up
-        expected = stack.motor_plate_wall + stack.inp_bearing_seat  # 10mm
+        expected = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 10mm
         assert expected == 10.0, f"Plate thickness {expected}mm != 10mm"
 
 
@@ -164,10 +164,10 @@ class TestCadQuerySolid:
         )
 
     def test_bounding_box_z(self, plate_solid):
-        """Z height should be 10mm (motor_plate_wall + bearing seat)."""
+        """Z height should be 10mm (motor_plate_wall + inner wall)."""
         bb = plate_solid.val().BoundingBox()
         z_size = bb.zmax - bb.zmin
-        expected = CFG.stack_up.motor_plate_wall + CFG.stack_up.inp_bearing_seat
+        expected = CFG.stack_up.motor_plate_wall + CFG.stack_up.motor_plate_inner_wall
 
         assert abs(z_size - expected) < 0.1, (
             f"Z extent {z_size:.2f}mm, expected {expected:.2f}mm"
@@ -181,7 +181,7 @@ class TestCadQuerySolid:
         """
         h = CFG.housing
         stack = CFG.stack_up
-        plate_t = stack.motor_plate_wall + stack.inp_bearing_seat
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
 
         full_disc_vol = math.pi * (h.od / 2.0) ** 2 * plate_t
         vol = plate_solid.val().Volume()

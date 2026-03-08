@@ -358,13 +358,13 @@ export.py                # Export STEP + STL to export/
 
 ### Environment
 
-- CadQuery 2.7.0 in `cad_env` conda environment
+- CadQuery 2.7.0 managed via `uv` (`pyproject.toml` + `uv.lock`)
 - Disc profile uses `splineApprox(points, tol=0.001)` for compact STEP output
 - Both discs are identical — 180° offset is applied in the assembly only
 
 ### Commands
 
-- `pytest tests/ -v` — run all tests (with `cad_env` activated)
-- `python assembly.py` — interactive 3D viewer
-- `python export.py` — generate `export/step/` and `export/stl/`
+- `uv run pytest tests/ -v` — run all tests
+- `uv run python assembly.py` — interactive 3D viewer
+- `uv run python export.py` — generate `export/step/` and `export/stl/`
 - Each `src/*.py` has an `if __name__ == "__main__"` block for standalone viewing

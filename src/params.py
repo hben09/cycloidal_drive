@@ -164,7 +164,7 @@ class StackUp:
     """
 
     motor_plate_wall: float = 5.0
-    inp_bearing_seat: float = 5.0  # 625 bearing depth in motor plate
+    motor_plate_inner_wall: float = 5.0  # inner wall thickness of motor plate
     input_clearance: float = 3.0  # gap between motor plate inner face and disc 1
     disc_thickness: float = 10.0
     inter_disc_spacer: float = 2.0
@@ -174,7 +174,7 @@ class StackUp:
 
     @property
     def z_motor_plate_inner(self) -> float:
-        return self.motor_plate_wall + self.inp_bearing_seat  # 10mm
+        return self.motor_plate_wall + self.motor_plate_inner_wall  # 10mm
 
     @property
     def z_disc1(self) -> float:

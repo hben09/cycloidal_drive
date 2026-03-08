@@ -38,7 +38,7 @@ class TestAxialStackUp:
         s = CFG.stack_up
         expected = (
             s.motor_plate_wall
-            + s.inp_bearing_seat
+            + s.motor_plate_inner_wall
             + s.input_clearance
             + s.disc_thickness * 2
             + s.inter_disc_spacer
@@ -96,7 +96,7 @@ class TestHousingAlignment:
     def test_motor_plate_inner_face(self):
         """Motor plate inner face at Z=10mm."""
         s = CFG.stack_up
-        expected = s.motor_plate_wall + s.inp_bearing_seat  # 5+5=10mm
+        expected = s.motor_plate_wall + s.motor_plate_inner_wall  # 5+5=10mm
         assert abs(s.z_motor_plate_inner - expected) < 0.01
 
     def test_ring_gear_body_height(self):
@@ -307,7 +307,7 @@ class TestShaftReach:
         """
         m = CFG.motor
         s = CFG.stack_up
-        plate_thickness = s.motor_plate_wall + s.inp_bearing_seat  # 10mm
+        plate_thickness = s.motor_plate_wall + s.motor_plate_inner_wall  # 10mm
         remaining = m.shaft_length - plate_thickness  # 20 - 10 = 10mm
         d_bore_depth = CFG.shaft.d_bore_depth  # 10mm
         assert remaining >= d_bore_depth, (
@@ -424,7 +424,7 @@ class TestHousingBoltEngagement:
         """Counterbore depth must be less than motor plate thickness."""
         h = CFG.housing
         s = CFG.stack_up
-        plate_t = s.motor_plate_wall + s.inp_bearing_seat
+        plate_t = s.motor_plate_wall + s.motor_plate_inner_wall
         assert h.bolt_counterbore_depth < plate_t, (
             f"Counterbore {h.bolt_counterbore_depth}mm >= plate thickness {plate_t}mm"
         )
