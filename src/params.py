@@ -80,7 +80,7 @@ class BearingParams:
     inp_bore: float = 5.0  # mm
     inp_od: float = 16.0  # mm
     inp_width: float = 5.0  # mm
-    inp_qty: int = 2
+    inp_qty: int = 1
 
 
 @dataclass(frozen=True)
@@ -120,15 +120,6 @@ class MotorParams:
     pilot_dia: float = 22.0  # mm (NEMA 17 centering boss)
     body_width: float = 42.3  # mm (NEMA 17 standard)
     body_length: float = 48.0  # mm
-
-
-@dataclass(frozen=True)
-class CouplerParams:
-    """Shaft coupler dimensions — spec Section 3.2."""
-
-    od: float = 19.0  # mm
-    length: float = 25.0  # mm
-    bore: float = 5.0  # mm
 
 
 @dataclass(frozen=True)
@@ -216,7 +207,6 @@ class DriveConfig:
     bearings: BearingParams = field(default_factory=BearingParams)
     housing: HousingParams = field(default_factory=HousingParams)
     motor: MotorParams = field(default_factory=MotorParams)
-    coupler: CouplerParams = field(default_factory=CouplerParams)
     output_hub: OutputHubParams = field(default_factory=OutputHubParams)
     tolerances: PETGTolerances = field(default_factory=PETGTolerances)
     profile: ProfileParams = field(default_factory=ProfileParams)

@@ -134,22 +134,6 @@ def build_nema17_motor(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 # -------------------------------------------------------------------
-# Shaft coupler — simple cylinder
-# -------------------------------------------------------------------
-
-
-def build_coupler(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """Flexible jaw coupler: 19mm OD × 25mm, 5mm bore."""
-    c = cfg.coupler
-    return (
-        cq.Workplane("XY")
-        .circle(c.od / 2.0)
-        .circle(c.bore / 2.0)
-        .extrude(c.length)
-    )
-
-
-# -------------------------------------------------------------------
 # Ring pins — 21 cylinders on 108mm circle
 # -------------------------------------------------------------------
 
@@ -292,7 +276,6 @@ if __name__ == "__main__":
     show_object(build_bearing_6814(), name="bearing_6814")
     show_object(build_bearing_625(), name="bearing_625")
     show_object(build_nema17_motor(), name="nema17_motor")
-    show_object(build_coupler(), name="coupler")
     show_object(build_ring_pins(), name="ring_pins")
     show_object(build_output_pins(), name="output_pins")
     show_object(build_housing_bolts(), name="housing_bolts")

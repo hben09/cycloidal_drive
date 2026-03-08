@@ -92,9 +92,8 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 ### 9. `src/purchased_parts.py` — Simplified models for all purchased components
 
 Simple cylinder/box models for visualization only (not for manufacturing):
-- **Bearings** (6003-2RS x2, 6814-2RS x2, 625-2RS x2): annular cylinders with correct bore/OD/width
+- **Bearings** (6003-2RS x2, 6814-2RS x2, 625-2RS x1): annular cylinders with correct bore/OD/width
 - **NEMA 17 motor**: 42.3mm square body, 48mm long, 5mm shaft stub with D-cut
-- **Shaft coupler**: 19mm OD x 25mm cylinder
 - **Ring pins**: 21x 4mm x 35mm cylinders on 108mm circle
 - **Output pins**: 4x M3 shoulder bolts (4mm × 45mm shoulder + M3 × 6mm thread) on 60mm circle
 - **Housing bolts**: 8x M4 × 60mm SHCS (7mm head + 4mm shank) on 125mm circle
@@ -415,7 +414,6 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 |---|---|
 | `test_bearing_dimensions` | Each bearing model matches bore/OD/width from spec |
 | `test_motor_body_size` | 42.3mm square × 48mm body, 5mm shaft with D-cut |
-| `test_coupler_size` | 19mm OD × 25mm length |
 | `test_ring_pin_count_and_size` | 21× 4mm × 35mm cylinders |
 | `test_output_pin_count_and_size` | 4× M3 shoulder bolts on 60mm circle |
 | `test_housing_bolt_solid_valid` | 8× M4 SHCS solids, correct Z extent (64mm) |

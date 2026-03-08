@@ -3,9 +3,8 @@
 Tests cover:
   1. Bearing dimensions — bore, OD, width for all three types
   2. NEMA 17 motor — body size, shaft length
-  3. Coupler — OD, bore, length
-  4. Ring pins — count, diameter, length, circle placement
-  5. Output pins — count, diameter, length, circle placement
+  3. Ring pins — count, diameter, length, circle placement
+  4. Output pins — count, diameter, length, circle placement
 """
 
 import math
@@ -56,14 +55,6 @@ def nema17():
     from src.purchased_parts import build_nema17_motor
 
     return build_nema17_motor()
-
-
-@pytest.fixture(scope="module")
-def coupler():
-    cq = pytest.importorskip("cadquery")
-    from src.purchased_parts import build_coupler
-
-    return build_coupler()
 
 
 @pytest.fixture(scope="module")
@@ -240,34 +231,6 @@ class TestNema17Motor:
         assert removed > hole_vol * 0.5, (
             f"Expected at least ~{hole_vol:.0f}mm³ removed, got {removed:.0f}mm³"
         )
-
-
-# ===================================================================
-# Coupler tests
-# ===================================================================
-
-
-class TestCoupler:
-
-    def test_solid_valid(self, coupler):
-        solids = coupler.solids().vals()
-        assert len(solids) == 1
-
-    def test_bounding_box_xy(self, coupler):
-        bb = coupler.val().BoundingBox()
-        od = bb.xmax - bb.xmin
-        assert abs(od - CFG.coupler.od) < 0.1
-
-    def test_bounding_box_z(self, coupler):
-        bb = coupler.val().BoundingBox()
-        z = bb.zmax - bb.zmin
-        assert abs(z - CFG.coupler.length) < 0.1
-
-    def test_volume(self, coupler):
-        c = CFG.coupler
-        expected = math.pi * ((c.od / 2) ** 2 - (c.bore / 2) ** 2) * c.length
-        vol = coupler.val().Volume()
-        assert abs(vol - expected) < 1.0
 
 
 # ===================================================================
