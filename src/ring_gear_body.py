@@ -18,7 +18,7 @@ Ring-pin retention (dual-end):
 
 Other features:
   - 21 ring-pin blind holes on 108mm circle (3.875mm press-fit dia, 30mm deep)
-  - 8 M4 housing-bolt through-holes on 110mm circle
+  - 8 M4 housing-bolt through-holes on 125mm circle
 
 Assembly: insert ring pins into the ring gear body from the input face,
 rotating discs to clear lobe valleys.  Then press the motor plate onto

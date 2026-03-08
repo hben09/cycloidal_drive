@@ -65,6 +65,7 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 - Tube: 140mm OD, 116mm bore, height = 47mm (from coupler clearance through output bearings per stack-up)
 - Output bearing seat: 90.15mm counterbore, 20mm deep from output end
 - 8x M4 housing bolt through-holes (4.4mm clearance) on 125mm circle
+- Reveal windows: outer wall cut away in disc zone (Z=3mm to Z=25mm) to expose ring pins, retaining only 16mm ⌀ cylindrical pillars around each bolt hole and a 3mm solid rim at the input face for motor-plate mating
 
 ### 6. `src/motor_plate.py` — Motor-side housing plate
 
@@ -201,18 +202,39 @@ Run: `pytest tests/ -v` from the repo root (with `cad_env` activated).
 
 ---
 
-### `tests/test_ring_gear_body.py` — Housing body (TODO)
+### `tests/test_ring_gear_body.py` — Housing body (DONE)
 
+**TestRingGearBodyDimensions** (15 tests)
+| Test | What it checks |
+|---|---|
+| `test_body_height_matches_stackup` | Body height = z_output_cap − z_motor_plate_inner (47mm) |
+| `test_housing_bolts_inside_od` | Bolt holes don't break through OD |
+| `test_pin_holes_dont_breach_bearing_seat` | Pin hole inner edge ≥ 5mm from bearing seat |
+| `test_pin_holes_inside_housing_od` | Pin holes don't break through OD |
+| `test_bolt_holes_do_not_overlap_pin_holes` | No bolt/pin hole overlap (computed angles) |
+| `test_bolt_holes_do_not_overlap_each_other` | No bolt-to-bolt overlap |
+| `test_shoulder_bore_clears_output_hub` | 70mm shoulder ≥ output hub OD |
+| `test_shoulder_retains_bearing` | Shoulder bore < 6814 OD (bearing can't pass) |
+| `test_bearing_seat_is_press_fit` | Seat dia slightly > bearing OD, gap < 0.5mm |
+| `test_housing_bolts_outside_bore` | Bolt inner edge outside 116mm bore |
+| `test_housing_bolts_have_wall_to_bore` | ≥ 1mm wall from bore to bolt edge |
+| `test_housing_bolts_clear_disc_sweep` | Bolt holes outside disc sweep envelope |
+| `test_pillar_wall_around_bolt` | ≥ 3mm wall around bolt in each pillar |
+| `test_pillar_stays_outside_disc_orbit` | Pillar inner edge vs bore geometry |
+| `test_window_rim_height_is_positive` | Rim height > 0 |
+| `test_windows_stay_within_disc_zone` | Windows don't extend into shoulder/bearing zones |
+| `test_disc_fits_through_main_bore` | Disc sweep < bore radius |
+
+**TestCadQuerySolid** (7 tests)
 | Test | What it checks |
 |---|---|
 | `test_solid_is_valid` | Single valid solid |
-| `test_outer_diameter` | OD = 140mm |
-| `test_bore_diameter` | Inner bore = 116mm |
-| `test_ring_pin_hole_count` | 21 through-holes present |
-| `test_ring_pin_hole_positions` | All holes on 108mm circle, equally spaced |
-| `test_output_bearing_seat` | Counterbore dia = 90.15mm, depth = 20mm |
-| `test_housing_bolt_holes` | 8 holes on 125mm circle |
-| `test_height` | Matches stack-up (47mm body section) |
+| `test_outer_diameter` | XY extent = housing OD |
+| `test_height` | Z extent matches stack-up (47mm) |
+| `test_window_zone_has_pillars_only` | Window zone area < 40% of full annulus |
+| `test_rim_zone_is_full_annulus` | Input rim area ≈ full annulus (minus bolt holes) |
+| `test_output_bearing_seat` | Bearing zone section area matches 90.15mm seat |
+| `test_volume_sanity` | Volume between reasonable bounds |
 
 ---
 

@@ -10,7 +10,7 @@
 | 6 | Output Shoulder Bolts | M3 shoulder bolt / 4mm ⌀ × 45mm shoulder / 54.5mm total | 4 | $0.75–1.50 | $3–6 | M3×0.5 thread / 6mm thread length / 7mm head |
 | 7 | Output Pin Nuts | M3 hex nut | 4 | $0.25 | $1 | Retains shoulder bolts on disc 1 side |
 | 8 | Motor Mounting Bolts | M3 × 8mm socket head cap screw | 4 | $0.25–0.50 | $1–2 | Mounts motor to housing plate |
-| 9 | Housing Assembly Bolts | M4 × 50mm socket head cap screw | 8 | $0.25–0.50 | $2–4 | Clamps housing halves on 125mm bolt circle |
+| 9 | Housing Assembly Bolts | M4 × 60mm socket head cap screw | 8 | $0.25–0.50 | $2–4 | Clamps housing halves on 125mm bolt circle |
 
 **Estimated Total: ~$45–85**
 
