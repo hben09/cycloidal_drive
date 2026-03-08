@@ -139,7 +139,7 @@ def build_nema17_motor(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 def build_ring_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """21× 4mm × 30mm ring pins on the 108mm pin circle."""
+    """21× 4mm × 35mm ring pins on the 108mm pin circle."""
     g = cfg.gear
     r = g.ring_pin_circle_dia / 2.0
     positions = [
@@ -172,8 +172,11 @@ def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     """
     d = cfg.disc
     r = d.output_pin_circle_dia / 2.0
+    head_dia = 7.0  # mm, bolt head diameter
+    head_height = 3.5  # mm, 54.5mm total - 45mm shoulder - 6mm thread
     shoulder_length = 45.0  # mm, actual bolt shoulder length
     thread_length = 6.0  # mm, actual M3 thread length
+    thread_dia = 3.0  # mm, M3 nominal diameter
     positions = [
         (
             r * math.cos(2 * math.pi * i / d.output_pin_count),
@@ -181,22 +184,29 @@ def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         )
         for i in range(d.output_pin_count)
     ]
-    # Shoulder section (4mm)
+    # Bolt head (7mm ⌀ × 3.5mm), from Z=-head_height to Z=0
+    heads = (
+        cq.Workplane("XY")
+        .pushPoints(positions)
+        .circle(head_dia / 2.0)
+        .extrude(-head_height)
+    )
+    # Shoulder section (4mm ⌀ × 45mm), from Z=0 onward
     shoulder = (
         cq.Workplane("XY")
         .pushPoints(positions)
         .circle(d.output_pin_dia / 2.0)
         .extrude(shoulder_length)
     )
-    # Threaded section (2.5mm, stepped down from shoulder)
+    # Threaded section (3mm ⌀ × 6mm, M3 nominal)
     thread = (
         cq.Workplane("XY")
         .workplane(offset=shoulder_length)
         .pushPoints(positions)
-        .circle(2.5 / 2.0)
+        .circle(thread_dia / 2.0)
         .extrude(thread_length)
     )
-    return shoulder.union(thread)
+    return heads.union(shoulder).union(thread)
 
 
 # -------------------------------------------------------------------
