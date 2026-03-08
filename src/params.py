@@ -142,8 +142,9 @@ class PETGTolerances:
 
     bearing_seat_bore_add: float = 0.075  # +0.05 to +0.10mm
     bearing_inner_shaft_sub: float = 0.075  # -0.05 to -0.10mm
-    ring_pin_press_sub: float = 0.125  # -0.10 to -0.15mm
+    ring_pin_press_sub: float = -0.20  # +0.20mm for snug fit (4.20mm holes)
     sliding_clearance_add: float = 0.25  # +0.20 to +0.30mm
+    d_bore_clearance_add: float = 0.05  # snug fit for motor shaft D-bore
     mating_surface_add: float = 0.15  # +0.15mm
 
 
@@ -164,7 +165,7 @@ class StackUp:
     """
 
     motor_plate_wall: float = 5.0
-    inp_bearing_seat: float = 5.0  # 625 bearing depth in motor plate
+    motor_plate_inner_wall: float = 5.0  # inner wall thickness of motor plate
     input_clearance: float = 3.0  # gap between motor plate inner face and disc 1
     disc_thickness: float = 10.0
     inter_disc_spacer: float = 2.0
@@ -174,7 +175,7 @@ class StackUp:
 
     @property
     def z_motor_plate_inner(self) -> float:
-        return self.motor_plate_wall + self.inp_bearing_seat  # 10mm
+        return self.motor_plate_wall + self.motor_plate_inner_wall  # 10mm
 
     @property
     def z_disc1(self) -> float:

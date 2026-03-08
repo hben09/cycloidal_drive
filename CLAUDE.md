@@ -199,7 +199,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 
 | Item | Spec | Qty | Purpose |
 |---|---|---|---|
-| Motor mounting bolts | M3 × 8mm socket head | 4 | Mount motor to housing |
+| Motor mounting bolts | M3 × 14mm socket head | 4 | Mount motor to housing (10mm plate + 4mm thread engagement) |
 | Output plate bolts | Per application | — | Attach arm link to output |
 
 ---
@@ -265,7 +265,7 @@ A separate printed or aluminum part that:
 |---|---|---|
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
-| Ring pin press-fit holes | −0.10 to −0.15mm on hole ⌀ | 4mm pins into motor plate & ring gear body |
+| Ring pin holes | +0.20mm on hole ⌀ (4.20mm) | 4mm pins into motor plate & ring gear body |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
 
@@ -330,22 +330,41 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 5 | Ring pins | 4mm × 35mm ground dowel h6 | 25 | $8–12 |
 | 6 | Output pins | M3 × 54.5mm shoulder bolt (4mm × 45mm shoulder) | 4 | $3–6 |
 | 6a | Output pin nuts | M3 nut | 4 | $1 |
-| 7 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
+| 7 | Motor bolts | M3 × 14mm socket head | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 60mm socket head cap screw | 8 | $2–4 |
 | 8a | Housing nuts | M4 hex nut | 8 | $1 |
 | | | | **Total** | **~$46–86** |
 
 ---
 
-## 10. Design Sequence
+## 10. Project Structure & Development
 
-Recommended order of CAD operations:
+### File Layout
 
-1. ~~Model the eccentric shaft~~ ✅ — D-bore socket, input collar, two lobes, output stub
-2. ~~Generate the cycloidal disc profile~~ ✅ — epitrochoid with 20 lobes
-3. ~~Add center bore and output pin holes to disc~~ ✅
-4. ~~Model the ring gear body~~ ✅ — 21× pin blind holes (30mm deep) on 108mm circle, output bearing seat
-5. ~~Model the output hub~~ ✅ — fit through 2× 6814 inner races with pin mounting
-6. ~~Model the motor plate~~ ✅ — NEMA 17 pattern, shaft bore (no 625 bearing, direct D-shaft)
-7. ~~Model the output cap~~ ✅ — bearing retention lid, hub clearance bore, housing bolt holes
-8. Verify all clearances in assembly
+```
+src/
+  params.py              # All dimensions, tolerances, counts (frozen dataclasses)
+  profiles.py            # Epitrochoid math (pure numpy)
+  eccentric_shaft.py     # Machined shaft with two offset lobes + D-bore
+  cycloidal_disc.py      # Epitrochoid profile disc (print 2 copies)
+  ring_gear_body.py      # Main housing cylinder + bearing seat + reveal windows
+  motor_plate.py         # NEMA 17 mount + ring pin holes
+  output_cap.py          # Output-side cap + nut pockets
+  output_hub.py          # Output plate through 6814 bearings + 625 seat
+  purchased_parts.py     # Simplified bearings, motor, pins for visualization
+assembly.py              # OCP CAD Viewer — all parts positioned per stack-up
+export.py                # Export STEP + STL to export/
+```
+
+### Environment
+
+- CadQuery 2.7.0 managed via `uv` (`pyproject.toml` + `uv.lock`)
+- Disc profile uses `splineApprox(points, tol=0.001)` for compact STEP output
+- Both discs are identical — 180° offset is applied in the assembly only
+
+### Commands
+
+- `uv run pytest tests/ -v` — run all tests
+- `uv run python assembly.py` — interactive 3D viewer
+- `uv run python export.py` — generate `export/step/` and `export/stl/`
+- Each `src/*.py` has an `if __name__ == "__main__"` block for standalone viewing

@@ -35,7 +35,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     tol = cfg.tolerances
     stack = cfg.stack_up
 
-    plate_thickness = stack.motor_plate_wall + stack.inp_bearing_seat  # 10mm
+    plate_thickness = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 10mm
     housing_r = h.od / 2.0  # 67mm
 
     # ── 1. Base disc ────────────────────────────────────────────────

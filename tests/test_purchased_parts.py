@@ -293,16 +293,18 @@ class TestOutputPins:
         )
 
     def test_bounding_box_z(self, output_pins):
-        """Pin height should span shoulder + thread = 45 + 6 = 51mm."""
-        expected_z = 45.0 + 6.0  # shoulder + thread
+        """Pin height should span head + shoulder + thread = 3.5 + 45 + 6 = 54.5mm."""
+        head_height = 3.5
+        expected_z = head_height + 45.0 + 6.0  # head + shoulder + thread
         bb = output_pins.val().BoundingBox()
         z = bb.zmax - bb.zmin
         assert abs(z - expected_z) < 0.1, f"Z {z:.2f}mm, expected {expected_z:.2f}mm"
 
     def test_bounding_box_xy_span(self, output_pins):
-        """XY extent should span the output pin circle + one pin diameter."""
+        """XY extent should span the output pin circle + one bolt head diameter."""
         d = CFG.disc
-        expected_span = d.output_pin_circle_dia + d.output_pin_dia
+        head_dia = 7.0  # bolt head diameter
+        expected_span = d.output_pin_circle_dia + head_dia
         bb = output_pins.val().BoundingBox()
         x_span = bb.xmax - bb.xmin
         assert abs(x_span - expected_span) < 0.2, (
@@ -310,14 +312,17 @@ class TestOutputPins:
         )
 
     def test_single_pin_volume(self, output_pins):
-        """Total volume should equal 4 × (shoulder cylinder + thread cylinder)."""
+        """Total volume should equal 4 × (head + shoulder + thread cylinders)."""
         d = CFG.disc
+        head_dia = 7.0  # bolt head diameter
+        head_height = 3.5  # bolt head height
         shoulder_length = 45.0  # actual bolt shoulder
         thread_length = 6.0  # actual M3 thread
-        thread_dia = 2.5  # M3 tap drill
+        thread_dia = 3.0  # M3 nominal diameter
+        head_vol = math.pi * (head_dia / 2) ** 2 * head_height
         shoulder_vol = math.pi * (d.output_pin_dia / 2) ** 2 * shoulder_length
         thread_vol = math.pi * (thread_dia / 2) ** 2 * thread_length
-        expected_total = d.output_pin_count * (shoulder_vol + thread_vol)
+        expected_total = d.output_pin_count * (head_vol + shoulder_vol + thread_vol)
         total_vol = sum(s.Volume() for s in output_pins.solids().vals())
         assert abs(total_vol - expected_total) < 5.0, (
             f"Total volume {total_vol:.0f}mm³, expected {expected_total:.0f}mm³"

@@ -38,7 +38,7 @@ def build_output_cap(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     stack = cfg.stack_up
 
     # ── Dimensions ────────────────────────────────────────────────
-    cap_thickness = stack.output_wall  # 3mm
+    cap_thickness = stack.output_wall  # 8mm
     housing_r = h.od / 2.0  # 67mm
 
     # Center bore: clears the output hub with sliding fit
