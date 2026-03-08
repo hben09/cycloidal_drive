@@ -62,7 +62,7 @@ Parameters: R=54mm, r=2mm, N=21, e=1.5mm. Generate 2000 points. Also includes `c
 
 ### 5. `src/ring_gear_body.py` — Main housing cylinder
 
-- Tube: 140mm OD, 116mm bore, height = 47mm (from coupler clearance through output bearings per stack-up)
+- Tube: 140mm OD, 116mm bore, height = 47mm (from input clearance through output bearings per stack-up)
 - Output bearing seat: 90.15mm counterbore, 20mm deep from output end
 - 8x M4 housing bolt through-holes (4.4mm clearance) on 125mm circle
 - Reveal windows: outer wall cut away in disc zone (Z=3mm to Z=25mm) to expose ring pins, retaining only 16mm ⌀ cylindrical pillars around each bolt hole and a 3mm solid rim at the input face for motor-plate mating
