@@ -199,7 +199,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 
 | Item | Spec | Qty | Purpose |
 |---|---|---|---|
-| Motor mounting bolts | M3 × 8mm socket head | 4 | Mount motor to housing |
+| Motor mounting bolts | M3 × 14mm socket head | 4 | Mount motor to housing (10mm plate + 4mm thread engagement) |
 | Output plate bolts | Per application | — | Attach arm link to output |
 
 ---
@@ -330,7 +330,7 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 5 | Ring pins | 4mm × 35mm ground dowel h6 | 25 | $8–12 |
 | 6 | Output pins | M3 × 54.5mm shoulder bolt (4mm × 45mm shoulder) | 4 | $3–6 |
 | 6a | Output pin nuts | M3 nut | 4 | $1 |
-| 7 | Motor bolts | M3 × 8mm socket head | 4 | $1–2 |
+| 7 | Motor bolts | M3 × 14mm socket head | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 60mm socket head cap screw | 8 | $2–4 |
 | 8a | Housing nuts | M4 hex nut | 8 | $1 |
 | | | | **Total** | **~$46–86** |
