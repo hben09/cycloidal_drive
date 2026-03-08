@@ -337,15 +337,34 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 
 ---
 
-## 10. Design Sequence
+## 10. Project Structure & Development
 
-Recommended order of CAD operations:
+### File Layout
 
-1. ~~Model the eccentric shaft~~ ✅ — D-bore socket, input collar, two lobes, output stub
-2. ~~Generate the cycloidal disc profile~~ ✅ — epitrochoid with 20 lobes
-3. ~~Add center bore and output pin holes to disc~~ ✅
-4. ~~Model the ring gear body~~ ✅ — 21× pin blind holes (30mm deep) on 108mm circle, output bearing seat
-5. ~~Model the output hub~~ ✅ — fit through 2× 6814 inner races with pin mounting
-6. ~~Model the motor plate~~ ✅ — NEMA 17 pattern, shaft bore (no 625 bearing, direct D-shaft)
-7. ~~Model the output cap~~ ✅ — bearing retention lid, hub clearance bore, housing bolt holes
-8. Verify all clearances in assembly
+```
+src/
+  params.py              # All dimensions, tolerances, counts (frozen dataclasses)
+  profiles.py            # Epitrochoid math (pure numpy)
+  eccentric_shaft.py     # Machined shaft with two offset lobes + D-bore
+  cycloidal_disc.py      # Epitrochoid profile disc (print 2 copies)
+  ring_gear_body.py      # Main housing cylinder + bearing seat + reveal windows
+  motor_plate.py         # NEMA 17 mount + ring pin holes
+  output_cap.py          # Output-side cap + nut pockets
+  output_hub.py          # Output plate through 6814 bearings + 625 seat
+  purchased_parts.py     # Simplified bearings, motor, pins for visualization
+assembly.py              # OCP CAD Viewer — all parts positioned per stack-up
+export.py                # Export STEP + STL to export/
+```
+
+### Environment
+
+- CadQuery 2.7.0 in `cad_env` conda environment
+- Disc profile uses `splineApprox(points, tol=0.001)` for compact STEP output
+- Both discs are identical — 180° offset is applied in the assembly only
+
+### Commands
+
+- `pytest tests/ -v` — run all tests (with `cad_env` activated)
+- `python assembly.py` — interactive 3D viewer
+- `python export.py` — generate `export/step/` and `export/stl/`
+- Each `src/*.py` has an `if __name__ == "__main__"` block for standalone viewing
