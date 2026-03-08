@@ -265,7 +265,7 @@ A separate printed or aluminum part that:
 |---|---|---|
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
-| Ring pin press-fit holes | −0.10 to −0.15mm on hole ⌀ | 4mm pins into motor plate & ring gear body |
+| Ring pin holes | +0.20mm on hole ⌀ (4.20mm) | 4mm pins into motor plate & ring gear body |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
 
