@@ -148,6 +148,39 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bolt_holes)
 
+    # ── 7. Reveal windows — expose ring pins between bolt pillars ──
+    # Cut away the outer wall in the disc zone, keeping only cylindrical
+    # pillars around each housing bolt and a solid rim at the input face.
+    rim_h = 3.0  # solid rim at input face for motor-plate mating
+    window_z_start = rim_h
+    window_h = disc_zone_end - rim_h  # 22mm
+    pillar_dia = 16.0  # ~5.8mm wall around 4.4mm bolt hole
+
+    # Full annular wall section to remove
+    wall_removal = (
+        cq.Workplane("XY")
+        .workplane(offset=window_z_start)
+        .circle(housing_r + 0.1)
+        .circle(bore_r)
+        .extrude(window_h)
+    )
+
+    # Preserve cylindrical pillars around each bolt hole
+    pillar_pts = [
+        (bolt_r * math.cos(a), bolt_r * math.sin(a))
+        for a in bolt_angles
+    ]
+    pillars = (
+        cq.Workplane("XY")
+        .workplane(offset=window_z_start)
+        .pushPoints(pillar_pts)
+        .circle(pillar_dia / 2.0)
+        .extrude(window_h)
+    )
+    wall_removal = wall_removal.cut(pillars)
+
+    result = result.cut(wall_removal)
+
     return result
 
 
