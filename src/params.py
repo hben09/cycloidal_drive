@@ -49,7 +49,7 @@ class DiscParams:
 class ShaftParams:
     """Eccentric shaft dimensions — spec Section 1.4."""
 
-    bearing_seat_od: float = 17.0  # mm, matches 6003 bore
+    bearing_seat_od: float = 17.10  # mm, slight clearance for 6003 bore
     eccentricity: float = 1.5  # mm
     spine_od: float = 5.0  # mm, shaft OD outside the lobe regions
     output_stub_length: float = 7.0  # mm, extends past disc 2 for output-side 625

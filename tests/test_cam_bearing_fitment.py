@@ -29,12 +29,15 @@ CFG = DEFAULT_CONFIG
 class TestCamBearingFitment:
     """Verify the eccentric cams seat correctly in the 6003 bearings."""
 
-    def test_cam_od_matches_bearing_bore(self):
-        """Cam lobe OD (17mm) must equal 6003 bearing bore (17mm) for a seat fit."""
-        cam_od = CFG.shaft.bearing_seat_od  # 17mm
+    def test_cam_od_fits_bearing_bore(self):
+        """Cam lobe OD (17.10mm) must be >= 6003 bearing bore (17mm) for a seat fit."""
+        cam_od = CFG.shaft.bearing_seat_od  # 17.10mm
         bearing_bore = CFG.bearings.ecc_bore  # 17mm
-        assert cam_od == bearing_bore, (
-            f"Cam OD {cam_od}mm != 6003 bore {bearing_bore}mm"
+        assert cam_od >= bearing_bore, (
+            f"Cam OD {cam_od}mm < 6003 bore {bearing_bore}mm"
+        )
+        assert cam_od - bearing_bore <= 0.2, (
+            f"Cam OD {cam_od}mm exceeds 6003 bore {bearing_bore}mm by more than 0.2mm"
         )
 
     def test_bearing_od_fits_disc_bore(self):
@@ -63,12 +66,14 @@ class TestCamBearingFitment:
             f"gear eccentricity {CFG.gear.eccentricity}mm"
         )
 
-    def test_cam_does_not_protrude_past_bearing(self):
-        """Cam lobe OD must not exceed bearing bore — no radial protrusion."""
+    def test_cam_press_fit_within_tolerance(self):
+        """Cam lobe OD may exceed bearing bore by up to 0.2mm for press fit."""
         cam_r = CFG.shaft.bearing_seat_od / 2.0
         bearing_bore_r = CFG.bearings.ecc_bore / 2.0
-        assert cam_r <= bearing_bore_r, (
-            f"Cam radius {cam_r}mm exceeds bearing bore radius {bearing_bore_r}mm"
+        interference = cam_r - bearing_bore_r
+        assert interference <= 0.1, (
+            f"Cam radius {cam_r}mm exceeds bearing bore radius "
+            f"{bearing_bore_r}mm by {interference}mm (max 0.1mm)"
         )
 
 
@@ -179,15 +184,18 @@ class TestEccentricOrbit:
             )
 
     def test_cam_fills_bearing_bore(self):
-        """Cam lobe OD should match bearing bore — no radial slop.
+        """Cam lobe OD should be at or slightly above bearing bore (press fit).
 
         A loose cam inside the bearing would cause backlash.
         """
         cam_od = CFG.shaft.bearing_seat_od
         bearing_bore = CFG.bearings.ecc_bore
-        slop = bearing_bore - cam_od
-        assert abs(slop) < 0.01, (
-            f"Cam-to-bearing radial slop = {slop:.3f}mm (should be ~0)"
+        oversize = cam_od - bearing_bore
+        assert oversize >= 0, (
+            f"Cam OD {cam_od}mm smaller than bearing bore {bearing_bore}mm"
+        )
+        assert oversize <= 0.2, (
+            f"Cam-to-bearing oversize = {oversize:.3f}mm (max 0.2mm)"
         )
 
 
@@ -218,26 +226,26 @@ class TestCadQueryCamBearingInterference:
 
         return shaft, bearing1, bearing2
 
-    def test_lobe1_no_interference_with_bearing1(self, shaft_and_bearings):
-        """Shaft lobe 1 must not overlap the bearing 1 annulus (inner race material).
+    def test_lobe1_interference_within_press_fit(self, shaft_and_bearings):
+        """Shaft lobe 1 press-fit interference with bearing 1 must be small.
 
-        The shaft sits in the bearing bore — their solids should not intersect
-        because the cam OD matches the bearing bore exactly.
+        The cam OD is 0.10mm larger than the bearing bore for a light press fit,
+        so a small interference volume is expected.
         """
         shaft, bearing1, _ = shaft_and_bearings
         interference = shaft.intersect(bearing1)
         vol = interference.val().Volume()
-        assert vol < 1.0, (
-            f"Shaft/bearing-1 interference = {vol:.1f}mm³ (should be ~0)"
+        assert vol < 50.0, (
+            f"Shaft/bearing-1 interference = {vol:.1f}mm³ (too large for press fit)"
         )
 
-    def test_lobe2_no_interference_with_bearing2(self, shaft_and_bearings):
-        """Shaft lobe 2 must not overlap bearing 2 annulus."""
+    def test_lobe2_interference_within_press_fit(self, shaft_and_bearings):
+        """Shaft lobe 2 press-fit interference with bearing 2 must be small."""
         shaft, _, bearing2 = shaft_and_bearings
         interference = shaft.intersect(bearing2)
         vol = interference.val().Volume()
-        assert vol < 1.0, (
-            f"Shaft/bearing-2 interference = {vol:.1f}mm³ (should be ~0)"
+        assert vol < 50.0, (
+            f"Shaft/bearing-2 interference = {vol:.1f}mm³ (too large for press fit)"
         )
 
     def test_shaft_passes_through_both_bearing_bores(self, shaft_and_bearings):

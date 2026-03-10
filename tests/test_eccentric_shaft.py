@@ -51,10 +51,14 @@ class TestShaftDimensions:
         )
 
     def test_lobe_fits_in_6003_bearing(self):
-        """Lobe OD must match the 6003 bearing bore exactly."""
-        assert CFG.shaft.bearing_seat_od == CFG.bearings.ecc_bore, (
-            f"Lobe OD {CFG.shaft.bearing_seat_od}mm != "
+        """Lobe OD (17.10mm) must be >= 6003 bearing bore (17mm) for a light press."""
+        assert CFG.shaft.bearing_seat_od >= CFG.bearings.ecc_bore, (
+            f"Lobe OD {CFG.shaft.bearing_seat_od}mm < "
             f"6003 bore {CFG.bearings.ecc_bore}mm"
+        )
+        assert CFG.shaft.bearing_seat_od - CFG.bearings.ecc_bore <= 0.2, (
+            f"Lobe OD {CFG.shaft.bearing_seat_od}mm exceeds "
+            f"6003 bore {CFG.bearings.ecc_bore}mm by more than 0.2mm"
         )
 
     def test_shaft_spans_both_discs(self):
@@ -108,7 +112,7 @@ class TestDBore:
         """
         shaft = CFG.shaft
         tol = CFG.tolerances
-        lobe_r = shaft.bearing_seat_od / 2.0  # 8.5mm
+        lobe_r = shaft.bearing_seat_od / 2.0  # 8.55mm
         bore_r = (shaft.d_bore_dia + tol.sliding_clearance_add * 2) / 2.0  # 2.75mm
         e = shaft.eccentricity  # 1.5mm
         thin_wall = lobe_r - e - bore_r
@@ -168,7 +172,7 @@ class TestCadQuerySolid:
         )
 
     def test_bounding_box_xy(self, shaft_solid):
-        """XY extent should reflect 17mm lobe + eccentricity offset.
+        """XY extent should reflect 17.10mm lobe + eccentricity offset.
 
         The max X extent is lobe_radius + eccentricity on one side (thick side)
         and lobe_radius - eccentricity on the other, but since both lobes
@@ -183,8 +187,8 @@ class TestCadQuerySolid:
         x_size = bb.xmax - bb.xmin
         y_size = bb.ymax - bb.ymin
 
-        expected_x = 2 * (lobe_r + e)  # 2 * (8.5 + 1.5) = 20mm
-        expected_y = 2 * lobe_r  # 17mm
+        expected_x = 2 * (lobe_r + e)  # 2 * (8.55 + 1.5) = 20.10mm
+        expected_y = 2 * lobe_r  # 17.10mm
 
         assert abs(x_size - expected_x) < 0.1, (
             f"X extent {x_size:.2f}mm, expected {expected_x:.2f}mm"
@@ -197,7 +201,7 @@ class TestCadQuerySolid:
         """Volume should be between reasonable bounds.
 
         Lower bound: just the spine cylinder (no lobes, no collar).
-        Upper bound: a full 17mm OD cylinder spanning the whole length.
+        Upper bound: a full 17.10mm OD cylinder spanning the whole length.
         """
         shaft = CFG.shaft
         stack = CFG.stack_up

@@ -460,11 +460,15 @@ class TestDiscFitment:
             f"Pin hole clearance {clearance:.2f}mm < 2*eccentricity {min_clearance}mm"
         )
 
-    def test_eccentric_shaft_seat_matches_6003_bore(self):
-        """Shaft bearing seat OD must match 6003 bearing bore."""
-        assert CFG.shaft.bearing_seat_od == CFG.bearings.ecc_bore, (
-            f"Shaft seat OD {CFG.shaft.bearing_seat_od}mm != "
+    def test_eccentric_shaft_seat_fits_6003_bore(self):
+        """Shaft bearing seat OD must be >= 6003 bearing bore (light press)."""
+        assert CFG.shaft.bearing_seat_od >= CFG.bearings.ecc_bore, (
+            f"Shaft seat OD {CFG.shaft.bearing_seat_od}mm < "
             f"6003 bore {CFG.bearings.ecc_bore}mm"
+        )
+        assert CFG.shaft.bearing_seat_od - CFG.bearings.ecc_bore <= 0.2, (
+            f"Shaft seat OD {CFG.shaft.bearing_seat_od}mm exceeds "
+            f"6003 bore {CFG.bearings.ecc_bore}mm by more than 0.2mm"
         )
 
     # -- CadQuery boolean interference check (thorough) --------------

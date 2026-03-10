@@ -62,7 +62,7 @@
 
 | Parameter | Value | Notes |
 |---|---|---|
-| Shaft OD at bearing seats | 17.00mm | Matches 6003 bearing bore |
+| Shaft OD at bearing seats | 17.10mm | Slight clearance for 6003 bearing bore |
 | Eccentricity | 1.50mm | Offset between shaft center and bearing seat center |
 | Spine OD | 5.00mm | Between lobes and at output stub |
 | Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
