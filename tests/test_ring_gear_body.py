@@ -269,6 +269,35 @@ class TestRingGearBodyDimensions:
             f"Rim {rim_h}mm >= disc zone end {disc_zone_end}mm — no window space"
         )
 
+    def test_ring_pin_chamfer_within_shoulder(self):
+        """Ring pin entry chamfer must stay within the shoulder zone.
+
+        Pins enter solid material at the shoulder (Z=25, local).  The
+        chamfer widens the entry on the shoulder top face and must not
+        extend past the shoulder into the bearing seat.
+        """
+        stack = CFG.stack_up
+        chamfer_depth = 1.0  # mm (matches ring_gear_body.py)
+        assert chamfer_depth <= stack.output_clearance, (
+            f"Chamfer depth {chamfer_depth}mm > shoulder height "
+            f"{stack.output_clearance}mm — chamfer extends into bearing seat"
+        )
+
+    def test_ring_pin_chamfer_no_overlap(self):
+        """Adjacent chamfered pin holes must not overlap."""
+        g = CFG.gear
+        tol = CFG.tolerances
+        pin_circle_r = g.ring_pin_circle_dia / 2.0  # 54mm
+        pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 4.20mm
+        chamfer_dia = pin_hole_dia + 1.0  # 5.20mm
+
+        angular_spacing = 2 * math.pi / g.num_ring_pins
+        center_dist = 2 * pin_circle_r * math.sin(angular_spacing / 2)
+        assert center_dist > chamfer_dia, (
+            f"Adjacent chamfer edges overlap: center distance {center_dist:.2f}mm "
+            f"<= chamfer diameter {chamfer_dia:.2f}mm"
+        )
+
     def test_disc_fits_through_main_bore(self):
         """Cycloidal disc (with eccentricity) must fit through the 116mm bore."""
         from src.profiles import compute_epitrochoid

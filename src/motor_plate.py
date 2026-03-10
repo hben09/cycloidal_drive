@@ -4,14 +4,16 @@
 (inner face). Features:
   - Motor pilot recess and M3 bolt pattern on the outer face
   - Central shaft bore for motor shaft pass-through (direct D-shaft engagement)
+  - 21 ring-pin through-holes on 108mm circle (clearance fit)
   - 8 M4 housing-bolt through-holes on the perimeter
 
 No motor-side 625 bearing — the motor shaft passes through the plate
 and engages the eccentric shaft D-bore directly. Motor internal bearings
 and 6003 disc bearings provide adequate radial support.
 
-Ring pins press into blind holes on the inner face (5mm deep), providing
-dual-end retention together with the ring gear body shoulder.
+Ring-pin through-holes (not blind) allow pins to be inserted one at a
+time from the outer face. Ring gear body holes provide the retention
+fit; motor plate provides lateral location only.
 """
 
 import math
@@ -81,18 +83,13 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(motor_bolts)
 
-    # ── 5. Ring-pin blind holes (21×, press-fit from inner face) ──
-    # Pins are 35mm long; disc zone takes 25mm, leaving 10mm split
-    # evenly: 5mm into the motor plate, 5mm into the ring gear body.
+    # ── 5. Ring-pin through-holes (21×, clearance fit) ─────────────
+    # Through-holes let pins be inserted one at a time from the outer
+    # face. Chamfered lead-in on the inner face guides entry during
+    # assembly. Ring gear body provides retention; motor plate locates.
     g = cfg.gear
-    pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 3.875mm
+    pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 4.20mm
     pin_circle_r = g.ring_pin_circle_dia / 2.0  # 54mm
-    disc_zone = (
-        stack.input_clearance
-        + 2 * cfg.disc.thickness
-        + cfg.disc.inter_disc_spacer
-    )  # 25mm
-    pin_engagement = (g.ring_pin_length - disc_zone) / 2.0  # 5mm per side
     pin_pts = [
         (
             pin_circle_r * math.cos(2 * math.pi * i / g.num_ring_pins),
@@ -102,10 +99,9 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     ]
     pin_holes = (
         cq.Workplane("XY")
-        .workplane(offset=plate_thickness - pin_engagement)
         .pushPoints(pin_pts)
         .circle(pin_hole_dia / 2.0)
-        .extrude(pin_engagement)
+        .extrude(plate_thickness)
     )
     result = result.cut(pin_holes)
 

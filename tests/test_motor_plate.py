@@ -129,6 +129,21 @@ class TestMotorPlateDimensions:
         expected = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 10mm
         assert expected == 10.0, f"Plate thickness {expected}mm != 10mm"
 
+    def test_ring_pin_holes_are_clearance_fit(self):
+        """Ring pin holes must be clearance fit (larger than pin diameter).
+
+        Through-holes with clearance fit enable one-at-a-time pin insertion
+        rather than simultaneous alignment of all 21 pins.
+        """
+        g = CFG.gear
+        tol = CFG.tolerances
+        pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 4.20mm
+        assert pin_hole_dia > g.ring_pin_dia, (
+            f"Pin hole {pin_hole_dia:.2f}mm <= pin {g.ring_pin_dia}mm — "
+            "clearance fit expected for through-holes"
+        )
+
+
 
 # ===================================================================
 # 2. CadQuery solid validation

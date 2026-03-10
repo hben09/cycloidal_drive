@@ -20,9 +20,10 @@ Other features:
   - 21 ring-pin blind holes on 108mm circle (3.875mm press-fit dia, 30mm deep)
   - 8 M4 housing-bolt through-holes on 125mm circle
 
-Assembly: insert ring pins into the ring gear body from the input face,
-rotating discs to clear lobe valleys.  Then press the motor plate onto
-the protruding pin ends to lock both ends.
+Assembly: insert ring pins through the motor plate's through-holes,
+then slide the ring gear body onto the protruding pin ends.  Chamfered
+entries on both parts guide the pins in.  No need to align all 21
+pins simultaneously — insert and seat them one at a time.
 """
 
 import math
@@ -129,6 +130,23 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(pin_hole_depth)
     )
     result = result.cut(pin_holes)
+
+    # Chamfer at shoulder face — pins are in air (116mm bore) from Z=0
+    # to Z=25, then enter solid shoulder material.  Tapered ramp at the
+    # shoulder top face guides pins in during assembly.
+    chamfer_depth = 1.0  # mm
+    chamfer_dia = pin_hole_dia + 1.0  # mm, funnel entry
+    for pt in pin_pts:
+        cone = (
+            cq.Workplane("XY")
+            .workplane(offset=disc_zone_end)
+            .center(pt[0], pt[1])
+            .circle(chamfer_dia / 2.0)
+            .workplane(offset=chamfer_depth)
+            .circle(pin_hole_dia / 2.0)
+            .loft(ruled=True)
+        )
+        result = result.cut(cone)
 
     # ── 6. M4 housing-bolt through-holes ─────────────────────────
     # Bolt angles are offset to sit at midpoints between adjacent
