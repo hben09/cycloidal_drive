@@ -89,6 +89,32 @@ class TestShaftDimensions:
         )
 
 
+    def test_retention_bridge_clears_disc_bore(self):
+        """Bridge retention flange OD must fit inside the disc center bore.
+
+        The bridge is 19.10mm OD; the disc center bore is 35.20mm.
+        Even with eccentricity offset, the flange must not contact the bore.
+        """
+        shaft = CFG.shaft
+        flange_r = (shaft.bearing_seat_od + 2.0) / 2.0  # 9.55mm
+        disc_bore_r = CFG.disc.center_bore_dia / 2.0  # 17.60mm
+        e = shaft.eccentricity  # 1.5mm
+        # Worst case: flange center is offset by e from shaft axis
+        clearance = disc_bore_r - (flange_r + e)
+        assert clearance >= 1.0, (
+            f"Bridge flange clearance to disc bore = {clearance:.2f}mm, need >= 1mm"
+        )
+
+    def test_retention_bridge_wider_than_bearing_bore(self):
+        """Bridge must be wider than the 6003 bearing bore to retain it."""
+        shaft = CFG.shaft
+        flange_od = shaft.bearing_seat_od + 2.0  # 19.10mm
+        bearing_bore = CFG.bearings.ecc_bore  # 17.0mm
+        assert flange_od > bearing_bore, (
+            f"Bridge OD {flange_od:.2f}mm <= bearing bore {bearing_bore:.2f}mm"
+        )
+
+
 class TestDBore:
     """Checks for the direct D-shaft engagement bore."""
 
@@ -172,23 +198,22 @@ class TestCadQuerySolid:
         )
 
     def test_bounding_box_xy(self, shaft_solid):
-        """XY extent should reflect 17.10mm lobe + eccentricity offset.
+        """XY extent should reflect the retention bridge (widest feature).
 
-        The max X extent is lobe_radius + eccentricity on one side (thick side)
-        and lobe_radius - eccentricity on the other, but since both lobes
-        are at opposite offsets, total X span = 2 * (lobe_r + e).
-        Y extent = 2 * lobe_r (lobes are symmetric in Y).
+        The bridge between lobes is 19.10mm OD (lobe OD + 2mm) and its
+        centers are offset by eccentricity, so:
+        X span = 2 * (flange_r + e), Y span = 2 * flange_r.
         """
         shaft = CFG.shaft
-        lobe_r = shaft.bearing_seat_od / 2.0
+        flange_r = (shaft.bearing_seat_od + 2.0) / 2.0  # 9.55mm
         e = shaft.eccentricity
 
         bb = shaft_solid.val().BoundingBox()
         x_size = bb.xmax - bb.xmin
         y_size = bb.ymax - bb.ymin
 
-        expected_x = 2 * (lobe_r + e)  # 2 * (8.55 + 1.5) = 20.10mm
-        expected_y = 2 * lobe_r  # 17.10mm
+        expected_x = 2 * (flange_r + e)  # 2 * (9.55 + 1.5) = 22.10mm
+        expected_y = 2 * flange_r  # 19.10mm
 
         assert abs(x_size - expected_x) < 0.1, (
             f"X extent {x_size:.2f}mm, expected {expected_x:.2f}mm"

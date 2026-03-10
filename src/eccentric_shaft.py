@@ -75,19 +75,22 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(disc_t)
     )
 
-    # ── Bridge: smooth loft between lobe 1 end and lobe 2 start ──
+    # ── Bridge + retention flange: loft between lobes with enlarged OD ──
     # Transitions the eccentric center from (+e, 0) to (-e, 0) through
-    # the inter-disc spacer zone, eliminating the weak 5mm spine gap.
+    # the inter-disc spacer zone. The entire bridge is oversized (19.10mm)
+    # so it acts as a bearing retention flange, preventing the two 6003
+    # bearings from sliding toward each other.
     spacer_t = cfg.disc.inter_disc_spacer
     z_bridge_start = z_lobe1 + disc_t  # where lobe 1 ends
+    flange_r = (shaft.bearing_seat_od + 2.0) / 2.0  # 9.55mm
     bridge = (
         cq.Workplane("XY")
         .workplane(offset=z_bridge_start)
         .center(e, 0)
-        .circle(lobe_r)
+        .circle(flange_r)
         .workplane(offset=spacer_t)
         .center(-2 * e, 0)
-        .circle(lobe_r)
+        .circle(flange_r)
         .loft(ruled=True)
     )
 
