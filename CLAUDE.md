@@ -271,7 +271,8 @@ A separate printed or aluminum part that:
 |---|---|---|
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
-| Ring pin holes | +0.20mm on hole ⌀ (4.20mm) | 4mm pins into motor plate & ring gear body |
+| Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance through-holes |
+| Ring pin holes (ring gear body) | −0.20mm on hole ⌀ (3.80mm) | 4mm pins, press-fit blind holes |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
 | Dowel press-fit bore | −0.15mm on bore ⌀ (4.70mm for 5mm pin) | Steel dowel pin hole in eccentric shaft |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
@@ -367,7 +368,7 @@ export.py                # Export STEP + STL to export/
 ### Environment
 
 - CadQuery 2.7.0 managed via `uv` (`pyproject.toml` + `uv.lock`)
-- Disc profile uses `splineApprox(points, tol=0.001)` for compact STEP output
+- Disc profile uses `cq.Edge.makeSpline(periodic=True)` for high-precision closed curves
 - Both discs are identical — 180° offset is applied in the assembly only
 
 ### Commands
