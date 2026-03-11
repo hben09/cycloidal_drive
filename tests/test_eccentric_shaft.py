@@ -260,7 +260,7 @@ class TestOutputPinHole:
         tol = CFG.tolerances
         lobe_r = shaft.bearing_seat_od / 2.0  # 8.55mm
         e = shaft.eccentricity  # 1.5mm
-        pin_bore_r = (shaft.output_pin_dia - tol.dowel_press_bore_sub * 2) / 2.0
+        pin_bore_r = (shaft.support_pin_dia - tol.dowel_press_bore_sub * 2) / 2.0
         # Distance from lobe 2 center (-e, 0) to pin hole center (0, 0) is e
         wall = lobe_r - e - pin_bore_r
         assert wall >= 4.0, f"Wall around pin hole = {wall:.2f}mm, need >= 4mm"
@@ -269,7 +269,7 @@ class TestOutputPinHole:
         """Pin hole must not reach the D-bore — at least 2mm wall between them."""
         stack = CFG.stack_up
         disc_t = CFG.disc.thickness
-        z_pin_hole_bottom = stack.z_disc2 + disc_t - CFG.shaft.output_pin_hole_depth
+        z_pin_hole_bottom = stack.z_disc2 + disc_t - CFG.shaft.support_pin_hole_depth
         z_d_bore_end = stack.z_motor_plate_inner + CFG.shaft.d_bore_depth
         wall = z_pin_hole_bottom - z_d_bore_end
         assert wall >= 2.0, (
@@ -280,7 +280,7 @@ class TestOutputPinHole:
         """Pin protrusion must reach through the 2mm gap into the 625 bearing."""
         shaft = CFG.shaft
         stack = CFG.stack_up
-        protrusion = shaft.output_pin_length - shaft.output_pin_hole_depth  # 8mm
+        protrusion = shaft.support_pin_length - shaft.support_pin_hole_depth  # 8mm
         gap = stack.z_output_bearings - (stack.z_disc2 + CFG.disc.thickness)  # 2mm
         bearing_width = CFG.bearings.inp_width  # 5mm
         assert protrusion >= gap + bearing_width, (
@@ -289,4 +289,4 @@ class TestOutputPinHole:
 
     def test_pin_fits_625_bore(self):
         """Pin OD must fit inside the 625 bearing bore."""
-        assert CFG.shaft.output_pin_dia <= CFG.bearings.inp_bore
+        assert CFG.shaft.support_pin_dia <= CFG.bearings.inp_bore

@@ -320,20 +320,20 @@ class TestShaftReach:
         shaft = CFG.shaft
         disc2_end = s.z_disc2 + s.disc_thickness  # 35mm
         z_625_end = s.z_output_bearings + CFG.bearings.inp_width  # 42mm
-        pin_tip_z = disc2_end + (shaft.output_pin_length - shaft.output_pin_hole_depth)
+        pin_tip_z = disc2_end + (shaft.support_pin_length - shaft.support_pin_hole_depth)
         assert pin_tip_z >= z_625_end, (
             f"Pin tip at Z={pin_tip_z}mm doesn't reach 625 far face at Z={z_625_end}mm"
         )
 
     def test_eccentric_shaft_pin_fits_625_bore(self):
         """Steel dowel pin OD must fit inside the 625 bearing bore."""
-        assert CFG.shaft.output_pin_dia <= CFG.bearings.inp_bore, (
-            f"Pin OD {CFG.shaft.output_pin_dia}mm > 625 bore {CFG.bearings.inp_bore}mm"
+        assert CFG.shaft.support_pin_dia <= CFG.bearings.inp_bore, (
+            f"Pin OD {CFG.shaft.support_pin_dia}mm > 625 bore {CFG.bearings.inp_bore}mm"
         )
 
     def test_eccentric_shaft_pin_clears_hub_bore(self):
         """Support pin must have clearance inside the output hub shaft bore."""
-        clearance = CFG.output_hub.shaft_clearance_bore - CFG.shaft.output_pin_dia
+        clearance = CFG.output_hub.shaft_clearance_bore - CFG.shaft.support_pin_dia
         assert clearance >= 0.5, (
             f"Pin-to-hub-bore clearance {clearance:.2f}mm < 0.5mm minimum"
         )

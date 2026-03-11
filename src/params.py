@@ -53,9 +53,9 @@ class ShaftParams:
     eccentricity: float = 1.5  # mm
     spine_od: float = 5.0  # mm, shaft OD outside the lobe regions
     # Steel dowel pin replaces printed output stub for 625 bearing support
-    output_pin_dia: float = 5.0  # mm, ground steel dowel pin h6
-    output_pin_length: float = 20.0  # mm, ground steel dowel pin h6
-    output_pin_hole_depth: float = 12.0  # mm, blind hole extending through lobe 2 into bridge
+    support_pin_dia: float = 5.0  # mm, ground steel dowel pin h6
+    support_pin_length: float = 20.0  # mm, ground steel dowel pin h6
+    support_pin_hole_depth: float = 12.0  # mm, blind hole extending through lobe 2 into bridge
     # Direct D-shaft engagement with motor shaft
     input_collar_od: float = 10.0  # mm, enlarged input section for D-bore wall
     d_bore_dia: float = 5.0  # mm, matches motor shaft (tolerance applied in builder)

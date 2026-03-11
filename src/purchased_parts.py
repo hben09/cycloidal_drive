@@ -293,8 +293,8 @@ def build_shaft_support_pin(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     shaft = cfg.shaft
     return (
         cq.Workplane("XY")
-        .circle(shaft.output_pin_dia / 2.0)
-        .extrude(shaft.output_pin_length)
+        .circle(shaft.support_pin_dia / 2.0)
+        .extrude(shaft.support_pin_length)
     )
 
 

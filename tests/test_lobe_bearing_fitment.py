@@ -1,9 +1,9 @@
-"""Tests verifying eccentric cam lobes fit inside 6003 bearings inside the discs.
+"""Tests verifying eccentric lobes fit inside 6003 bearings inside the discs.
 
 Tests cover:
-  1. Parametric fitment — cam OD vs bearing bore, bearing OD vs disc bore,
-     axial alignment of cams with disc positions
-  2. Eccentric orbit — cam center stays within bearing bore at all input angles
+  1. Parametric fitment — lobe OD vs bearing bore, bearing OD vs disc bore,
+     axial alignment of lobes with disc positions
+  2. Eccentric orbit — lobe center stays within bearing bore at all input angles
   3. CadQuery interference — boolean intersection of shaft lobe and bearing
      annulus has zero volume (no physical overlap)
 """
@@ -26,18 +26,18 @@ CFG = DEFAULT_CONFIG
 # ===================================================================
 
 
-class TestCamBearingFitment:
-    """Verify the eccentric cams seat correctly in the 6003 bearings."""
+class TestLobeBearingFitment:
+    """Verify the eccentric lobes seat correctly in the 6003 bearings."""
 
-    def test_cam_od_fits_bearing_bore(self):
-        """Cam lobe OD (17.10mm) must be >= 6003 bearing bore (17mm) for a seat fit."""
-        cam_od = CFG.shaft.bearing_seat_od  # 17.10mm
+    def test_lobe_od_fits_bearing_bore(self):
+        """Lobe OD (17.10mm) must be >= 6003 bearing bore (17mm) for a seat fit."""
+        lobe_od = CFG.shaft.bearing_seat_od  # 17.10mm
         bearing_bore = CFG.bearings.ecc_bore  # 17mm
-        assert cam_od >= bearing_bore, (
-            f"Cam OD {cam_od}mm < 6003 bore {bearing_bore}mm"
+        assert lobe_od >= bearing_bore, (
+            f"Lobe OD {lobe_od}mm < 6003 bore {bearing_bore}mm"
         )
-        assert cam_od - bearing_bore <= 0.2, (
-            f"Cam OD {cam_od}mm exceeds 6003 bore {bearing_bore}mm by more than 0.2mm"
+        assert lobe_od - bearing_bore <= 0.2, (
+            f"Lobe OD {lobe_od}mm exceeds 6003 bore {bearing_bore}mm by more than 0.2mm"
         )
 
     def test_bearing_od_fits_disc_bore(self):
@@ -59,31 +59,31 @@ class TestCamBearingFitment:
             f"disc thickness {CFG.disc.thickness}mm"
         )
 
-    def test_cam_eccentricity_consistent(self):
+    def test_lobe_eccentricity_consistent(self):
         """Shaft eccentricity must match gear eccentricity."""
         assert CFG.shaft.eccentricity == CFG.gear.eccentricity, (
             f"Shaft eccentricity {CFG.shaft.eccentricity}mm != "
             f"gear eccentricity {CFG.gear.eccentricity}mm"
         )
 
-    def test_cam_press_fit_within_tolerance(self):
-        """Cam lobe OD may exceed bearing bore by up to 0.2mm for press fit."""
-        cam_r = CFG.shaft.bearing_seat_od / 2.0
+    def test_lobe_press_fit_within_tolerance(self):
+        """Lobe OD may exceed bearing bore by up to 0.2mm for press fit."""
+        lobe_r = CFG.shaft.bearing_seat_od / 2.0
         bearing_bore_r = CFG.bearings.ecc_bore / 2.0
-        interference = cam_r - bearing_bore_r
+        interference = lobe_r - bearing_bore_r
         assert interference <= 0.1, (
-            f"Cam radius {cam_r}mm exceeds bearing bore radius "
+            f"Lobe radius {lobe_r}mm exceeds bearing bore radius "
             f"{bearing_bore_r}mm by {interference}mm (max 0.1mm)"
         )
 
 
 # ===================================================================
-# 2. Axial alignment — cam lobes aligned with disc Z positions
+# 2. Axial alignment — lobes aligned with disc Z positions
 # ===================================================================
 
 
-class TestCamAxialAlignment:
-    """Verify cam lobes sit at the correct Z positions to engage the discs."""
+class TestLobeAxialAlignment:
+    """Verify eccentric lobes sit at the correct Z positions to engage the discs."""
 
     def test_lobe1_z_matches_disc1(self):
         """Lobe 1 Z start must equal disc 1 Z position from stack-up."""
@@ -113,7 +113,7 @@ class TestCamAxialAlignment:
         )
 
     def test_inter_disc_gap_free_of_lobes(self):
-        """The 2mm spacer gap between discs must not contain any cam lobe material.
+        """The 2mm spacer gap between discs must not contain any lobe material.
 
         Lobe 1 ends at z_disc1 + thickness, lobe 2 starts at z_disc2.
         The gap = z_disc2 - (z_disc1 + thickness) must equal inter_disc_spacer.
@@ -125,16 +125,16 @@ class TestCamAxialAlignment:
 
 
 # ===================================================================
-# 3. Eccentric orbit — cam stays inside bearing through full rotation
+# 3. Eccentric orbit — lobe stays inside bearing through full rotation
 # ===================================================================
 
 
 class TestEccentricOrbit:
-    """Verify the cam-bearing-disc assembly works through full shaft rotation.
+    """Verify the lobe-bearing-disc assembly works through full shaft rotation.
 
     The bearing outer race is press-fit into the disc bore — they are
-    concentric and move together. The cam lobe sits in the bearing inner
-    race. As the shaft rotates, the cam pushes the bearing+disc assembly
+    concentric and move together. The eccentric lobe sits in the bearing inner
+    race. As the shaft rotates, the lobe pushes the bearing+disc assembly
     to orbit at radius e from the shaft axis.
     """
 
@@ -166,10 +166,10 @@ class TestEccentricOrbit:
             f"housing bore radius {housing_bore_r:.2f}mm"
         )
 
-    def test_cam_center_orbit_radius_equals_eccentricity(self):
-        """At every input angle, the cam lobe center should be exactly e from shaft axis.
+    def test_lobe_center_orbit_radius_equals_eccentricity(self):
+        """At every input angle, the lobe center should be exactly e from shaft axis.
 
-        This verifies the two lobes are offset by exactly ±e and the orbit
+        This verifies the two lobes are offset by exactly +/-e and the orbit
         radius is consistent through a full revolution.
         """
         e = CFG.shaft.eccentricity
@@ -179,23 +179,23 @@ class TestEccentricOrbit:
             cy = e * math.sin(phi)
             orbit_r = math.sqrt(cx**2 + cy**2)
             assert abs(orbit_r - e) < 1e-10, (
-                f"At angle {math.degrees(phi):.1f}°: orbit radius "
+                f"At angle {math.degrees(phi):.1f}deg: orbit radius "
                 f"{orbit_r:.6f}mm != eccentricity {e}mm"
             )
 
-    def test_cam_fills_bearing_bore(self):
-        """Cam lobe OD should be at or slightly above bearing bore (press fit).
+    def test_lobe_fills_bearing_bore(self):
+        """Lobe OD should be at or slightly above bearing bore (press fit).
 
-        A loose cam inside the bearing would cause backlash.
+        A loose lobe inside the bearing would cause backlash.
         """
-        cam_od = CFG.shaft.bearing_seat_od
+        lobe_od = CFG.shaft.bearing_seat_od
         bearing_bore = CFG.bearings.ecc_bore
-        oversize = cam_od - bearing_bore
+        oversize = lobe_od - bearing_bore
         assert oversize >= 0, (
-            f"Cam OD {cam_od}mm smaller than bearing bore {bearing_bore}mm"
+            f"Lobe OD {lobe_od}mm smaller than bearing bore {bearing_bore}mm"
         )
         assert oversize <= 0.2, (
-            f"Cam-to-bearing oversize = {oversize:.3f}mm (max 0.2mm)"
+            f"Lobe-to-bearing oversize = {oversize:.3f}mm (max 0.2mm)"
         )
 
 
@@ -204,7 +204,7 @@ class TestEccentricOrbit:
 # ===================================================================
 
 
-class TestCadQueryCamBearingInterference:
+class TestCadQueryLobeBearingInterference:
     """Boolean intersection tests between shaft lobes and bearing annuli."""
 
     @pytest.fixture(scope="class")
@@ -229,7 +229,7 @@ class TestCadQueryCamBearingInterference:
     def test_lobe1_interference_within_press_fit(self, shaft_and_bearings):
         """Shaft lobe 1 press-fit interference with bearing 1 must be small.
 
-        The cam OD is 0.10mm larger than the bearing bore for a light press fit,
+        The lobe OD is 0.10mm larger than the bearing bore for a light press fit,
         so a small interference volume is expected.
         """
         shaft, bearing1, _ = shaft_and_bearings

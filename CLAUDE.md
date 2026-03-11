@@ -69,9 +69,9 @@
 | D-bore ⌀ | 5.00mm + tolerance | Receives motor shaft directly |
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
 | D-bore depth | 10.00mm | Motor shaft engagement length |
-| Output pin hole ⌀ | 4.70mm | Blind hole for 5mm steel dowel press-fit (5.00 − 2×0.15mm) |
-| Output pin hole depth | 12.00mm | Through lobe 2 into bridge zone |
-| Output pin | 5mm × 20mm ground steel dowel, h6 | Press-fit into shaft, supports 625 bearing |
+| Support pin hole ⌀ | 4.70mm | Blind hole for 5mm steel dowel press-fit (5.00 − 2×0.15mm) |
+| Support pin hole depth | 12.00mm | Through lobe 2 into bridge zone |
+| Support pin | 5mm × 20mm ground steel dowel, h6 | Press-fit into shaft, supports 625 bearing |
 | Material | PETG | 3D printed; use 100% infill, 0.16mm layer height |
 
 The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis. The input end has a D-bore socket that receives the motor shaft directly (no coupler). A 10mm OD collar at the input provides wall thickness around the D-bore.
