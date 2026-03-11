@@ -64,15 +64,19 @@
 |---|---|---|
 | Shaft OD at bearing seats | 17.10mm | Slight clearance for 6003 bearing bore |
 | Eccentricity | 1.50mm | Offset between shaft center and bearing seat center |
-| Spine OD | 5.00mm | Between lobes and at output stub |
+| Spine OD | 5.00mm | Between lobes |
 | Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
 | D-bore ⌀ | 5.00mm + tolerance | Receives motor shaft directly |
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
 | D-bore depth | 10.00mm | Motor shaft engagement length |
-| Output stub length | 7.00mm | Extends past disc 2 for output-side 625 |
+| Output pin hole ⌀ | 4.70mm | Blind hole for 5mm steel dowel press-fit (5.00 − 2×0.15mm) |
+| Output pin hole depth | 12.00mm | Through lobe 2 into bridge zone |
+| Output pin | 5mm × 20mm ground steel dowel, h6 | Press-fit into shaft, supports 625 bearing |
 | Material | PETG | 3D printed; use 100% infill, 0.16mm layer height |
 
 The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis. The input end has a D-bore socket that receives the motor shaft directly (no coupler). A 10mm OD collar at the input provides wall thickness around the D-bore.
+
+The output end has a blind hole (4.70mm × 12mm deep) centered on the shaft axis, extending from the output face of lobe 2 through into the bridge zone. A 5mm × 20mm ground steel dowel pin (h6) is pressed into this hole and extends through the 2mm clearance gap into the 625 bearing in the output hub, providing rigid radial support for the shaft's free end. Pin breakdown: 12mm insertion + 2mm gap + 5mm bearing + 1mm proud = 20mm.
 
 The bridge between the two lobes (spanning the 2mm inter-disc spacer zone) is enlarged to 23.10mm OD (lobe OD + 6mm, 3mm radial flange per side) and acts as a bearing retention flange, preventing the two 6003 bearings from sliding toward each other. The bridge is a ruled loft that transitions the eccentric center from (+e, 0) to (−e, 0).
 
@@ -269,6 +273,7 @@ A separate printed or aluminum part that:
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
 | Ring pin holes | +0.20mm on hole ⌀ (4.20mm) | 4mm pins into motor plate & ring gear body |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
+| Dowel press-fit bore | −0.15mm on bore ⌀ (4.70mm for 5mm pin) | Steel dowel pin hole in eccentric shaft |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
 
 **Notes:**
@@ -335,7 +340,8 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 7 | Motor bolts | M3 × 14mm socket head | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 60mm socket head cap screw | 8 | $2–4 |
 | 8a | Housing nuts | M4 hex nut | 8 | $1 |
-| | | | **Total** | **~$46–86** |
+| 9 | Shaft support pin | 5mm × 20mm ground steel dowel pin, h6 | 1 | $0.50–1 |
+| | | | **Total** | **~$47–87** |
 
 ---
 

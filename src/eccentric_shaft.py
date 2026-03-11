@@ -37,7 +37,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     z_start = stack.z_motor_plate_inner  # 10mm — shaft starts at motor plate inner face
     z_lobe1 = stack.z_disc1  # 13mm
     z_lobe2 = stack.z_disc2  # 25mm
-    z_end = z_lobe2 + disc_t + shaft.output_stub_length  # 42mm
+    z_end = z_lobe2 + disc_t  # 35mm (steel dowel pin extends beyond)
     total_length = z_end - z_start
 
     # ── Spine: 5mm OD cylinder from collar end to output ────────────
@@ -95,6 +95,19 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
 
     result = spine.union(collar).union(lobe1).union(lobe2).union(bridge)
+
+    # ── Output pin hole: blind hole for steel dowel press-fit ─────
+    pin_bore_dia = shaft.output_pin_dia - tol.dowel_press_bore_sub * 2  # 4.70mm
+    pin_hole_depth = shaft.output_pin_hole_depth  # 8mm
+    z_output_face = z_lobe2 + disc_t  # 35mm
+
+    pin_hole = (
+        cq.Workplane("XY")
+        .workplane(offset=z_output_face - pin_hole_depth)
+        .circle(pin_bore_dia / 2.0)
+        .extrude(pin_hole_depth)
+    )
+    result = result.cut(pin_hole)
 
     # ── D-bore: motor shaft socket from input face ──────────────────
     # Round bore + D-flat key matching the motor shaft profile

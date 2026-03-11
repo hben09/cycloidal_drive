@@ -23,6 +23,7 @@ from src.purchased_parts import (
     build_output_pins,
     build_housing_bolts,
     build_housing_nuts,
+    build_shaft_support_pin,
 )
 
 cfg = DEFAULT_CONFIG
@@ -105,6 +106,12 @@ show_object(output_hub, name="output_hub", options={"color": "goldenrod", "alpha
 output_cap = build_output_cap()
 output_cap = output_cap.translate((0, 0, stack.z_output_cap))
 show_object(output_cap, name="output_cap", options={"color": "slategray", "alpha": 0.4})
+
+# ── Output shaft pin (steel dowel) ───────────────────────────
+z_pin_base = stack.z_disc2 + cfg.disc.thickness - cfg.shaft.output_pin_hole_depth
+shaft_pin = build_shaft_support_pin()
+shaft_pin = shaft_pin.translate((0, 0, z_pin_base))
+show_object(shaft_pin, name="shaft_support_pin", options={"color": "red"})
 
 # ── 625 bearing (output-side shaft support) ───────────────────
 # Sits in the output hub's inner-face pocket at z_output_bearings

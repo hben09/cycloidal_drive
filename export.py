@@ -22,6 +22,7 @@ from src.purchased_parts import (
     build_nema17_motor,
     build_ring_pins,
     build_output_pins,
+    build_shaft_support_pin,
 )
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -101,6 +102,11 @@ def build_assembly() -> cq.Assembly:
     # Output cap
     assy.add(build_output_cap(), name="output_cap",
              loc=cq.Location((0, 0, stack.z_output_cap)))
+
+    # Output shaft pin (steel dowel)
+    z_pin_base = stack.z_disc2 + cfg.disc.thickness - cfg.shaft.output_pin_hole_depth
+    assy.add(build_shaft_support_pin(), name="shaft_support_pin",
+             loc=cq.Location((0, 0, z_pin_base)))
 
     # 625 bearing
     assy.add(build_bearing_625(), name="bearing_625",

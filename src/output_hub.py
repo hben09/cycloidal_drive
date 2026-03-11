@@ -7,7 +7,7 @@ Features:
   - 625 bearing pocket on inner face (supports eccentric shaft output stub)
   - 4× output pin holes on 60mm circle (M3 shoulder bolt seats)
   - 4× arm mount bolt holes on 50mm circle (M4 clearance, 45° offset)
-  - Central shaft clearance bore (5.4mm)
+  - Central shaft clearance bore (6.0mm)
 
 The hub OD is sized for a light press into the 6814 bearing bores (70mm
 nominal, reduced by PETG inner-shaft tolerance).  Arm mount holes are
@@ -40,7 +40,7 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # ── Dimensions ──────────────────────────────────────────────────
     hub_od = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm (light press)
     hub_height = stack.output_bearing_total  # 20mm (2× 6814 width)
-    shaft_bore_dia = hub.shaft_clearance_bore  # 5.4mm
+    shaft_bore_dia = hub.shaft_clearance_bore  # 6.0mm
 
     # 625 bearing pocket (outer race press-fit seat on inner face)
     bearing_pocket_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.075mm

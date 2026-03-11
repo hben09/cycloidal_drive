@@ -64,17 +64,16 @@ class TestShaftDimensions:
     def test_shaft_spans_both_discs(self):
         """Shaft Z range must cover both disc positions from StackUp."""
         stack = CFG.stack_up
-        shaft = CFG.shaft
         disc_t = CFG.disc.thickness
 
         z_start = stack.z_motor_plate_inner  # 10mm
-        z_end = stack.z_disc2 + disc_t + shaft.output_stub_length  # 42mm
+        z_end = stack.z_disc2 + disc_t  # 35mm (steel pin extends beyond)
 
-        # Shaft must start before disc 1 and end after disc 2
+        # Shaft must start before disc 1 and end at disc 2 output face
         assert z_start < stack.z_disc1, (
             f"Shaft starts at Z={z_start}mm, disc 1 starts at Z={stack.z_disc1}mm"
         )
-        assert z_end > stack.z_disc2 + disc_t, (
+        assert z_end >= stack.z_disc2 + disc_t, (
             f"Shaft ends at Z={z_end}mm, disc 2 ends at Z={stack.z_disc2 + disc_t}mm"
         )
 
@@ -184,12 +183,11 @@ class TestCadQuerySolid:
     def test_bounding_box_z(self, shaft_solid):
         """Z height should match the computed shaft length."""
         stack = CFG.stack_up
-        shaft = CFG.shaft
         disc_t = CFG.disc.thickness
 
         z_start = stack.z_motor_plate_inner
-        z_end = stack.z_disc2 + disc_t + shaft.output_stub_length
-        expected_length = z_end - z_start  # 32mm
+        z_end = stack.z_disc2 + disc_t  # 35mm (no stub, pin extends beyond)
+        expected_length = z_end - z_start  # 25mm
 
         bb = shaft_solid.val().BoundingBox()
         z_size = bb.zmax - bb.zmin
@@ -235,7 +233,7 @@ class TestCadQuerySolid:
         lobe_r = shaft.bearing_seat_od / 2.0
         spine_r = shaft.spine_od / 2.0
         z_start = stack.z_motor_plate_inner
-        z_end = stack.z_disc2 + disc_t + shaft.output_stub_length
+        z_end = stack.z_disc2 + disc_t  # 35mm (no stub)
         total_length = z_end - z_start
 
         vol = shaft_solid.val().Volume()
@@ -246,3 +244,49 @@ class TestCadQuerySolid:
         assert lower < vol < upper, (
             f"Volume {vol:.0f}mm³ outside expected range [{lower:.0f}, {upper:.0f}]"
         )
+
+
+# ===================================================================
+# 3. Output pin hole checks (no CadQuery needed)
+# ===================================================================
+
+
+class TestOutputPinHole:
+    """Checks for the steel dowel pin press-fit hole."""
+
+    def test_pin_hole_within_lobe(self):
+        """Pin hole must be fully contained within lobe 2 material."""
+        shaft = CFG.shaft
+        tol = CFG.tolerances
+        lobe_r = shaft.bearing_seat_od / 2.0  # 8.55mm
+        e = shaft.eccentricity  # 1.5mm
+        pin_bore_r = (shaft.output_pin_dia - tol.dowel_press_bore_sub * 2) / 2.0
+        # Distance from lobe 2 center (-e, 0) to pin hole center (0, 0) is e
+        wall = lobe_r - e - pin_bore_r
+        assert wall >= 4.0, f"Wall around pin hole = {wall:.2f}mm, need >= 4mm"
+
+    def test_pin_hole_clears_d_bore(self):
+        """Pin hole must not reach the D-bore — at least 2mm wall between them."""
+        stack = CFG.stack_up
+        disc_t = CFG.disc.thickness
+        z_pin_hole_bottom = stack.z_disc2 + disc_t - CFG.shaft.output_pin_hole_depth
+        z_d_bore_end = stack.z_motor_plate_inner + CFG.shaft.d_bore_depth
+        wall = z_pin_hole_bottom - z_d_bore_end
+        assert wall >= 2.0, (
+            f"Wall between pin hole and D-bore = {wall:.2f}mm, need >= 2mm"
+        )
+
+    def test_pin_reaches_625_bearing(self):
+        """Pin protrusion must reach through the 2mm gap into the 625 bearing."""
+        shaft = CFG.shaft
+        stack = CFG.stack_up
+        protrusion = shaft.output_pin_length - shaft.output_pin_hole_depth  # 8mm
+        gap = stack.z_output_bearings - (stack.z_disc2 + CFG.disc.thickness)  # 2mm
+        bearing_width = CFG.bearings.inp_width  # 5mm
+        assert protrusion >= gap + bearing_width, (
+            f"Pin protrusion {protrusion}mm < gap {gap}mm + bearing {bearing_width}mm"
+        )
+
+    def test_pin_fits_625_bore(self):
+        """Pin OD must fit inside the 625 bearing bore."""
+        assert CFG.shaft.output_pin_dia <= CFG.bearings.inp_bore

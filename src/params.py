@@ -52,7 +52,10 @@ class ShaftParams:
     bearing_seat_od: float = 17.10  # mm, slight clearance for 6003 bore
     eccentricity: float = 1.5  # mm
     spine_od: float = 5.0  # mm, shaft OD outside the lobe regions
-    output_stub_length: float = 7.0  # mm, extends past disc 2 for output-side 625
+    # Steel dowel pin replaces printed output stub for 625 bearing support
+    output_pin_dia: float = 5.0  # mm, ground steel dowel pin h6
+    output_pin_length: float = 20.0  # mm, ground steel dowel pin h6
+    output_pin_hole_depth: float = 12.0  # mm, blind hole extending through lobe 2 into bridge
     # Direct D-shaft engagement with motor shaft
     input_collar_od: float = 10.0  # mm, enlarged input section for D-bore wall
     d_bore_dia: float = 5.0  # mm, matches motor shaft (tolerance applied in builder)
@@ -127,7 +130,7 @@ class OutputHubParams:
     """Output hub/plate dimensions — spec Section 5.3."""
 
     od: float = 70.0  # mm (matches 6814 bore, light press)
-    shaft_clearance_bore: float = 5.4  # mm (5mm shaft + clearance)
+    shaft_clearance_bore: float = 6.0  # mm (5mm pin + 1mm clearance)
     arm_mount_bolt_circle_dia: float = 50.0  # mm
     arm_mount_bolt_count: int = 4
     arm_mount_bolt_dia: float = 4.4  # mm (M4 clearance)
@@ -145,6 +148,7 @@ class PETGTolerances:
     ring_pin_press_sub: float = -0.20  # +0.20mm for snug fit (4.20mm holes)
     sliding_clearance_add: float = 0.25  # +0.20 to +0.30mm
     d_bore_clearance_add: float = 0.05  # snug fit for motor shaft D-bore
+    dowel_press_bore_sub: float = 0.15  # undersized bore for steel dowel press fit
     mating_surface_add: float = 0.15  # +0.15mm
 
 

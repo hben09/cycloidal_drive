@@ -279,6 +279,25 @@ def build_housing_nuts(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     return result
 
 
+# -------------------------------------------------------------------
+# Output shaft pin — 5mm steel dowel for eccentric shaft support
+# -------------------------------------------------------------------
+
+
+def build_shaft_support_pin(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
+    """5mm × 16mm steel dowel pin for eccentric shaft output support.
+
+    Built at Z=0 with full pin length extending in +Z.
+    Caller positions it so the insertion end sits inside the shaft hole.
+    """
+    shaft = cfg.shaft
+    return (
+        cq.Workplane("XY")
+        .circle(shaft.output_pin_dia / 2.0)
+        .extrude(shaft.output_pin_length)
+    )
+
+
 if __name__ == "__main__":
     from ocp_vscode import show_object
 
@@ -290,3 +309,4 @@ if __name__ == "__main__":
     show_object(build_output_pins(), name="output_pins")
     show_object(build_housing_bolts(), name="housing_bolts")
     show_object(build_housing_nuts(), name="housing_nuts")
+    show_object(build_shaft_support_pin(), name="shaft_support_pin")

@@ -314,21 +314,28 @@ class TestShaftReach:
             f"Motor shaft only {remaining}mm past plate, D-bore needs {d_bore_depth}mm"
         )
 
-    def test_eccentric_shaft_reaches_625_bearing(self):
-        """Shaft output stub must extend past disc 2 to reach the 625 pocket."""
+    def test_eccentric_shaft_pin_reaches_625_bearing(self):
+        """Steel dowel pin must protrude enough to reach through the 625 bearing."""
         s = CFG.stack_up
-        shaft_param = CFG.shaft
+        shaft = CFG.shaft
         disc2_end = s.z_disc2 + s.disc_thickness  # 35mm
-        z_625 = s.z_output_bearings  # 37mm (625 sits at inner face of output hub)
-        stub_needed = z_625 - disc2_end  # 2mm
-        assert shaft_param.output_stub_length >= stub_needed, (
-            f"Stub length {shaft_param.output_stub_length}mm < needed {stub_needed}mm"
+        z_625_end = s.z_output_bearings + CFG.bearings.inp_width  # 42mm
+        pin_tip_z = disc2_end + (shaft.output_pin_length - shaft.output_pin_hole_depth)
+        assert pin_tip_z >= z_625_end, (
+            f"Pin tip at Z={pin_tip_z}mm doesn't reach 625 far face at Z={z_625_end}mm"
         )
 
-    def test_eccentric_shaft_stub_fits_625_bore(self):
-        """Shaft spine OD must fit inside the 625 bearing bore."""
-        assert CFG.shaft.spine_od <= CFG.bearings.inp_bore, (
-            f"Spine OD {CFG.shaft.spine_od}mm > 625 bore {CFG.bearings.inp_bore}mm"
+    def test_eccentric_shaft_pin_fits_625_bore(self):
+        """Steel dowel pin OD must fit inside the 625 bearing bore."""
+        assert CFG.shaft.output_pin_dia <= CFG.bearings.inp_bore, (
+            f"Pin OD {CFG.shaft.output_pin_dia}mm > 625 bore {CFG.bearings.inp_bore}mm"
+        )
+
+    def test_eccentric_shaft_pin_clears_hub_bore(self):
+        """Support pin must have clearance inside the output hub shaft bore."""
+        clearance = CFG.output_hub.shaft_clearance_bore - CFG.shaft.output_pin_dia
+        assert clearance >= 0.5, (
+            f"Pin-to-hub-bore clearance {clearance:.2f}mm < 0.5mm minimum"
         )
 
 
