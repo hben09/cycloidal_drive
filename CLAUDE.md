@@ -43,7 +43,7 @@
 | Parameter | Value | Notes |
 |---|---|---|
 | Output pin count | 4 | Equally spaced at 90° |
-| Output pin circle ⌀ | 60.00mm | Increased from 52mm for better torque arm |
+| Output pin circle ⌀ | 60.00mm | — |
 | Output pin ⌀ | 4.00mm | M3 shoulder bolt (45mm shoulder) + nut |
 | Disc pin hole ⌀ | 8.00mm | 4mm pin + 2 × 1.5mm ecc + 1mm clearance |
 | Pin hole approach | Oversized, no bearings | Greased sliding fit |
@@ -133,7 +133,7 @@ Two bearings mounted end-to-end in the housing. The inner races sit on the outpu
 | Dynamic load rating | ~1.0 kN (typical) |
 | Purpose | Supports eccentric shaft at output side |
 
-Motor-side 625 eliminated — direct D-shaft engagement means the motor's internal bearings and the 6003 disc bearings provide adequate input-side radial support. One 625 remains in the output-side housing plate (or output hub).
+Located in the output hub, supporting the eccentric shaft's free end via the 5mm steel dowel pin.
 
 ---
 
@@ -153,11 +153,7 @@ Motor-side 625 eliminated — direct D-shaft engagement means the motor's intern
 | Mounting hole thread | M3, tapped 4.5mm deep |
 | Holding torque | ~0.45 Nm (typical) |
 
-### 3.2 ~~Shaft Coupler~~ — ELIMINATED
-
-Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-bore in the eccentric shaft input end. No separate coupler needed.
-
-### 3.3 Ring Pins
+### 3.2 Ring Pins
 
 | Parameter | Value |
 |---|---|
@@ -166,7 +162,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 | Length | 35mm |
 | Material | Hardened steel dowel pin |
 
-### 3.4 Output Pins
+### 3.3 Output Pins
 
 | Parameter | Value |
 |---|---|
@@ -179,7 +175,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 | Total length | 54.5mm |
 | Retained by | Head on hub output face, M3 nut on disc 1 side |
 
-### 3.5 Housing Bolts
+### 3.4 Housing Bolts
 
 | Parameter | Value |
 |---|---|
@@ -191,7 +187,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 | Shank length | 60mm |
 | Retained by | Counterbore in motor plate, M4 hex nut in output cap |
 
-### 3.6 Housing Nuts
+### 3.5 Housing Nuts
 
 | Parameter | Value |
 |---|---|
@@ -201,7 +197,7 @@ Replaced by direct D-shaft engagement. The motor shaft slides into a matching D-
 | Thickness | 3.2mm |
 | Captured in | Hex nut pocket in output cap outer face |
 
-### 3.7 Other Fasteners
+### 3.6 Other Fasteners
 
 | Item | Spec | Qty | Purpose |
 |---|---|---|---|
