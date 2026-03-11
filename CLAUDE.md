@@ -70,7 +70,7 @@
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
 | D-bore depth | 10.00mm | Motor shaft engagement length |
 | Output stub length | 7.00mm | Extends past disc 2 for output-side 625 |
-| Material | Steel or aluminum | Recommend machined; do NOT 3D print this part |
+| Material | PETG | 3D printed; use 100% infill, 0.16mm layer height |
 
 The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis. The input end has a D-bore socket that receives the motor shaft directly (no coupler). A 10mm OD collar at the input provides wall thickness around the D-bore.
 
