@@ -74,7 +74,7 @@
 
 The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis. The input end has a D-bore socket that receives the motor shaft directly (no coupler). A 10mm OD collar at the input provides wall thickness around the D-bore.
 
-The bridge between the two lobes (spanning the 2mm inter-disc spacer zone) is enlarged to 19.10mm OD (lobe OD + 2mm) and acts as a bearing retention flange, preventing the two 6003 bearings from sliding toward each other. The bridge is a ruled loft that transitions the eccentric center from (+e, 0) to (−e, 0).
+The bridge between the two lobes (spanning the 2mm inter-disc spacer zone) is enlarged to 23.10mm OD (lobe OD + 6mm, 3mm radial flange per side) and acts as a bearing retention flange, preventing the two 6003 bearings from sliding toward each other. The bridge is a ruled loft that transitions the eccentric center from (+e, 0) to (−e, 0).
 
 ---
 
