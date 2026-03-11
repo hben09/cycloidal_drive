@@ -147,7 +147,7 @@ class PETGTolerances:
     bearing_inner_shaft_sub: float = 0.075  # -0.05 to -0.10mm
     ring_pin_press_sub: float = -0.20  # +0.20mm for snug fit (4.20mm holes)
     sliding_clearance_add: float = 0.25  # +0.20 to +0.30mm
-    d_bore_clearance_add: float = 0.05  # snug fit for motor shaft D-bore
+    d_bore_clearance_add: float = 0.025  # snug fit for motor shaft D-bore
     dowel_press_bore_sub: float = 0.15  # undersized bore for steel dowel press fit
     mating_surface_add: float = 0.15  # +0.15mm
 

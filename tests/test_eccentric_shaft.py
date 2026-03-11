@@ -121,7 +121,7 @@ class TestDBore:
         """Input collar must have wall around the D-bore."""
         shaft = CFG.shaft
         tol = CFG.tolerances
-        bore_r = (shaft.d_bore_dia + tol.sliding_clearance_add * 2) / 2.0
+        bore_r = (shaft.d_bore_dia + tol.d_bore_clearance_add * 2) / 2.0
         collar_r = shaft.input_collar_od / 2.0
         wall = collar_r - bore_r
         assert wall >= 1.5, (
@@ -138,7 +138,7 @@ class TestDBore:
         shaft = CFG.shaft
         tol = CFG.tolerances
         lobe_r = shaft.bearing_seat_od / 2.0  # 8.55mm
-        bore_r = (shaft.d_bore_dia + tol.sliding_clearance_add * 2) / 2.0  # 2.75mm
+        bore_r = (shaft.d_bore_dia + tol.d_bore_clearance_add * 2) / 2.0  # 2.525mm
         e = shaft.eccentricity  # 1.5mm
         thin_wall = lobe_r - e - bore_r
         assert thin_wall >= 2.0, (
@@ -149,7 +149,7 @@ class TestDBore:
         """D-bore diameter must accommodate the motor shaft."""
         shaft = CFG.shaft
         tol = CFG.tolerances
-        bore_dia = shaft.d_bore_dia + tol.sliding_clearance_add * 2
+        bore_dia = shaft.d_bore_dia + tol.d_bore_clearance_add * 2
         assert bore_dia > CFG.motor.shaft_dia, (
             f"D-bore {bore_dia:.2f}mm <= motor shaft {CFG.motor.shaft_dia}mm"
         )
