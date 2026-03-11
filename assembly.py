@@ -103,7 +103,7 @@ output_cap = output_cap.translate((0, 0, stack.z_output_cap))
 show_object(output_cap, name="output_cap", options={"color": "slategray", "alpha": 0.4})
 
 # ── Output shaft pin (steel dowel) ───────────────────────────
-z_pin_base = stack.z_disc2 + cfg.disc.thickness - cfg.shaft.output_pin_hole_depth
+z_pin_base = stack.z_disc2 + cfg.disc.thickness - cfg.shaft.support_pin_hole_depth
 shaft_pin = build_shaft_support_pin()
 shaft_pin = shaft_pin.translate((0, 0, z_pin_base))
 show_object(shaft_pin, name="shaft_support_pin", options={"color": "red"})

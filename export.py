@@ -99,7 +99,7 @@ def build_assembly() -> cq.Assembly:
              loc=cq.Location((0, 0, stack.z_output_cap)))
 
     # Output shaft pin (steel dowel)
-    z_pin_base = stack.z_disc2 + cfg.disc.thickness - cfg.shaft.output_pin_hole_depth
+    z_pin_base = stack.z_disc2 + cfg.disc.thickness - cfg.shaft.support_pin_hole_depth
     assy.add(build_shaft_support_pin(), name="shaft_support_pin",
              loc=cq.Location((0, 0, z_pin_base)))
 
