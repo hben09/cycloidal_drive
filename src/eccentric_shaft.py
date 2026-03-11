@@ -123,13 +123,8 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(d_bore_round)
 
-    # D-flat key: fill the bore flat zone so the motor shaft D-cut locks in
-    # The motor shaft has a flat at 4.5mm across. The bore needs a matching
-    # protrusion (key) that the flat slides against. We model this by cutting
-    # only the D-shaped profile (round minus the keyed area).
-    # Actually: cut a full round bore, then add back a key block on one side.
-    # Simpler: cut only a D-shaped bore (circle intersected with flat).
-    # The bore is the D-profile: a circle with material left where the flat is.
+    # D-flat key: the motor shaft has a flat at 4.5mm across. After cutting
+    # a full round bore, we add back a key block so the D-cut locks in.
     dcut_offset = shaft.d_bore_flat / 2.0 + tol.d_bore_clearance_add  # 2.275mm
     cut_depth = bore_r - dcut_offset  # amount to NOT cut (the key)
     if cut_depth > 0:

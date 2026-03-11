@@ -71,12 +71,7 @@ def build_assembly() -> cq.Assembly:
     assy.add(build_eccentric_shaft(), name="eccentric_shaft")
 
     # Ring pins
-    disc_zone = (
-        stack.input_clearance
-        + 2 * cfg.disc.thickness
-        + cfg.disc.inter_disc_spacer
-    )
-    pin_engagement = (cfg.gear.ring_pin_length - disc_zone) / 2.0
+    pin_engagement = (cfg.gear.ring_pin_length - stack.disc_zone) / 2.0
     z_pins = stack.z_motor_plate_inner - pin_engagement
     assy.add(build_ring_pins(), name="ring_pins",
              loc=cq.Location((0, 0, z_pins)))

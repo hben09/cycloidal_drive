@@ -53,7 +53,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     housing_r = h.od / 2.0  # 67mm
     bore_r = h.bore_dia / 2.0  # 58mm (116mm bore)
     bearing_seat_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
-    shoulder_bore_r = b.out_bore / 2.0  # 35mm (70mm — clears output hub)
+    hub_clearance_bore_r = b.out_bore / 2.0  # 35mm (70mm — clears output hub)
 
     # Zone boundaries (local Z)
     disc_zone_end = (
@@ -91,7 +91,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     shoulder_bore = (
         cq.Workplane("XY")
         .workplane(offset=shoulder_z)
-        .circle(shoulder_bore_r)
+        .circle(hub_clearance_bore_r)
         .extrude(shoulder_h)
     )
     result = result.cut(shoulder_bore)
@@ -109,12 +109,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # Holes go from Z=0 (input face) through the disc zone (25mm,
     # air at 54mm radius inside 58mm bore) plus 5mm of press-fit
     # engagement into the shoulder/bearing zone.  Total depth 30mm.
-    disc_zone = (
-        stack.input_clearance
-        + 2 * cfg.disc.thickness
-        + cfg.disc.inter_disc_spacer
-    )  # 25mm
-    pin_engagement = (g.ring_pin_length - disc_zone) / 2.0  # 5mm
+    pin_engagement = (g.ring_pin_length - disc_zone_end) / 2.0  # 5mm
     pin_hole_depth = disc_zone_end + pin_engagement  # 30mm
     pin_pts = [
         (

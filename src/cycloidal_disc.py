@@ -33,7 +33,7 @@ def build_cycloidal_disc(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
 
     # Build disc from spline profile using OCC-level periodic spline
-    # for exact interpolation (splineApprox clips lobe peaks)
+    # for exact interpolation of lobe peaks
     pts_3d = [cq.Vector(x, y, 0) for x, y in points]
     edge = cq.Edge.makeSpline(pts_3d, periodic=True)
     wire = cq.Wire.assembleEdges([edge])

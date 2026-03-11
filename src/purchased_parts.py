@@ -43,7 +43,7 @@ def build_bearing_6814(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 def build_bearing_625(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """625-2RS input shaft bearing: 5×16×5mm."""
+    """625-2RS shaft support bearing (output side): 5×16×5mm."""
     b = cfg.bearings
     return (
         cq.Workplane("XY")
@@ -285,7 +285,7 @@ def build_housing_nuts(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 def build_shaft_support_pin(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """5mm × 16mm steel dowel pin for eccentric shaft output support.
+    """5mm × 20mm steel dowel pin for eccentric shaft output support.
 
     Built at Z=0 with full pin length extending in +Z.
     Caller positions it so the insertion end sits inside the shaft hole.
