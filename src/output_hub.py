@@ -6,13 +6,10 @@
 Features:
   - 625 bearing pocket on inner face (supports eccentric shaft output stub)
   - 4× output pin holes on 60mm circle (M3 shoulder bolt seats)
-  - 4× arm mount bolt holes on 50mm circle (M4 clearance, 45° offset)
   - Central shaft clearance bore (6.0mm)
 
 The hub OD is sized for a light press into the 6814 bearing bores (70mm
-nominal, reduced by PETG inner-shaft tolerance).  Arm mount holes are
-rotated 45° from the output pin holes to maintain wall thickness between
-the two hole circles.
+nominal, reduced by PETG inner-shaft tolerance).
 """
 
 import math
@@ -50,11 +47,7 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     pin_circle_r = d.output_pin_circle_dia / 2.0  # 30mm
     pin_hole_dia = d.output_pin_dia  # 4.0mm
 
-    # Arm mount holes (M4 clearance, 45° offset from output pins)
-    arm_circle_r = hub.arm_mount_bolt_circle_dia / 2.0  # 25mm
-    arm_hole_dia = hub.arm_mount_bolt_dia  # 4.4mm
-
-    # ── 1. Base cylinder ────────────────────────────────────────────
+# ── 1. Base cylinder ────────────────────────────────────────────
     result = (
         cq.Workplane("XY")
         .circle(hub_od / 2.0)
@@ -92,27 +85,6 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(hub_height)
     )
     result = result.cut(pin_holes)
-
-    # ── 5. Arm mount bolt holes (4×, 50mm circle, 45° offset) ──────
-    offset_angle = math.pi / 4.0  # 45° offset from output pins
-    arm_pts = [
-        (
-            arm_circle_r * math.cos(
-                2 * math.pi * i / hub.arm_mount_bolt_count + offset_angle
-            ),
-            arm_circle_r * math.sin(
-                2 * math.pi * i / hub.arm_mount_bolt_count + offset_angle
-            ),
-        )
-        for i in range(hub.arm_mount_bolt_count)
-    ]
-    arm_holes = (
-        cq.Workplane("XY")
-        .pushPoints(arm_pts)
-        .circle(arm_hole_dia / 2.0)
-        .extrude(hub_height)
-    )
-    result = result.cut(arm_holes)
 
     return result
 

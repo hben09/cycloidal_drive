@@ -111,47 +111,6 @@ class TestOutputHubDimensions:
             f"Pin hole to 625 pocket wall = {wall:.2f}mm, need >= 2mm"
         )
 
-    def test_arm_mount_holes_inside_hub(self):
-        """Arm mount hole outer edges must not breach the hub OD."""
-        hub = CFG.output_hub
-        tol = CFG.tolerances
-        arm_outer = hub.arm_mount_bolt_circle_dia / 2.0 + hub.arm_mount_bolt_dia / 2.0
-        hub_r = (hub.od - tol.bearing_inner_shaft_sub) / 2.0
-        assert arm_outer < hub_r, (
-            f"Arm mount edge at {arm_outer}mm >= hub radius {hub_r:.3f}mm"
-        )
-
-    def test_arm_mount_holes_clear_shaft_bore(self):
-        """Arm mount holes must not overlap the central shaft bore."""
-        hub = CFG.output_hub
-        arm_inner = hub.arm_mount_bolt_circle_dia / 2.0 - hub.arm_mount_bolt_dia / 2.0
-        shaft_r = hub.shaft_clearance_bore / 2.0
-        wall = arm_inner - shaft_r
-        assert wall >= 2.0, (
-            f"Arm mount to shaft bore wall = {wall:.2f}mm, need >= 2mm"
-        )
-
-    def test_output_pins_clear_arm_mounts(self):
-        """Output pin holes and arm mount holes (45° offset) must not overlap."""
-        d = CFG.disc
-        hub = CFG.output_hub
-        pin_r = d.output_pin_circle_dia / 2.0  # 30mm
-        arm_r = hub.arm_mount_bolt_circle_dia / 2.0  # 25mm
-        pin_hole_r = d.output_pin_dia / 2.0  # 2mm
-        arm_hole_r = hub.arm_mount_bolt_dia / 2.0  # 2.2mm
-        min_distance = pin_hole_r + arm_hole_r  # 4.2mm
-
-        # Closest pair: a pin at 0° and an arm mount at 45°
-        angle_sep = math.pi / 4.0
-        dist = math.sqrt(
-            pin_r ** 2 + arm_r ** 2
-            - 2 * pin_r * arm_r * math.cos(angle_sep)
-        )
-        assert dist >= min_distance, (
-            f"Closest pin-to-arm-mount distance {dist:.2f}mm < "
-            f"min {min_distance:.2f}mm"
-        )
-
     def test_output_pin_holes_clear_bearing_bore(self):
         """Output pin holes must sit inside the 6814 bearing bore.
 
@@ -236,18 +195,11 @@ class TestCadQuerySolid:
         pocket_r = (b.inp_od + tol.bearing_seat_bore_add) / 2.0
         pocket_vol = math.pi * pocket_r ** 2 * b.inp_width
         pin_vol = d.output_pin_count * math.pi * (d.output_pin_dia / 2.0) ** 2 * height
-        arm_vol = (
-            hub.arm_mount_bolt_count
-            * math.pi
-            * (hub.arm_mount_bolt_dia / 2.0) ** 2
-            * height
-        )
         lower = (
             math.pi * hub_r ** 2 * height
             - math.pi * shaft_r ** 2 * height
             - pocket_vol
             - pin_vol
-            - arm_vol
         ) * 0.9  # 10% margin for overlap
 
         vol = hub_solid.val().Volume()

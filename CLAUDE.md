@@ -202,7 +202,6 @@ Located in the output hub, supporting the eccentric shaft's free end via the 5mm
 | Item | Spec | Qty | Purpose |
 |---|---|---|---|
 | Motor mounting bolts | M3 × 14mm socket head | 4 | Mount motor to housing (10mm plate + 4mm thread engagement) |
-| Output plate bolts | Per application | — | Attach arm link to output |
 
 ---
 
@@ -256,7 +255,7 @@ A separate printed or aluminum part that:
 
 - Has 4× clearance holes (4mm + tolerance) on the 60mm pin circle for shoulder bolts
 - Passes through the 2× 6814 bearing inner races (hub OD = 70mm, light press)
-- Has a flat output face with mounting holes for the next arm link
+- Has a flat output face for the next arm link
 - Houses a 625 bearing seat on the inner side to support the eccentric shaft output end
 
 ---

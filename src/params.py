@@ -131,9 +131,7 @@ class OutputHubParams:
 
     od: float = 70.0  # mm (matches 6814 bore, light press)
     shaft_clearance_bore: float = 6.0  # mm (5mm pin + 1mm clearance)
-    arm_mount_bolt_circle_dia: float = 50.0  # mm
-    arm_mount_bolt_count: int = 4
-    arm_mount_bolt_dia: float = 4.4  # mm (M4 clearance)
+
 
 
 @dataclass(frozen=True)
