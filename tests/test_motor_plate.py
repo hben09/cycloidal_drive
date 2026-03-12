@@ -129,6 +129,54 @@ class TestMotorPlateDimensions:
         expected = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 10mm
         assert expected == 10.0, f"Plate thickness {expected}mm != 10mm"
 
+    def test_motor_bolt_counterbore_fits_in_plate(self):
+        """M3 counterbore depth must be less than plate thickness."""
+        m = CFG.motor
+        stack = CFG.stack_up
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
+        cb_depth = plate_t - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))
+        assert cb_depth < plate_t, (
+            f"M3 counterbore {cb_depth}mm >= plate {plate_t}mm"
+        )
+        assert cb_depth > 0, f"M3 counterbore depth {cb_depth}mm is not positive"
+
+    def test_motor_bolt_counterbore_recesses_head(self):
+        """M3 counterbore must be deep enough to fully recess the bolt head."""
+        m = CFG.motor
+        stack = CFG.stack_up
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
+        cb_depth = plate_t - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))
+        assert cb_depth >= m.motor_bolt_head_height, (
+            f"M3 counterbore {cb_depth}mm < head height {m.motor_bolt_head_height}mm"
+        )
+
+    def test_motor_bolt_engagement(self):
+        """M3 bolts must engage at least 3mm into the motor body."""
+        m = CFG.motor
+        stack = CFG.stack_up
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
+        cb_depth = plate_t - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))
+        plate_through = plate_t - cb_depth
+        engagement = m.motor_bolt_thread_length - plate_through
+        assert engagement >= 3.0, (
+            f"Motor engagement {engagement:.1f}mm < 3mm minimum"
+        )
+        assert engagement <= m.bolt_hole_depth, (
+            f"Motor engagement {engagement:.1f}mm exceeds hole depth {m.bolt_hole_depth}mm"
+        )
+
+    def test_motor_bolt_counterbore_clears_pilot(self):
+        """M3 counterbore must not overlap with the pilot recess."""
+        m = CFG.motor
+        tol = CFG.tolerances
+        half_pat = m.bolt_pattern_square / 2.0  # 15.5mm
+        pilot_r = (m.pilot_dia + tol.mating_surface_add * 2) / 2.0
+        cb_r = (m.motor_bolt_head_dia + 0.4) / 2.0
+        clearance = half_pat - pilot_r - cb_r
+        assert clearance > 0, (
+            f"M3 counterbore overlaps pilot recess, clearance = {clearance:.2f}mm"
+        )
+
     def test_ring_pin_holes_are_clearance_fit(self):
         """Ring pin holes must be clearance fit (larger than pin diameter).
 

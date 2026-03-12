@@ -201,7 +201,7 @@ Located in the output hub, supporting the eccentric shaft's free end via the 5mm
 
 | Item | Spec | Qty | Purpose |
 |---|---|---|---|
-| Motor mounting bolts | M3 × 14mm socket head | 4 | Mount motor to housing (10mm plate + 4mm thread engagement) |
+| Motor mounting bolts | M3 × 10mm socket head (5.3mm head ⌀ × 3mm head height, 13mm total) | 4 | Mount motor to housing (6mm through plate + 4mm thread engagement, head recessed in 4mm counterbore on inner face) |
 
 ---
 
@@ -333,7 +333,7 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 5 | Ring pins | 4mm × 35mm ground dowel h6 | 25 | $8–12 |
 | 6 | Output pins | M3 × 54.5mm shoulder bolt (4mm × 45mm shoulder) | 4 | $3–6 |
 | 6a | Output pin nuts | M3 nut | 4 | $1 |
-| 7 | Motor bolts | M3 × 14mm socket head | 4 | $1–2 |
+| 7 | Motor bolts | M3 × 10mm socket head (13mm total) | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 60mm socket head cap screw | 8 | $2–4 |
 | 8a | Housing nuts | M4 hex nut | 8 | $1 |
 | 9 | Shaft support pin | 5mm × 20mm ground steel dowel pin, h6 | 1 | $0.50–1 |

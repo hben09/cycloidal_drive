@@ -134,6 +134,47 @@ def build_nema17_motor(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 # -------------------------------------------------------------------
+# Motor mounting bolts — 4× M3 × 10mm SHCS on 31mm square pattern
+# -------------------------------------------------------------------
+
+
+def build_motor_bolts(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
+    """4× M3 × 10mm socket head cap screws for NEMA 17 mounting.
+
+    Built with thread tip at Z=0, thread extends in +Z (10mm),
+    then head extends in +Z (3mm more).  Total height = 13mm.
+    Caller positions so thread tip sits 4mm into the motor body.
+    """
+    m = cfg.motor
+    half_pat = m.bolt_pattern_square / 2.0
+    positions = [
+        (half_pat, half_pat),
+        (-half_pat, half_pat),
+        (-half_pat, -half_pat),
+        (half_pat, -half_pat),
+    ]
+
+    # Thread / shank: 3mm ⌀ × 10mm, from Z=0 to Z=10mm
+    shanks = (
+        cq.Workplane("XY")
+        .pushPoints(positions)
+        .circle(m.bolt_dia / 2.0)
+        .extrude(m.motor_bolt_thread_length)
+    )
+
+    # Head: 5.3mm ⌀ × 3mm, from Z=10mm to Z=13mm
+    heads = (
+        cq.Workplane("XY")
+        .workplane(offset=m.motor_bolt_thread_length)
+        .pushPoints(positions)
+        .circle(m.motor_bolt_head_dia / 2.0)
+        .extrude(m.motor_bolt_head_height)
+    )
+
+    return shanks.union(heads)
+
+
+# -------------------------------------------------------------------
 # Ring pins — 21 cylinders on 108mm circle
 # -------------------------------------------------------------------
 
@@ -309,4 +350,5 @@ if __name__ == "__main__":
     show_object(build_output_pins(), name="output_pins")
     show_object(build_housing_bolts(), name="housing_bolts")
     show_object(build_housing_nuts(), name="housing_nuts")
+    show_object(build_motor_bolts(), name="motor_bolts")
     show_object(build_shaft_support_pin(), name="shaft_support_pin")

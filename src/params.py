@@ -120,6 +120,10 @@ class MotorParams:
     bolt_pattern_square: float = 31.0  # mm (center-to-center)
     bolt_dia: float = 3.0  # mm (M3)
     bolt_hole_depth: float = 4.5  # mm, threaded blind holes in mounting face
+    motor_bolt_total_length: float = 13.0  # mm (3mm head + 10mm thread)
+    motor_bolt_thread_length: float = 10.0  # mm
+    motor_bolt_head_dia: float = 5.3  # mm
+    motor_bolt_head_height: float = 3.0  # mm
     pilot_dia: float = 22.0  # mm (NEMA 17 centering boss)
     body_width: float = 42.3  # mm (NEMA 17 standard)
     body_length: float = 48.0  # mm

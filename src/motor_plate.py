@@ -83,6 +83,19 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(motor_bolts)
 
+    # ── 4a. Counterbore pockets for M3 bolt heads (inner face, Z=10mm) ──
+    # Recesses bolt heads so they sit inside the plate, not in the disc zone.
+    m3_cb_dia = m.motor_bolt_head_dia + 0.4  # 5.7mm clearance
+    m3_cb_depth = plate_thickness - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))  # 4mm
+    motor_bolt_cb = (
+        cq.Workplane("XY")
+        .workplane(offset=plate_thickness)
+        .pushPoints(motor_bolt_pts)
+        .circle(m3_cb_dia / 2.0)
+        .extrude(-m3_cb_depth)
+    )
+    result = result.cut(motor_bolt_cb)
+
     # ── 5. Ring-pin through-holes (21×, clearance fit) ─────────────
     # Through-holes let pins be inserted one at a time from the outer
     # face. Chamfered lead-in on the inner face guides entry during

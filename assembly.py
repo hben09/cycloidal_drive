@@ -23,6 +23,7 @@ from src.purchased_parts import (
     build_output_pins,
     build_housing_bolts,
     build_housing_nuts,
+    build_motor_bolts,
     build_shaft_support_pin,
 )
 
@@ -82,6 +83,12 @@ show_object(output, name="output_pins", options={"color": "darkgray"})
 # ── Motor ──────────────────────────────────────────────────────
 motor = build_nema17_motor()
 show_object(motor, name="nema17_motor", options={"color": "dimgray"})
+
+# ── Motor mounting bolts (M3 × 10mm SHCS) ─────────────────────
+# Heads recessed inside motor plate; tip 4mm into motor body.
+motor_bolts = build_motor_bolts()
+motor_bolts = motor_bolts.translate((0, 0, stack.z_motor_plate_inner - cfg.motor.motor_bolt_total_length - 1.0))
+show_object(motor_bolts, name="motor_bolts", options={"color": "dimgray"})
 
 # ── Motor plate ──────────────────────────────────────────────────
 motor_plate = build_motor_plate()

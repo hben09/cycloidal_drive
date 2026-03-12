@@ -5,6 +5,7 @@ Tests cover:
   2. NEMA 17 motor — body size, shaft length
   3. Ring pins — count, diameter, length, circle placement
   4. Output pins — count, diameter, length, circle placement
+  5. Motor bolts — count, dimensions, volume
 """
 
 import math
@@ -87,6 +88,14 @@ def housing_nuts():
     from src.purchased_parts import build_housing_nuts
 
     return build_housing_nuts()
+
+
+@pytest.fixture(scope="module")
+def motor_bolts():
+    cq = pytest.importorskip("cadquery")
+    from src.purchased_parts import build_motor_bolts
+
+    return build_motor_bolts()
 
 
 # ===================================================================
@@ -383,4 +392,49 @@ class TestHousingNuts:
         z = bb.zmax - bb.zmin
         assert abs(z - h.bolt_nut_thickness) < 0.1, (
             f"Z extent {z:.2f}mm, expected {h.bolt_nut_thickness}mm"
+        )
+
+
+# ===================================================================
+# Motor bolt tests
+# ===================================================================
+
+
+class TestMotorBolts:
+
+    def test_solid_valid(self, motor_bolts):
+        """Should produce exactly 4 separate solids."""
+        solids = motor_bolts.solids().vals()
+        assert len(solids) == 4, f"Expected 4 solids, got {len(solids)}"
+
+    def test_bounding_box_z(self, motor_bolts):
+        """Z extent should be total bolt length (thread + head)."""
+        m = CFG.motor
+        expected_z = m.motor_bolt_total_length  # 13mm
+        bb = motor_bolts.val().BoundingBox()
+        z = bb.zmax - bb.zmin
+        assert abs(z - expected_z) < 0.2, (
+            f"Z extent {z:.2f}mm, expected {expected_z:.2f}mm"
+        )
+
+    def test_bounding_box_xy_span(self, motor_bolts):
+        """XY extent should span the bolt pattern + head diameter."""
+        m = CFG.motor
+        # Diagonal of 31mm square pattern + head diameter
+        expected_span = m.bolt_pattern_square + m.motor_bolt_head_dia
+        bb = motor_bolts.val().BoundingBox()
+        x_span = bb.xmax - bb.xmin
+        assert abs(x_span - expected_span) < 0.5, (
+            f"X span {x_span:.2f}mm, expected ~{expected_span:.2f}mm"
+        )
+
+    def test_single_bolt_volume(self, motor_bolts):
+        """Total volume should equal 4 × (shank + head cylinders)."""
+        m = CFG.motor
+        shank_vol = math.pi * (m.bolt_dia / 2) ** 2 * m.motor_bolt_thread_length
+        head_vol = math.pi * (m.motor_bolt_head_dia / 2) ** 2 * m.motor_bolt_head_height
+        expected_total = 4 * (shank_vol + head_vol)
+        total_vol = sum(s.Volume() for s in motor_bolts.solids().vals())
+        assert abs(total_vol - expected_total) < 5.0, (
+            f"Total volume {total_vol:.0f}mm³, expected {expected_total:.0f}mm³"
         )
