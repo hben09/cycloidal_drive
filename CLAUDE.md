@@ -244,7 +244,7 @@ Measured from motor mounting face inward:
 Recommend splitting the housing into 3 printed parts:
 
 1. **Motor plate** — NEMA 17 bolt pattern, shaft bore for D-shaft pass-through, 21 ring-pin through-holes (4.20mm ⌀), 8× M4 counterbore holes (7.4mm ⌀ × 4.5mm deep) on outer face
-2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (30mm deep, chamfered entry), output bearing seat bore, 8× M4 clearance through-holes
+2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (4.20mm ⌀, 30mm deep, chamfered entry), output bearing seat bore, 8× M4 clearance through-holes
 3. **Output cap** — Retains output bearings, seals housing, 8× hex nut pockets (7.2mm AF × 4.0mm deep) on outer face
 
 Parts joined with 8× M4 × 60mm socket head cap screws on a 125mm bolt circle. Bolt heads sit in counterbores on the motor plate; M4 hex nuts captured in hex pockets on the output cap.
@@ -267,7 +267,7 @@ A separate printed or aluminum part that:
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
 | Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance through-holes |
-| Ring pin holes (ring gear body) | −0.20mm on hole ⌀ (3.80mm) | 4mm pins, press-fit blind holes |
+| Ring pin holes (ring gear body) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance blind holes |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
 | Dowel press-fit bore | −0.15mm on bore ⌀ (4.70mm for 5mm pin) | Steel dowel pin hole in eccentric shaft |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |

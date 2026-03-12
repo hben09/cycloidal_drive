@@ -17,7 +17,7 @@ Ring-pin retention (dual-end):
   the input face avoid cutting through the bearing seat wall.
 
 Other features:
-  - 21 ring-pin blind holes on 108mm circle (3.875mm press-fit dia, 30mm deep)
+  - 21 ring-pin blind holes on 108mm circle (4.20mm clearance dia, 30mm deep)
   - 8 M4 housing-bolt through-holes on 125mm circle
 
 Assembly: insert ring pins through the motor plate's through-holes,
@@ -67,7 +67,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     bearing_h = stack.output_bearing_total  # 20mm
 
     # Pin hole dimensions
-    pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 3.875mm
+    pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 4.20mm clearance
     pin_circle_r = g.ring_pin_circle_dia / 2.0  # 54mm
 
     # ── 1. Base cylinder ─────────────────────────────────────────
