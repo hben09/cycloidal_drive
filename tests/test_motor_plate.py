@@ -103,8 +103,7 @@ class TestMotorPlateDimensions:
     def test_shaft_bore_clears_motor_shaft(self):
         """Central bore must be larger than the motor shaft."""
         m = CFG.motor
-        tol = CFG.tolerances
-        shaft_bore = m.shaft_dia + tol.sliding_clearance_add * 2
+        shaft_bore = 15.0  # mm, enlarged motor shaft pass-through
         assert shaft_bore > m.shaft_dia, (
             f"Shaft bore {shaft_bore:.2f}mm <= motor shaft {m.shaft_dia}mm"
         )

@@ -58,7 +58,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     result = result.cut(pilot_cut)
 
     # ── 3. Central shaft bore (through full plate) ──────────────────
-    shaft_bore_dia = m.shaft_dia + tol.sliding_clearance_add * 2  # 5.50mm
+    shaft_bore_dia = 15.0  # mm, enlarged motor shaft pass-through
     shaft_bore = (
         cq.Workplane("XY")
         .circle(shaft_bore_dia / 2.0)
