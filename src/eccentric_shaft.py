@@ -111,7 +111,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
     # ── D-bore: motor shaft socket from input face ──────────────────
     # Round bore + D-flat key matching the motor shaft profile
-    bore_dia = shaft.d_bore_dia + tol.d_bore_clearance_add * 2  # 5.05mm
+    bore_dia = shaft.d_bore_dia + tol.d_bore_clearance_add * 2  # 5.10mm
     bore_r = bore_dia / 2.0
     bore_depth = shaft.d_bore_depth  # 10mm
 
@@ -125,7 +125,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
     # D-flat key: the motor shaft has a flat at 4.5mm across. After cutting
     # a full round bore, we add back a key block so the D-cut locks in.
-    dcut_offset = shaft.d_bore_flat / 2.0 + tol.d_bore_clearance_add  # 2.275mm
+    dcut_offset = shaft.d_bore_flat / 2.0 + tol.d_bore_clearance_add  # 2.30mm
     cut_depth = bore_r - dcut_offset  # amount to NOT cut (the key)
     if cut_depth > 0:
         # Add back a key block (material the D-bore leaves in place)

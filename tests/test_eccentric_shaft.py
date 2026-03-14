@@ -138,7 +138,7 @@ class TestDBore:
         shaft = CFG.shaft
         tol = CFG.tolerances
         lobe_r = shaft.bearing_seat_od / 2.0  # 8.55mm
-        bore_r = (shaft.d_bore_dia + tol.d_bore_clearance_add * 2) / 2.0  # 2.525mm
+        bore_r = (shaft.d_bore_dia + tol.d_bore_clearance_add * 2) / 2.0  # 2.55mm
         e = shaft.eccentricity  # 1.5mm
         thin_wall = lobe_r - e - bore_r
         assert thin_wall >= 2.0, (

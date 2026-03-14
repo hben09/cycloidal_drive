@@ -66,7 +66,7 @@
 | Eccentricity | 1.50mm | Offset between shaft center and bearing seat center |
 | Spine OD | 5.00mm | Between lobes |
 | Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
-| D-bore ⌀ | 5.00mm + tolerance | Receives motor shaft directly |
+| D-bore ⌀ | 5.10mm | Receives motor shaft directly (5.00mm + 2×0.05mm clearance) |
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
 | D-bore depth | 10.00mm | Motor shaft engagement length |
 | Support pin hole ⌀ | 5.15mm | Blind hole for 5mm steel dowel clearance fit (5.00 + 2×0.075mm) |
