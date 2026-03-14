@@ -97,7 +97,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     result = spine.union(collar).union(lobe1).union(lobe2).union(bridge)
 
     # ── Output pin hole: blind hole for steel dowel press-fit ─────
-    pin_bore_dia = shaft.support_pin_dia - tol.dowel_press_bore_sub * 2  # 4.70mm
+    pin_bore_dia = shaft.support_pin_dia + tol.dowel_bore_clearance_add * 2  # 5.15mm
     pin_hole_depth = shaft.support_pin_hole_depth  # 12mm
     z_output_face = z_lobe2 + disc_t  # 35mm
 

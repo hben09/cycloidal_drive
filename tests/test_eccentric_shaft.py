@@ -260,7 +260,7 @@ class TestOutputPinHole:
         tol = CFG.tolerances
         lobe_r = shaft.bearing_seat_od / 2.0  # 8.55mm
         e = shaft.eccentricity  # 1.5mm
-        pin_bore_r = (shaft.support_pin_dia - tol.dowel_press_bore_sub * 2) / 2.0
+        pin_bore_r = (shaft.support_pin_dia + tol.dowel_bore_clearance_add * 2) / 2.0
         # Distance from lobe 2 center (-e, 0) to pin hole center (0, 0) is e
         wall = lobe_r - e - pin_bore_r
         assert wall >= 4.0, f"Wall around pin hole = {wall:.2f}mm, need >= 4mm"
