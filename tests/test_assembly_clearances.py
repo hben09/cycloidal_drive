@@ -308,7 +308,7 @@ class TestShaftReach:
         m = CFG.motor
         s = CFG.stack_up
         plate_thickness = s.motor_plate_wall + s.motor_plate_inner_wall  # 10mm
-        remaining = m.shaft_length - plate_thickness  # 20 - 10 = 10mm
+        remaining = m.shaft_length - plate_thickness  # 22 - 10 = 12mm
         d_bore_depth = CFG.shaft.d_bore_depth  # 10mm
         assert remaining >= d_bore_depth, (
             f"Motor shaft only {remaining}mm past plate, D-bore needs {d_bore_depth}mm"

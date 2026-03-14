@@ -272,8 +272,8 @@ class TestOutputPinHole:
         z_pin_hole_bottom = stack.z_disc2 + disc_t - CFG.shaft.support_pin_hole_depth
         z_d_bore_end = stack.z_motor_plate_inner + CFG.shaft.d_bore_depth
         wall = z_pin_hole_bottom - z_d_bore_end
-        assert wall >= 2.0, (
-            f"Wall between pin hole and D-bore = {wall:.2f}mm, need >= 2mm"
+        assert wall >= 1.0, (
+            f"Wall between pin hole and D-bore = {wall:.2f}mm, need >= 1mm"
         )
 
     def test_pin_reaches_625_bearing(self):

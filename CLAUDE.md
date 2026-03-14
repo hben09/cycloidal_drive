@@ -68,7 +68,7 @@
 | Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
 | D-bore ⌀ | 5.10mm | Receives motor shaft directly (5.00mm + 2×0.05mm clearance) |
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
-| D-bore depth | 10.00mm | Motor shaft engagement length |
+| D-bore depth | 12.00mm | Motor shaft engagement length |
 | Support pin hole ⌀ | 5.15mm | Blind hole for 5mm steel dowel clearance fit (5.00 + 2×0.075mm) |
 | Support pin hole depth | 12.00mm | Through lobe 2 into bridge zone |
 | Support pin | 5mm × 20mm ground steel dowel, h6 | Press-fit into shaft, supports 625 bearing |
@@ -147,7 +147,7 @@ Located in the output hub, supporting the eccentric shaft's free end via the 5mm
 | Faceplate size | 42.3mm × 42.3mm |
 | Body length | 48mm (excluding shaft) |
 | Shaft diameter | 5mm (with D-cut flat at 4.5mm across) |
-| Shaft length | 20mm (18mm D-cut from tip, 2mm round base) |
+| Shaft length | 22mm from mounting face (20mm from pilot face; 18mm D-cut from tip, 4mm round base) |
 | Pilot / centering boss | 22mm ⌀ × 2mm |
 | Mounting hole spacing | 31mm × 31mm (center-to-center) |
 | Mounting hole thread | M3, tapped 4.5mm deep |

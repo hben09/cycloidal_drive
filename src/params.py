@@ -60,7 +60,7 @@ class ShaftParams:
     input_collar_od: float = 10.0  # mm, enlarged input section for D-bore wall
     d_bore_dia: float = 5.0  # mm, matches motor shaft (tolerance applied in builder)
     d_bore_flat: float = 4.5  # mm, D-flat width (matches motor shaft D-cut)
-    d_bore_depth: float = 10.0  # mm, motor shaft engagement length
+    d_bore_depth: float = 12.0  # mm, motor shaft engagement length
 
 
 @dataclass(frozen=True)
@@ -114,7 +114,7 @@ class MotorParams:
     """NEMA 17 motor dimensions — spec Section 3.1."""
 
     shaft_dia: float = 5.0  # mm
-    shaft_length: float = 20.0  # mm
+    shaft_length: float = 22.0  # mm (20mm from pilot face + 2mm pilot)
     shaft_dcut_flat: float = 4.5  # mm, D-cut flat-to-round width
     shaft_dcut_length: float = 18.0  # mm, D-cut extends from shaft tip inward
     bolt_pattern_square: float = 31.0  # mm (center-to-center)
