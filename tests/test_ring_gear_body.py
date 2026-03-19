@@ -128,23 +128,18 @@ class TestRingGearBodyDimensions:
                     f"distance {dist:.2f}mm < min {min_distance:.2f}mm"
                 )
 
-    def test_shoulder_bore_clears_output_hub(self):
-        """Shoulder ring bore must be >= output hub OD for assembly clearance."""
-        b = CFG.bearings
-        hub = CFG.output_hub
-        shoulder_bore = b.out_bore  # 70mm (used as shoulder bore)
-        assert shoulder_bore >= hub.od, (
-            f"Shoulder bore {shoulder_bore}mm < output hub OD {hub.od}mm"
-        )
+    def test_bearing_seat_smaller_than_main_bore(self):
+        """Bearing seat bore must be smaller than the 116mm main bore.
 
-    def test_shoulder_retains_bearing(self):
-        """Shoulder bore must be smaller than 6814 outer race OD."""
-        b = CFG.bearings
-        shoulder_bore = b.out_bore  # 70mm
-        bearing_od = b.out_od  # 90mm
-        assert shoulder_bore < bearing_od, (
-            f"Shoulder bore {shoulder_bore}mm >= bearing OD {bearing_od}mm "
-            "— bearing would pass through"
+        With the shoulder ring removed, the step from 116mm bore down to
+        90.15mm bearing seat is the only geometric transition.  The 6814
+        bearings (90mm OD) are retained axially by press-fit into the
+        seat plus the output cap on the far side.
+        """
+        h = CFG.housing
+        assert h.output_bearing_seat_dia < h.bore_dia, (
+            f"Bearing seat {h.output_bearing_seat_dia}mm >= main bore "
+            f"{h.bore_dia}mm — no step exists"
         )
 
     def test_bearing_seat_is_press_fit(self):
@@ -251,36 +246,45 @@ class TestRingGearBodyDimensions:
         rim_h = 3.0
         assert rim_h > 0
 
-    def test_windows_stay_within_disc_zone(self):
-        """Windows must not extend into the shoulder or bearing zones."""
+    def test_windows_stay_within_bore_zone(self):
+        """Windows must not extend into the bearing seat zone."""
         stack = CFG.stack_up
         rim_h = 3.0
-        disc_zone_end = (
+        bore_zone_end = (
             stack.input_clearance
             + stack.disc_thickness * 2
             + stack.inter_disc_spacer
-        )  # 25mm
-        window_z_end = disc_zone_end  # windows stop here
-        shoulder_z = disc_zone_end  # shoulder starts here
-        assert window_z_end <= shoulder_z, (
-            f"Window end {window_z_end}mm extends past shoulder at {shoulder_z}mm"
+            + stack.output_clearance
+        )  # 27mm
+        bearing_z = bore_zone_end  # bearing seat starts here
+        window_z_end = bore_zone_end  # windows stop here
+        assert window_z_end <= bearing_z, (
+            f"Window end {window_z_end}mm extends past bearing seat at {bearing_z}mm"
         )
-        assert rim_h < disc_zone_end, (
-            f"Rim {rim_h}mm >= disc zone end {disc_zone_end}mm — no window space"
+        assert rim_h < bore_zone_end, (
+            f"Rim {rim_h}mm >= bore zone end {bore_zone_end}mm — no window space"
         )
 
-    def test_ring_pin_chamfer_within_shoulder(self):
-        """Ring pin entry chamfer must stay within the shoulder zone.
+    def test_ring_pin_chamfer_within_bearing_zone(self):
+        """Ring pin entry chamfer must not extend into the bearing seat.
 
-        Pins enter solid material at the shoulder (Z=25, local).  The
-        chamfer widens the entry on the shoulder top face and must not
-        extend past the shoulder into the bearing seat.
+        Pins enter solid material at the bore/bearing-seat transition
+        (Z=27, local).  The chamfer widens the entry and must stay
+        within the pin engagement depth.
         """
+        g = CFG.gear
         stack = CFG.stack_up
+        bore_zone_end = (
+            stack.input_clearance
+            + stack.disc_thickness * 2
+            + stack.inter_disc_spacer
+            + stack.output_clearance
+        )
+        pin_engagement = (g.ring_pin_length - bore_zone_end) / 2.0  # 4mm
         chamfer_depth = 1.0  # mm (matches ring_gear_body.py)
-        assert chamfer_depth <= stack.output_clearance, (
-            f"Chamfer depth {chamfer_depth}mm > shoulder height "
-            f"{stack.output_clearance}mm — chamfer extends into bearing seat"
+        assert chamfer_depth <= pin_engagement, (
+            f"Chamfer depth {chamfer_depth}mm > pin engagement "
+            f"{pin_engagement}mm — chamfer extends past pin hole"
         )
 
     def test_ring_pin_chamfer_no_overlap(self):
@@ -373,7 +377,7 @@ class TestCadQuerySolid:
             stack.input_clearance
             + stack.disc_thickness
             + stack.inter_disc_spacer / 2.0
-        )  # 14mm — inside window zone (rim_h=3 to disc_zone_end=25)
+        )  # 14mm — inside window zone (rim_h=3 to bore_zone_end=27)
 
         section = body_solid.section(height=disc_zone_mid)
         area = section.val().Area()
@@ -467,9 +471,17 @@ class TestCadQuerySolid:
         # Upper bound: full cylinder minus smallest bore (bearing seat through full height)
         upper = math.pi * housing_r**2 * body_h - math.pi * bearing_r**2 * body_h
 
-        # Lower bound: thin-wall tube (116mm bore) for full height
-        # (ignores the shoulder and bearing zone material, so very conservative)
-        lower = math.pi * (housing_r**2 - bore_r**2) * body_h
+        # Lower bound: thin-wall tube (116mm bore) for full height,
+        # minus the reveal windows that cut away the outer wall in the bore zone.
+        # Windows span bore_zone_end - rim_h, removing the annular wall except pillars.
+        bore_zone_end = (
+            stack.input_clearance + stack.disc_thickness * 2
+            + stack.inter_disc_spacer + stack.output_clearance
+        )
+        rim_h = 3.0
+        window_h = bore_zone_end - rim_h
+        window_vol = math.pi * (housing_r**2 - bore_r**2) * window_h
+        lower = math.pi * (housing_r**2 - bore_r**2) * body_h - window_vol
 
         vol = body_solid.val().Volume()
         assert vol > lower, (

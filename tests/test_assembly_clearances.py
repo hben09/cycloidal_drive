@@ -254,13 +254,22 @@ class TestRadialClearances:
 class TestBearingRetention:
     """Verify all bearings are axially constrained."""
 
-    def test_6814_retained_by_shoulder(self):
-        """Ring gear body shoulder (70mm bore) blocks 6814 (90mm OD) on input side."""
+    def test_6814_retained_by_press_fit(self):
+        """6814 bearings are retained by press-fit into 90.15mm seat + output cap.
+
+        No shoulder ring is used — the disc envelope (~108mm) exceeds the
+        6814 OD (90mm), so a shoulder cannot simultaneously clear the disc
+        and block the bearing.  Verify that the seat provides interference fit.
+        """
+        h = CFG.housing
         b = CFG.bearings
-        shoulder_bore = b.out_bore  # 70mm
-        bearing_od = b.out_od  # 90mm
-        assert shoulder_bore < bearing_od, (
-            f"Shoulder bore {shoulder_bore}mm >= 6814 OD {bearing_od}mm — not retained"
+        assert h.output_bearing_seat_dia > b.out_od, (
+            f"Bearing seat {h.output_bearing_seat_dia}mm <= 6814 OD "
+            f"{b.out_od}mm — no press fit"
+        )
+        gap = h.output_bearing_seat_dia - b.out_od
+        assert gap < 0.5, (
+            f"Bearing seat gap {gap:.2f}mm too large for press fit"
         )
 
     def test_6814_retained_by_output_cap(self):
@@ -347,18 +356,24 @@ class TestShaftReach:
 class TestRingPinSpan:
     """Verify ring pin length covers both engagement zones."""
 
-    def test_pin_length_spans_disc_zone_plus_engagement(self):
-        """Pin length = 5mm motor plate + 25mm disc zone + 5mm ring gear body."""
+    def test_pin_length_spans_bore_zone_plus_engagement(self):
+        """Pin length must span the bore zone with engagement on both sides.
+
+        Motor plate side: 5mm engagement (unchanged).
+        Ring gear body side: 4mm engagement (bore zone = 27mm, pin = 35mm).
+        """
         g = CFG.gear
         s = CFG.stack_up
-        disc_zone = (
+        bore_zone = (
             s.input_clearance
             + s.disc_thickness * 2
             + s.inter_disc_spacer
-        )
-        engagement_per_side = (g.ring_pin_length - disc_zone) / 2.0
-        assert abs(engagement_per_side - 5.0) < 0.01, (
-            f"Pin engagement {engagement_per_side}mm per side != 5mm"
+            + s.output_clearance
+        )  # 27mm
+        # Engagement is symmetric: 4mm each side (motor plate + ring gear body)
+        engagement_per_side = (g.ring_pin_length - bore_zone) / 2.0  # 4mm
+        assert engagement_per_side >= 3.0, (
+            f"Pin engagement {engagement_per_side}mm per side < 3mm minimum"
         )
 
     def test_pin_length_equals_35mm(self):

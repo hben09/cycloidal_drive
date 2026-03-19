@@ -23,7 +23,7 @@
 | Number of ring pins | 21 | N + 1 where N = 20 lobes |
 | Ring pin diameter | 4.00mm | Ground steel dowel, h6 tolerance |
 | Ring pin circle ⌀ | 108.00mm | Centered in housing bore |
-| Ring pin length | 35mm | 5mm motor plate + 25mm disc zone + 5mm ring gear body |
+| Ring pin length | 35mm | 5mm motor plate + 27mm bore zone + 4mm ring gear body (1mm slack) |
 | Housing bore ⌀ | 116.00mm | 140mm OD − 2 × 12mm wall |
 
 ### 1.2 Cycloidal Disc
@@ -244,7 +244,7 @@ Measured from motor mounting face inward:
 Recommend splitting the housing into 3 printed parts:
 
 1. **Motor plate** — NEMA 17 bolt pattern, 15mm shaft bore for motor shaft pass-through, 21 ring-pin through-holes (4.20mm ⌀), 8× M4 counterbore holes (7.4mm ⌀ × 4.5mm deep) on outer face
-2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (4.20mm ⌀, 30mm deep, chamfered entry), output bearing seat bore, 8× M4 clearance through-holes
+2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (4.20mm ⌀, 31mm deep, chamfered entry), output bearing seat bore, 8× M4 clearance through-holes. No shoulder ring — 6814 bearings retained by press-fit + output cap
 3. **Output cap** — Retains output bearings, seals housing, 8× hex nut pockets (7.2mm AF × 4.0mm deep) on outer face
 
 Parts joined with 8× M4 × 60mm socket head cap screws on a 125mm bolt circle. Bolt heads sit in counterbores on the motor plate; M4 hex nuts captured in hex pockets on the output cap.

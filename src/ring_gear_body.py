@@ -5,19 +5,23 @@
 input face.
 
 Stepped internal bore:
-  Z=0  to Z=25  — 116mm bore (full clearance for cycloidal disc orbit)
-  Z=25 to Z=27  — 70mm bore shoulder ring (retains output bearings)
+  Z=0  to Z=27  — 116mm bore (disc orbit clearance + 2mm output gap)
   Z=27 to Z=47  — 90.15mm bore (press-fit seat for 2× 6814-2RS output
                    bearings)
 
+Bearing axial retention relies on press-fit into the 90.15mm seat and
+the output cap clamping the outer race from the far side.  No shoulder
+ring is used — the disc envelope (~108mm) exceeds the 6814 OD (90mm),
+so a shoulder cannot simultaneously clear the disc and block the bearing.
+
 Ring-pin retention (dual-end):
-  35mm pins press 5mm into the motor plate (blind holes) and 5mm into
-  the ring gear body shoulder/bearing zone.  The middle 25mm spans the
-  disc zone (116mm bore — pins in air).  Blind holes (30mm deep) from
-  the input face avoid cutting through the bearing seat wall.
+  35mm pins press 5mm into the motor plate (blind holes) and 4mm into
+  the ring gear body bearing zone.  The middle 27mm spans the disc +
+  clearance zone (116mm bore — pins in air).  Blind holes (31mm deep)
+  from the input face avoid cutting through the bearing seat wall.
 
 Other features:
-  - 21 ring-pin blind holes on 108mm circle (4.20mm clearance dia, 30mm deep)
+  - 21 ring-pin blind holes on 108mm circle (4.20mm clearance dia, 31mm deep)
   - 8 M4 housing-bolt through-holes on 125mm circle
 
 Assembly: insert ring pins through the motor plate's through-holes,
@@ -44,7 +48,6 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     """
     g = cfg.gear
     h = cfg.housing
-    b = cfg.bearings
     tol = cfg.tolerances
     stack = cfg.stack_up
 
@@ -53,7 +56,6 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     housing_r = h.od / 2.0  # 67mm
     bore_r = h.bore_dia / 2.0  # 58mm (116mm bore)
     bearing_seat_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
-    hub_clearance_bore_r = b.out_bore / 2.0  # 35mm (70mm — clears output hub)
 
     # Zone boundaries (local Z)
     disc_zone_end = (
@@ -61,9 +63,8 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         + stack.disc_thickness * 2
         + stack.inter_disc_spacer
     )  # 25mm
-    shoulder_h = stack.output_clearance  # 2mm
-    shoulder_z = disc_zone_end  # 25mm
-    bearing_z = shoulder_z + shoulder_h  # 27mm
+    bore_zone_end = disc_zone_end + stack.output_clearance  # 27mm (2mm disc clearance)
+    bearing_z = bore_zone_end  # 27mm
     bearing_h = stack.output_bearing_total  # 20mm
 
     # Pin hole dimensions
@@ -77,26 +78,15 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(body_height)
     )
 
-    # ── 2. Main bore: Z=0 to Z=25 (116mm, disc orbit clearance) ─
+    # ── 2. Main bore: Z=0 to Z=27 (116mm, disc orbit + clearance) ─
     main_bore = (
         cq.Workplane("XY")
         .circle(bore_r)
-        .extrude(disc_zone_end)
+        .extrude(bore_zone_end)
     )
     result = result.cut(main_bore)
 
-    # ── 3. Shoulder ring bore: Z=25 to Z=27 (70mm) ──────────────
-    # Provides bearing retention shoulder (6814 OD 90mm can't pass
-    # through 70mm bore) and first 2mm of ring-pin engagement.
-    shoulder_bore = (
-        cq.Workplane("XY")
-        .workplane(offset=shoulder_z)
-        .circle(hub_clearance_bore_r)
-        .extrude(shoulder_h)
-    )
-    result = result.cut(shoulder_bore)
-
-    # ── 4. Output bearing seat: Z=27 to Z=47 (90.15mm) ──────────
+    # ── 3. Output bearing seat: Z=27 to Z=47 (90.15mm) ──────────
     bearing_bore = (
         cq.Workplane("XY")
         .workplane(offset=bearing_z)
@@ -105,12 +95,12 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bearing_bore)
 
-    # ── 5. Ring-pin blind holes (21×, press-fit) ──────────────────
-    # Holes go from Z=0 (input face) through the disc zone (25mm,
-    # air at 54mm radius inside 58mm bore) plus 5mm of press-fit
-    # engagement into the shoulder/bearing zone.  Total depth 30mm.
-    pin_engagement = (g.ring_pin_length - disc_zone_end) / 2.0  # 5mm
-    pin_hole_depth = disc_zone_end + pin_engagement  # 30mm
+    # ── 4. Ring-pin blind holes (21×, press-fit) ──────────────────
+    # Holes go from Z=0 (input face) through the bore zone (27mm,
+    # air at 54mm radius inside 58mm bore) plus 4mm of press-fit
+    # engagement into the bearing zone.  Total depth 31mm.
+    pin_engagement = (g.ring_pin_length - bore_zone_end) / 2.0  # 4mm
+    pin_hole_depth = bore_zone_end + pin_engagement  # 31mm
     pin_pts = [
         (
             pin_circle_r * math.cos(2 * math.pi * i / g.num_ring_pins),
@@ -126,15 +116,14 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(pin_holes)
 
-    # Chamfer at shoulder face — pins are in air (116mm bore) from Z=0
-    # to Z=25, then enter solid shoulder material.  Tapered ramp at the
-    # shoulder top face guides pins in during assembly.
+    # Chamfer at bore/bearing transition — pins are in air (116mm bore)
+    # from Z=0 to Z=27, then enter solid bearing-zone material.
     chamfer_depth = 1.0  # mm
     chamfer_dia = pin_hole_dia + 1.0  # mm, funnel entry
     for pt in pin_pts:
         cone = (
             cq.Workplane("XY")
-            .workplane(offset=disc_zone_end)
+            .workplane(offset=bore_zone_end)
             .center(pt[0], pt[1])
             .circle(chamfer_dia / 2.0)
             .workplane(offset=chamfer_depth)
@@ -143,7 +132,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         )
         result = result.cut(cone)
 
-    # ── 6. M4 housing-bolt through-holes ─────────────────────────
+    # ── 5. M4 housing-bolt through-holes ─────────────────────────
     # Bolt angles are offset to sit at midpoints between adjacent
     # ring pins, preventing hole overlap on the shared annular wall.
     m4_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
@@ -161,12 +150,12 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bolt_holes)
 
-    # ── 7. Reveal windows — expose ring pins between bolt pillars ──
+    # ── 6. Reveal windows — expose ring pins between bolt pillars ──
     # Cut away the outer wall in the disc zone, keeping only cylindrical
     # pillars around each housing bolt and a solid rim at the input face.
     rim_h = 3.0  # solid rim at input face for motor-plate mating
     window_z_start = rim_h
-    window_h = disc_zone_end - rim_h  # 22mm
+    window_h = bore_zone_end - rim_h  # 24mm
     pillar_dia = 16.0  # ~5.8mm wall around 4.4mm bolt hole
 
     # Full annular wall section to remove
