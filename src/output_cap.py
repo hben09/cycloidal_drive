@@ -42,7 +42,7 @@ def build_output_cap(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     housing_r = h.od / 2.0  # 67mm
 
     # Center bore: clears the output hub with sliding fit
-    hub_bore_dia = hub.od + tol.sliding_clearance_add  # 70.25mm
+    hub_bore_dia = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm — 2mm lip over 6814 outer race
 
     # ── 1. Base disc ──────────────────────────────────────────────
     result = (

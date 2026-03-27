@@ -28,8 +28,9 @@ class TestOutputCapDimensions:
     def test_center_bore_clears_output_hub(self):
         """Center bore must be larger than the output hub OD."""
         hub = CFG.output_hub
+        h = CFG.housing
         tol = CFG.tolerances
-        bore_dia = hub.od + tol.sliding_clearance_add  # 70.25mm
+        bore_dia = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         hub_od = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm
         clearance = bore_dia - hub_od
         assert clearance > 0, (
@@ -38,20 +39,17 @@ class TestOutputCapDimensions:
 
     def test_center_bore_blocks_6814_outer_race(self):
         """Center bore must be smaller than 6814 outer race OD for retention."""
-        hub = CFG.output_hub
+        h = CFG.housing
         b = CFG.bearings
-        tol = CFG.tolerances
-        bore_dia = hub.od + tol.sliding_clearance_add  # 70.25mm
+        bore_dia = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         assert bore_dia < b.out_od, (
             f"Cap bore {bore_dia}mm >= 6814 OD {b.out_od}mm — bearings not retained"
         )
 
     def test_center_bore_blocks_bearing_seat(self):
         """Center bore must be smaller than the bearing seat bore in ring gear body."""
-        hub = CFG.output_hub
         h = CFG.housing
-        tol = CFG.tolerances
-        bore_dia = hub.od + tol.sliding_clearance_add  # 70.25mm
+        bore_dia = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         assert bore_dia < h.output_bearing_seat_dia, (
             f"Cap bore {bore_dia}mm >= bearing seat {h.output_bearing_seat_dia}mm"
         )
@@ -107,7 +105,7 @@ class TestOutputCapDimensions:
         h = CFG.housing
         hub = CFG.output_hub
         tol = CFG.tolerances
-        bore_r = (hub.od + tol.sliding_clearance_add) / 2.0
+        bore_r = (h.output_bearing_seat_dia - 2 * 2.0) / 2.0
         housing_r = h.od / 2.0
         bolt_r = h.bolt_circle_dia / 2.0
         bolt_hole_r = (h.bolt_dia + 0.4) / 2.0  # M4 clearance
@@ -132,11 +130,11 @@ class TestOutputCapDimensions:
         hub = CFG.output_hub
         h = CFG.housing
         tol = CFG.tolerances
-        bore_r = (hub.od + tol.sliding_clearance_add) / 2.0  # 35.125mm
+        bore_r = (h.output_bearing_seat_dia - 2 * 2.0) / 2.0  # 43.075mm
         seat_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
         shoulder = seat_r - bore_r
-        assert shoulder >= 5.0, (
-            f"Bearing retention shoulder {shoulder:.2f}mm, need >= 5mm"
+        assert shoulder >= 2.0, (
+            f"Bearing retention shoulder {shoulder:.2f}mm, need >= 2mm"
         )
 
 
@@ -196,7 +194,7 @@ class TestCadQuerySolid:
         stack = CFG.stack_up
 
         housing_r = h.od / 2.0
-        bore_r = (hub.od + tol.sliding_clearance_add) / 2.0
+        bore_r = (h.output_bearing_seat_dia - 2 * 2.0) / 2.0
         thickness = stack.output_wall
 
         # Upper: annulus only

@@ -197,9 +197,10 @@ class TestRadialClearances:
     def test_output_hub_clears_output_cap_bore(self):
         """Output hub OD must be smaller than output cap center bore."""
         hub = CFG.output_hub
+        h = CFG.housing
         tol = CFG.tolerances
         hub_od = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm
-        cap_bore = hub.od + tol.sliding_clearance_add  # 70.25mm
+        cap_bore = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         clearance = cap_bore - hub_od
         assert clearance > 0, (
             f"Hub OD {hub_od}mm >= cap bore {cap_bore}mm"
@@ -274,10 +275,9 @@ class TestBearingRetention:
 
     def test_6814_retained_by_output_cap(self):
         """Output cap center bore must be smaller than 6814 OD on output side."""
-        hub = CFG.output_hub
+        h = CFG.housing
         b = CFG.bearings
-        tol = CFG.tolerances
-        cap_bore = hub.od + tol.sliding_clearance_add  # 70.25mm
+        cap_bore = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         assert cap_bore < b.out_od, (
             f"Cap bore {cap_bore}mm >= 6814 OD {b.out_od}mm — not retained"
         )
