@@ -37,7 +37,7 @@ class DiscParams:
     """Cycloidal disc dimensions — spec Section 1.2 & 1.3."""
 
     thickness: float = 10.0  # mm, matches 6003 bearing width
-    center_bore_dia: float = 35.20  # mm, 35mm bearing OD + 0.20mm clearance
+    center_bore_dia: float = 35.10  # mm, 35mm bearing OD + 0.10mm clearance
     inter_disc_spacer: float = 2.0  # mm
     output_pin_count: int = 4
     output_pin_circle_dia: float = 60.0  # mm

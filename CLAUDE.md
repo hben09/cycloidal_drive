@@ -33,7 +33,7 @@
 | Number of lobes | 20 | Sets the ratio |
 | Disc count | 2 | Offset 180° to cancel vibration |
 | Approximate OD | ~108mm | Defined by epitrochoid profile |
-| Center bore ⌀ | 35.20mm | 35mm bearing OD + 0.20mm clearance (PETG) |
+| Center bore ⌀ | 35.10mm | 35mm bearing OD + 0.10mm clearance (PETG) |
 | Disc thickness | 10.00mm | Matched to 6003-2RS bearing width |
 | Inter-disc spacer | 2.00mm | Separates the two discs |
 | Output pin holes | 4× equally spaced | See Section 1.3 |
@@ -52,8 +52,8 @@
 
 - Pin hole center radius: 30.00mm
 - Pin hole edge (inner): 30.00 − 4.00 = 26.00mm from center
-- Center bore radius: 17.60mm
-- **Wall between bore and pin hole: 8.40mm** ✓
+- Center bore radius: 17.55mm
+- **Wall between bore and pin hole: 8.45mm** ✓
 - Pin hole edge (outer): 30.00 + 4.00 = 34.00mm from center
 - Disc lobe valley (approx inner radius): ~49mm from center
 - **Wall between pin hole and lobe root: ~15mm** ✓
