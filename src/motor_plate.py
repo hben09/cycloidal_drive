@@ -96,6 +96,20 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(motor_bolt_cb)
 
+    # ── 4b. Inner-face recess inside ring-pin circle ───────────────
+    # Thins the inner face inside the ring-pin circle. Local thickness
+    # drops from 10mm to 9mm; M3 bolt heads sit flush with the new floor.
+    # Outer ring of plate around the pin holes stays full thickness.
+    inner_pocket_dia = stack.motor_plate_inner_pocket_dia
+    inner_pocket_depth = stack.motor_plate_inner_pocket_depth
+    inner_pocket = (
+        cq.Workplane("XY")
+        .workplane(offset=plate_thickness)
+        .circle(inner_pocket_dia / 2.0)
+        .extrude(-inner_pocket_depth)
+    )
+    result = result.cut(inner_pocket)
+
     # ── 5. Ring-pin through-holes (21×, clearance fit) ─────────────
     # Through-holes let pins be inserted one at a time from the outer
     # face. Chamfered lead-in on the inner face guides entry during

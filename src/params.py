@@ -172,6 +172,8 @@ class StackUp:
 
     motor_plate_wall: float = 5.0
     motor_plate_inner_wall: float = 5.0  # inner wall thickness of motor plate
+    motor_plate_inner_pocket_dia: float = 100.0  # mm; recess inside ring-pin circle
+    motor_plate_inner_pocket_depth: float = 1.0  # mm; depth of inner-face recess
     input_clearance: float = 3.0  # gap between motor plate inner face and disc 1
     disc_thickness: float = 10.0
     inter_disc_spacer: float = 2.0

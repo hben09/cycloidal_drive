@@ -190,6 +190,40 @@ class TestMotorPlateDimensions:
             "clearance fit expected for through-holes"
         )
 
+    def test_inner_pocket_inside_ring_pin_circle(self):
+        """Inner-face pocket diameter must stay inside the ring-pin circle."""
+        g = CFG.gear
+        stack = CFG.stack_up
+        assert stack.motor_plate_inner_pocket_dia < g.ring_pin_circle_dia, (
+            f"Pocket Ø {stack.motor_plate_inner_pocket_dia}mm "
+            f">= ring-pin circle Ø {g.ring_pin_circle_dia}mm"
+        )
+
+    def test_inner_pocket_clears_ring_pins(self):
+        """Inner-face pocket must leave a wall to the ring-pin holes."""
+        g = CFG.gear
+        tol = CFG.tolerances
+        stack = CFG.stack_up
+        pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 4.20mm
+        pin_hole_inner_r = (g.ring_pin_circle_dia - pin_hole_dia) / 2.0  # 51.9mm
+        pocket_r = stack.motor_plate_inner_pocket_dia / 2.0
+        wall = pin_hole_inner_r - pocket_r
+        assert wall >= 1.5, (
+            f"Pocket-to-pin-hole wall {wall:.2f}mm < 1.5mm minimum"
+        )
+
+    def test_inner_pocket_preserves_m3_head_recess(self):
+        """After the pocket cut, M3 counterbore must still recess the head."""
+        m = CFG.motor
+        stack = CFG.stack_up
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
+        cb_depth = plate_t - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))
+        effective_recess = cb_depth - stack.motor_plate_inner_pocket_depth
+        assert effective_recess >= m.motor_bolt_head_height, (
+            f"After pocket: effective recess {effective_recess}mm "
+            f"< head height {m.motor_bolt_head_height}mm"
+        )
+
 
 
 # ===================================================================
@@ -246,11 +280,17 @@ class TestCadQuerySolid:
         plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
 
         full_disc_vol = math.pi * (h.od / 2.0) ** 2 * plate_t
+        pocket_vol = (
+            math.pi * (stack.motor_plate_inner_pocket_dia / 2.0) ** 2
+            * stack.motor_plate_inner_pocket_depth
+        )
         vol = plate_solid.val().Volume()
 
-        # Plate with bolt holes only should be at least 90% of a solid disc
-        assert vol > full_disc_vol * 0.90, (
-            f"Volume {vol:.0f}mm³ too small, expected > {full_disc_vol * 0.90:.0f}"
+        # Plate after holes + inner-face pocket should still be > 90% of
+        # the pocket-subtracted disc volume.
+        floor = (full_disc_vol - pocket_vol) * 0.90
+        assert vol > floor, (
+            f"Volume {vol:.0f}mm³ too small, expected > {floor:.0f}"
         )
         assert vol < full_disc_vol, (
             f"Volume {vol:.0f}mm³ exceeds full disc {full_disc_vol:.0f}"
