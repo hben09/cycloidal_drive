@@ -170,7 +170,7 @@ Located in the output hub, supporting the eccentric shaft's free end via the 5mm
 | Type | Ground steel dowel pin, h6 |
 | Diameter | 4.00mm |
 | Length | 45mm |
-| Retained by | Blind clearance holes (4.20mm × 19mm) in output hub; captured axially between closed hub ceiling and motor plate inner face (~1mm of axial slop); free-floating through disc 8mm clearance holes |
+| Retained by | Friction in 4.20mm blind holes in output hub (4.20mm designed → ~4.00–4.10mm printed → light press on 4mm pin); closed hub ceiling above and motor plate inner face below act as backup capture; free-floating through disc 8mm clearance holes |
 | Material | Hardened steel dowel pin |
 
 ### 3.4 Housing Bolts
@@ -260,22 +260,30 @@ A separate printed or aluminum part that:
 
 ## 6. PETG Print Tolerances
 
+**Important context:** PETG holes print **0.10–0.20mm undersized** vs. the design value due to cooling shrinkage, elephant foot, and arc overshoot at the top of round holes. The positive offsets in the table below are **print compensation** — they shift the as-printed dimension back toward nominal. As a result:
+
+- A "+0.20mm" pin hole (designed 4.20mm, printed ~4.00–4.10mm) lands at a **slip-to-light-press fit** on a 4mm dowel — the pin is held primarily by friction, with surrounding capture features (closed ends, adjacent parts) acting as backup retention.
+- A "+0.075mm" bearing seat (designed 90.15mm, printed ~90.00mm or slightly under) lands at a **firm press fit**.
+- Designing a hole *smaller* than the steel part (negative offset) is unsafe — print shrinkage stacks on top and the joint either won't assemble or splits the PETG.
+
+In short: **everything ends up a press fit on a real print**; the offset just controls *how tight*. The "clearance" / "press" labels below are design-relative, not as-printed.
+
 | Fit Type | Nominal Adjustment | Application |
 |---|---|---|
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
-| Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance through-holes |
-| Ring & output pin holes (gear body / hub) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance blind holes |
+| Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, through-holes (slip-press as printed) |
+| Ring & output pin holes (gear body / hub) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, blind holes (slip-press as printed) |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
-| Dowel clearance bore | +0.075mm on bore ⌀ (5.15mm for 5mm pin) | Steel dowel pin hole in eccentric shaft |
+| Dowel clearance bore | +0.075mm on bore ⌀ (5.15mm for 5mm pin) | Steel dowel pin hole in eccentric shaft (firm press as printed) |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
 
 **Notes:**
 
 - Print all cycloidal discs flat (lobes in XY plane) at 100% infill
 - Use 0.16mm or finer layer height for bearing seats
-- Test-print a bearing fit gauge before committing to full parts
-- PETG shrinks ~0.3–0.5% — account for this on large dimensions (140mm housing may need to be designed at ~140.5mm)
+- Test-print a bearing fit gauge before committing to full parts — every printer/filament combination shrinks differently, so the +0.20mm compensation may need tuning
+- PETG shrinks ~0.3–0.5% on large dimensions (140mm housing may need to be designed at ~140.5mm)
 
 ---
 
