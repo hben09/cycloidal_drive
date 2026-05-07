@@ -152,14 +152,21 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
     # ── 6. Reveal windows — expose ring pins between bolt pillars ──
     # Cut away the outer wall from just below the input rim down through
-    # the bearing zone, keeping only cylindrical pillars around each
+    # the bearing zone, keeping only trapezoidal pillars around each
     # housing bolt and a solid rim at the input face.  The 58mm inner
     # cut radius leaves the 90.15mm bearing seat (45.075mm radius) ringed
     # by ~13mm of PETG, preserving press-fit retention of the 6814s.
     rim_h = 3.0  # solid rim at input face for motor-plate mating
     window_z_start = rim_h
     window_h = body_height - rim_h  # 44mm — spans disc zone + bearing zone
-    pillar_dia = 16.0  # ~5.8mm wall around 4.4mm bolt hole
+
+    # Trapezoidal pillar: wider at housing OD, narrower at bore (buttress).
+    # Radial bounds overshoot bore/OD by 1mm so the bore and base-cylinder
+    # cuts trim each pillar flush with the housing walls.
+    pillar_inner_r = bore_r - 1.0  # 57mm
+    pillar_outer_r = housing_r + 1.0  # 68mm
+    pillar_inner_w = 12.0  # mm, tangential width at bore
+    pillar_outer_w = 22.0  # mm, tangential width at housing OD
 
     # Full annular wall section to remove
     wall_removal = (
@@ -170,19 +177,29 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(window_h)
     )
 
-    # Preserve cylindrical pillars around each bolt hole
-    pillar_pts = [
-        (bolt_r * math.cos(a), bolt_r * math.sin(a))
-        for a in bolt_angles
-    ]
-    pillars = (
-        cq.Workplane("XY")
-        .workplane(offset=window_z_start)
-        .pushPoints(pillar_pts)
-        .circle(pillar_dia / 2.0)
-        .extrude(window_h)
-    )
-    wall_removal = wall_removal.cut(pillars)
+    # Subtract trapezoidal pillars (preserved material) from wall_removal
+    for a in bolt_angles:
+        cos_a = math.cos(a)
+        sin_a = math.sin(a)
+        # Local frame: x = radial along bolt angle, y = tangential
+        local_pts = [
+            (pillar_inner_r, -pillar_inner_w / 2.0),
+            (pillar_outer_r, -pillar_outer_w / 2.0),
+            (pillar_outer_r, +pillar_outer_w / 2.0),
+            (pillar_inner_r, +pillar_inner_w / 2.0),
+        ]
+        world_pts = [
+            (lx * cos_a - ly * sin_a, lx * sin_a + ly * cos_a)
+            for lx, ly in local_pts
+        ]
+        pillar = (
+            cq.Workplane("XY")
+            .workplane(offset=window_z_start)
+            .polyline(world_pts)
+            .close()
+            .extrude(window_h)
+        )
+        wall_removal = wall_removal.cut(pillar)
 
     result = result.cut(wall_removal)
 
