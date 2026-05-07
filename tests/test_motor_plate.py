@@ -270,10 +270,35 @@ class TestCadQuerySolid:
         )
 
     def test_volume_sanity(self, plate_solid):
-        """Volume should be between reasonable bounds.
+        """Volume should fall between the inner solid disc and the full disc.
 
-        Lower bound: solid disc minus generous hole allowance.
-        Upper bound: solid disc (no holes).
+        After reveal windows, the plate's outer ring (58→70mm radius) is
+        mostly removed except at 8 pillars.  Hard floor is the inner solid
+        disc alone (radius 0 → 58mm); upper bound is the full uncut disc.
+        """
+        h = CFG.housing
+        stack = CFG.stack_up
+        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
+
+        full_disc_vol = math.pi * (h.od / 2.0) ** 2 * plate_t
+        inner_disc_r = h.bore_dia / 2.0  # 58mm — matches helper's pillar_inner cut
+        inner_disc_vol = math.pi * inner_disc_r ** 2 * plate_t
+        floor = inner_disc_vol * 0.85  # margin for pocket + pin holes etc.
+
+        vol = plate_solid.val().Volume()
+        assert vol > floor, (
+            f"Volume {vol:.0f}mm³ too small, expected > {floor:.0f}"
+        )
+        assert vol < full_disc_vol, (
+            f"Volume {vol:.0f}mm³ exceeds full disc {full_disc_vol:.0f}"
+        )
+
+    def test_reveal_windows_present(self, plate_solid):
+        """Volume must drop below the solid-disc baseline — windows actually cut.
+
+        A plate without reveal windows would have volume ≈ full_disc minus
+        the inner pocket.  After windows, most of the outer ring is gone, so
+        the volume must be strictly below that baseline.
         """
         h = CFG.housing
         stack = CFG.stack_up
@@ -284,14 +309,10 @@ class TestCadQuerySolid:
             math.pi * (stack.motor_plate_inner_pocket_dia / 2.0) ** 2
             * stack.motor_plate_inner_pocket_depth
         )
-        vol = plate_solid.val().Volume()
+        baseline = full_disc_vol - pocket_vol
 
-        # Plate after holes + inner-face pocket should still be > 90% of
-        # the pocket-subtracted disc volume.
-        floor = (full_disc_vol - pocket_vol) * 0.90
-        assert vol > floor, (
-            f"Volume {vol:.0f}mm³ too small, expected > {floor:.0f}"
-        )
-        assert vol < full_disc_vol, (
-            f"Volume {vol:.0f}mm³ exceeds full disc {full_disc_vol:.0f}"
+        vol = plate_solid.val().Volume()
+        assert vol < baseline * 0.85, (
+            f"Volume {vol:.0f}mm³ >= 85% of solid-plate baseline "
+            f"{baseline:.0f}mm³ — reveal windows missing?"
         )
