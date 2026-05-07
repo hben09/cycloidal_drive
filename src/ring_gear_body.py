@@ -156,7 +156,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # housing bolt and a solid rim at the input face.  The 58mm inner
     # cut radius leaves the 90.15mm bearing seat (45.075mm radius) ringed
     # by ~13mm of PETG, preserving press-fit retention of the 6814s.
-    rim_h = 3.0  # solid rim at input face for motor-plate mating
+    rim_h = 0.0  # rim eliminated; reveal windows extend to input face
     window_z_start = rim_h
     window_h = body_height - rim_h  # 44mm — spans disc zone + bearing zone
 
