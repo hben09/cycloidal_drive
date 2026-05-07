@@ -5,7 +5,9 @@
 
 Features:
   - 625 bearing pocket on inner face (supports eccentric shaft output stub)
-  - 4× output pin holes on 60mm circle (M3 shoulder bolt seats)
+  - 4× output pin holes on 60mm circle — 4.20mm clearance, blind from the
+    output-cap side; dowels are captured between the closed hub ceiling
+    and the motor plate inner face
   - Central shaft clearance bore (6.0mm)
 
 The hub OD is sized for a light press into the 6814 bearing bores (70mm
@@ -43,9 +45,10 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     bearing_pocket_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.075mm
     bearing_pocket_depth = b.inp_width  # 5mm
 
-    # Output pin holes (M4 shoulder bolt seats)
+    # Output pin blind clearance holes (ring-pin convention)
     pin_circle_r = d.output_pin_circle_dia / 2.0  # 30mm
-    pin_hole_dia = d.output_pin_dia  # 4.0mm
+    pin_hole_dia = d.output_pin_dia - tol.ring_pin_press_sub  # 4.20mm clearance
+    pin_hole_depth = hub_height - hub.output_hub_pin_ceiling  # 19mm, leaves 1mm closed top
 
 # ── 1. Base cylinder ────────────────────────────────────────────
     result = (
@@ -82,7 +85,7 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         cq.Workplane("XY")
         .pushPoints(pin_pts)
         .circle(pin_hole_dia / 2.0)
-        .extrude(hub_height)
+        .extrude(pin_hole_depth)
     )
     result = result.cut(pin_holes)
 

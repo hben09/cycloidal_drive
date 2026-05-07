@@ -44,9 +44,9 @@
 |---|---|---|
 | Output pin count | 4 | Equally spaced at 90° |
 | Output pin circle ⌀ | 60.00mm | — |
-| Output pin ⌀ | 4.00mm | M3 shoulder bolt (45mm shoulder) + nut |
+| Output pin ⌀ | 4.00mm | 4mm × 45mm h6 ground steel dowel pin |
 | Disc pin hole ⌀ | 8.00mm | 4mm pin + 2 × 1.5mm ecc + 1mm clearance |
-| Pin hole approach | Oversized, no bearings | Greased sliding fit |
+| Pin hole approach | Oversized, no bearings | Greased sliding fit through discs (8mm); blind clearance holes in hub (4.20mm × 19mm deep), captured between closed hub ceiling and motor plate inner face |
 
 **Clearance check — output pin holes:**
 
@@ -118,7 +118,7 @@ Two bearings mounted end-to-end in the housing. The inner races sit on the outpu
 
 - Output bearing bore radius: 35.00mm
 - Output pin hole outer edge: 34.00mm from center
-- **Clearance between pin holes and bearing bore: 1.00mm** — Note: this is the clearance on the output plate hub, not the disc. The pin holes in the discs do not interact with the output bearing. The output pins pass through the discs and thread into the output plate, which passes through the bearing bore. The 60mm pin circle sits well inside the 70mm bearing bore.
+- **Clearance between pin holes and bearing bore: 1.00mm** — Note: this is the clearance on the output plate hub, not the disc. The pin holes in the discs do not interact with the output bearing. The output pins pass through the discs and seat in blind clearance holes in the output plate, which passes through the bearing bore. The 60mm pin circle sits well inside the 70mm bearing bore.
 
 ### 2.3 Input Shaft Support Bearing — 625-2RS
 
@@ -167,13 +167,11 @@ Located in the output hub, supporting the eccentric shaft's free end via the 5mm
 | Parameter | Value |
 |---|---|
 | Quantity | 4 |
-| Type | M3 shoulder bolt (4mm shoulder, M3×0.5 thread) |
-| Shoulder ⌀ | 4.00mm |
-| Shoulder length | 45mm |
-| Thread | M3×0.5, 6mm long |
-| Head ⌀ | 7mm (3mm hex socket) |
-| Total length | 54.5mm |
-| Retained by | Head on hub output face, M3 nut on disc 1 side |
+| Type | Ground steel dowel pin, h6 |
+| Diameter | 4.00mm |
+| Length | 45mm |
+| Retained by | Blind clearance holes (4.20mm × 19mm) in output hub; captured axially between closed hub ceiling and motor plate inner face (~1mm of axial slop); free-floating through disc 8mm clearance holes |
+| Material | Hardened steel dowel pin |
 
 ### 3.4 Housing Bolts
 
@@ -253,7 +251,7 @@ Parts joined with 8× M4 × 60mm socket head cap screws on a 125mm bolt circle. 
 
 A separate printed or aluminum part that:
 
-- Has 4× clearance holes (4mm + tolerance) on the 60mm pin circle for shoulder bolts
+- Has 4× blind clearance holes (4.20mm × 19mm deep) on the 60mm pin circle for 4mm dowel pins, closed by a 1mm ceiling on the output-cap side
 - Passes through the 2× 6814 bearing inner races (hub OD = 70mm, light press)
 - Has a flat output face for the next arm link
 - Houses a 625 bearing seat on the inner side to support the eccentric shaft output end
@@ -267,7 +265,7 @@ A separate printed or aluminum part that:
 | Bearing outer race → housing | +0.05 to +0.10mm on bore ⌀ | 6814 and 625 outer race seats |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
 | Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance through-holes |
-| Ring pin holes (ring gear body) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance blind holes |
+| Ring & output pin holes (gear body / hub) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, clearance blind holes |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
 | Dowel clearance bore | +0.075mm on bore ⌀ (5.15mm for 5mm pin) | Steel dowel pin hole in eccentric shaft |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
@@ -331,13 +329,12 @@ Generate this profile at high resolution (e.g., 1000+ points per full revolution
 | 3 | Output bearing | 6814-2RS (70 × 90 × 10mm) | 2 | $16–40 |
 | 4 | Input shaft bearing | 625-2RS (5 × 16 × 5mm) | 1 | $1–2 |
 | 5 | Ring pins | 4mm × 35mm ground dowel h6 | 25 | $8–12 |
-| 6 | Output pins | M3 × 54.5mm shoulder bolt (4mm × 45mm shoulder) | 4 | $3–6 |
-| 6a | Output pin nuts | M3 nut | 4 | $1 |
+| 6 | Output pins | 4mm × 45mm ground steel dowel pin, h6 | 4 | $2–4 |
 | 7 | Motor bolts | M3 × 10mm socket head (13mm total) | 4 | $1–2 |
 | 8 | Housing bolts | M4 × 60mm socket head cap screw | 8 | $2–4 |
 | 8a | Housing nuts | M4 hex nut | 8 | $1 |
 | 9 | Shaft support pin | 5mm × 20mm ground steel dowel pin, h6 | 1 | $0.50–1 |
-| | | | **Total** | **~$47–87** |
+| | | | **Total** | **~$45–84** |
 
 ---
 

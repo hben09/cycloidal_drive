@@ -41,7 +41,8 @@ class DiscParams:
     inter_disc_spacer: float = 2.0  # mm
     output_pin_count: int = 4
     output_pin_circle_dia: float = 60.0  # mm
-    output_pin_dia: float = 4.0  # mm (M3 shoulder bolt, 45mm shoulder)
+    output_pin_dia: float = 4.0  # mm (4mm × 45mm h6 ground steel dowel, captured in blind hub holes)
+    output_pin_length: float = 45.0  # mm, h6 ground steel dowel
     output_pin_hole_dia: float = 8.0  # mm (4mm + 2*1.5mm ecc + 1mm clearance)
 
 
@@ -135,6 +136,7 @@ class OutputHubParams:
 
     od: float = 70.0  # mm (matches 6814 bore, light press)
     shaft_clearance_bore: float = 6.0  # mm (5mm pin + 1mm clearance)
+    output_hub_pin_ceiling: float = 1.0  # mm, closed-top thickness above blind pin holes
 
 
 

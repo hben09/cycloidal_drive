@@ -125,6 +125,19 @@ class TestOutputHubDimensions:
             f"Pin edge at {pin_outer}mm >= bearing bore radius {bearing_bore_r}mm"
         )
 
+    def test_output_pin_hole_is_clearance(self):
+        """Hub pin hole must be larger than the dowel pin (clearance fit, ring-pin convention)."""
+        d = CFG.disc
+        tol = CFG.tolerances
+        hole_dia = d.output_pin_dia - tol.ring_pin_press_sub  # ring_pin_press_sub is -0.20
+        assert hole_dia > d.output_pin_dia, (
+            f"Hole {hole_dia}mm not larger than pin {d.output_pin_dia}mm"
+        )
+        clearance = hole_dia - d.output_pin_dia
+        assert 0.10 <= clearance <= 0.30, (
+            f"Clearance {clearance:.3f}mm outside expected PETG range (0.10–0.30mm)"
+        )
+
 
 # ===================================================================
 # 2. CadQuery solid validation
@@ -172,6 +185,34 @@ class TestCadQuerySolid:
             f"Z extent {z_size:.2f}mm, expected {expected:.2f}mm"
         )
 
+    def test_pin_holes_blind_from_output_face(self, hub_solid):
+        """Pin holes must be blind from the output-cap side — a 1mm ceiling stays solid.
+
+        Sample a point on the 60mm pin circle at Z near the top of the hub.
+        That point should be inside the hub solid (not inside a pin hole).
+        """
+        hub = CFG.output_hub
+        d = CFG.disc
+        height = CFG.stack_up.output_bearing_total
+        pin_circle_r = d.output_pin_circle_dia / 2.0  # 30mm
+        # Probe point: directly above pin #1 (angle 0), at Z=hub_height-0.25mm
+        # (mid-ceiling). Inside the ceiling => inside the solid.
+        probe_z = height - hub.output_hub_pin_ceiling / 2.0
+        probe_xy = (pin_circle_r, 0.0)
+        solid = hub_solid.val()
+
+        from cadquery.occ_impl.geom import Vector
+        from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+        from OCP.TopAbs import TopAbs_IN, TopAbs_ON
+
+        classifier = BRepClass3d_SolidClassifier(solid.wrapped)
+        classifier.Perform(Vector(probe_xy[0], probe_xy[1], probe_z).toPnt(), 1e-3)
+        state = classifier.State()
+        assert state in (TopAbs_IN, TopAbs_ON), (
+            f"Probe point at pin #1 / Z={probe_z}mm not inside hub — "
+            "blind ceiling above output pin holes is missing"
+        )
+
     def test_volume_sanity(self, hub_solid):
         """Volume should be between reasonable bounds.
 
@@ -194,7 +235,9 @@ class TestCadQuerySolid:
         # Lower: subtract all features generously
         pocket_r = (b.inp_od + tol.bearing_seat_bore_add) / 2.0
         pocket_vol = math.pi * pocket_r ** 2 * b.inp_width
-        pin_vol = d.output_pin_count * math.pi * (d.output_pin_dia / 2.0) ** 2 * height
+        pin_hole_dia = d.output_pin_dia - tol.ring_pin_press_sub  # 4.20mm clearance
+        pin_hole_depth = height - hub.output_hub_pin_ceiling  # 19mm blind
+        pin_vol = d.output_pin_count * math.pi * (pin_hole_dia / 2.0) ** 2 * pin_hole_depth
         lower = (
             math.pi * hub_r ** 2 * height
             - math.pi * shaft_r ** 2 * height

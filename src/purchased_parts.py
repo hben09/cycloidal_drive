@@ -204,20 +204,15 @@ def build_ring_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
 
 
 def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
-    """4× M3 shoulder bolts on the 60mm output pin circle.
+    """4× 4mm × 45mm h6 ground steel dowel pins on the 60mm output pin circle.
 
-    Actual bolt: 7mm head, 4mm × 45mm shoulder, M3×0.5 × 6mm thread.
-    Head bears on hub output face, shoulder passes through hub (20mm) +
-    disc zone (24mm), M3 thread pokes out for a nut.
-    Total length: 54.5mm.
+    Captured in blind clearance holes (4.20mm × 19mm) in the output hub —
+    closed hub ceiling above the pins, motor plate inner face below.
+    Free-floating through the discs (8mm clearance accommodates the
+    1.5mm eccentric motion).
     """
     d = cfg.disc
     r = d.output_pin_circle_dia / 2.0
-    head_dia = 7.0  # mm, bolt head diameter
-    head_height = 3.5  # mm, 54.5mm total - 45mm shoulder - 6mm thread
-    shoulder_length = 45.0  # mm, actual bolt shoulder length
-    thread_length = 6.0  # mm, actual M3 thread length
-    thread_dia = 3.0  # mm, M3 nominal diameter
     positions = [
         (
             r * math.cos(2 * math.pi * i / d.output_pin_count),
@@ -225,29 +220,12 @@ def build_output_pins(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         )
         for i in range(d.output_pin_count)
     ]
-    # Bolt head (7mm ⌀ × 3.5mm), from Z=-head_height to Z=0
-    heads = (
-        cq.Workplane("XY")
-        .pushPoints(positions)
-        .circle(head_dia / 2.0)
-        .extrude(-head_height)
-    )
-    # Shoulder section (4mm ⌀ × 45mm), from Z=0 onward
-    shoulder = (
+    return (
         cq.Workplane("XY")
         .pushPoints(positions)
         .circle(d.output_pin_dia / 2.0)
-        .extrude(shoulder_length)
+        .extrude(d.output_pin_length)
     )
-    # Threaded section (3mm ⌀ × 6mm, M3 nominal)
-    thread = (
-        cq.Workplane("XY")
-        .workplane(offset=shoulder_length)
-        .pushPoints(positions)
-        .circle(thread_dia / 2.0)
-        .extrude(thread_length)
-    )
-    return heads.union(shoulder).union(thread)
 
 
 # -------------------------------------------------------------------

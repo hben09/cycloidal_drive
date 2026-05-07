@@ -78,9 +78,13 @@ pins = build_ring_pins()
 pins = pins.translate((0, 0, z_pins))
 show_object(pins, name="ring_pins", options={"color": "gray"})
 
-# ── Output pins ────────────────────────────────────────────────
+# ── Output pins (4mm × 45mm dowels, captured between hub ceiling and motor plate) ──
 output = build_output_pins()
-output = output.translate((0, 0, stack.z_disc1))
+output = output.translate((
+    0,
+    0,
+    stack.z_output_cap - cfg.output_hub.output_hub_pin_ceiling - cfg.disc.output_pin_length,
+))
 show_object(output, name="output_pins", options={"color": "darkgray"})
 
 # ── Motor ──────────────────────────────────────────────────────

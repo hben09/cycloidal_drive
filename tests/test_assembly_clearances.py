@@ -194,6 +194,31 @@ class TestRadialClearances:
             f"Output pin edge at {pin_outer_r}mm >= 6814 bore radius {bearing_bore_r}mm"
         )
 
+    def test_output_pin_bottom_clears_motor_plate(self):
+        """Output pin bottom (under the hub ceiling) must clear the motor plate inner face."""
+        d = CFG.disc
+        hub = CFG.output_hub
+        s = CFG.stack_up
+        pin_top_z = s.z_output_cap - hub.output_hub_pin_ceiling  # 56mm
+        pin_bottom_z = pin_top_z - d.output_pin_length  # 11mm
+        clearance = pin_bottom_z - s.z_motor_plate_inner  # 11 - 10 = 1mm
+        assert clearance > 0, (
+            f"Pin bottom at Z={pin_bottom_z}mm penetrates motor plate inner face "
+            f"at Z={s.z_motor_plate_inner}mm"
+        )
+
+    def test_output_pin_engages_disc1(self):
+        """Output pin bottom must extend below disc 1 inner face for full disc engagement."""
+        d = CFG.disc
+        hub = CFG.output_hub
+        s = CFG.stack_up
+        pin_top_z = s.z_output_cap - hub.output_hub_pin_ceiling
+        pin_bottom_z = pin_top_z - d.output_pin_length
+        assert pin_bottom_z <= s.z_disc1, (
+            f"Pin bottom at Z={pin_bottom_z}mm doesn't reach disc 1 inner face "
+            f"at Z={s.z_disc1}mm — disc 1 not fully engaged"
+        )
+
     def test_output_hub_clears_output_cap_bore(self):
         """Output hub OD must be smaller than output cap center bore."""
         hub = CFG.output_hub
