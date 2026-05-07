@@ -17,7 +17,7 @@ class GearParams:
     eccentricity: float = 1.5  # mm
     ring_pin_circle_dia: float = 108.0  # mm
     ring_pin_dia: float = 4.0  # mm, h6 ground steel
-    ring_pin_length: float = 35.0  # mm (5mm motor plate + 25mm disc zone + 5mm shoulder)
+    ring_pin_length: float = 35.0  # mm (4mm motor plate + 27mm bore zone + 4mm bearing-zone wall)
 
     @property
     def ring_pin_circle_radius(self) -> float:
@@ -105,7 +105,7 @@ class HousingParams:
     bolt_head_height: float = 4.0  # mm (M4 SHCS head)
     bolt_counterbore_dia: float = 7.4  # mm (head 7mm + 0.4mm clearance)
     bolt_counterbore_depth: float = 4.5  # mm (4mm head + 0.5mm recess)
-    bolt_nut_af: float = 7.2  # mm (M4 nut 7mm AF + 0.2mm clearance)
+    bolt_nut_pocket_af: float = 7.2  # mm (M4 nut 7mm AF + 0.2mm pocket clearance)
     bolt_nut_thickness: float = 3.2  # mm (M4 hex nut)
     bolt_nut_depth: float = 4.0  # mm (pocket depth in output cap)
     output_bearing_seat_dia: float = 90.15  # mm (press fit for 6814 outer race)

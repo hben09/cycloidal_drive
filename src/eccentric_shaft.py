@@ -1,8 +1,8 @@
 """Eccentric shaft — converts motor rotation into disc wobble.
 
-Machined steel or aluminum. Two 17mm OD lobes offset 180° from each
-other (one per disc), connected by a 5mm OD spine. The lobe centers
-are offset ±eccentricity from the shaft axis.
+3D-printed PETG (100% infill, 0.16mm layer height per spec). Two 17.10mm
+OD lobes offset 180° from each other (one per disc), connected by a 5mm
+OD spine. The lobe centers are offset ±eccentricity from the shaft axis.
 
 The input end has a D-bore socket that receives the motor shaft directly
 (no coupler). A 10mm OD collar at the input provides wall thickness
@@ -113,7 +113,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # Round bore + D-flat key matching the motor shaft profile
     bore_dia = shaft.d_bore_dia + tol.d_bore_clearance_add * 2  # 5.10mm
     bore_r = bore_dia / 2.0
-    bore_depth = shaft.d_bore_depth  # 10mm
+    bore_depth = shaft.d_bore_depth  # 12mm
 
     d_bore_round = (
         cq.Workplane("XY")

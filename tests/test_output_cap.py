@@ -87,7 +87,7 @@ class TestOutputCapDimensions:
         """Hex nut pocket must leave adequate wall to housing OD."""
         h = CFG.housing
         bolt_r = h.bolt_circle_dia / 2.0
-        nut_circ_r = (h.bolt_nut_af / 2.0) / math.cos(math.radians(30))
+        nut_circ_r = (h.bolt_nut_pocket_af / 2.0) / math.cos(math.radians(30))
         wall = h.od / 2.0 - (bolt_r + nut_circ_r)
         assert wall >= 2.0, (
             f"Nut pocket wall to OD = {wall:.2f}mm, need >= 2mm"

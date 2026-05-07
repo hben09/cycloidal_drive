@@ -1,7 +1,7 @@
 """Output cap — closes the output end of the housing, retains 6814 bearings.
 
 3D-printed PETG housing part.  Sits at global Z=57mm (z_output_cap) to
-Z=60mm (total_housing_depth).  Local Z=0 is the inner face (bearing-facing
+Z=65mm (total_housing_depth).  Local Z=0 is the inner face (bearing-facing
 side).
 
 Features:
@@ -86,7 +86,7 @@ def build_output_cap(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # ── 5. Hex nut pockets (outer face, Z = cap_thickness side) ─────
     # Each hex oriented with a flat facing radially outward to maximise
     # wall thickness toward the housing perimeter.
-    nut_circ_dia = h.bolt_nut_af / math.cos(math.radians(30))  # ~8.31mm
+    nut_circ_dia = h.bolt_nut_pocket_af / math.cos(math.radians(30))  # ~8.31mm
     for angle, pt in zip(bolt_angles, bolt_pts):
         hex_pocket = (
             cq.Workplane("XY")
