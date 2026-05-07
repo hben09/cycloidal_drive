@@ -243,7 +243,7 @@ Measured from motor mounting face inward:
 Recommend splitting the housing into 3 printed parts:
 
 1. **Motor plate** — NEMA 17 bolt pattern, 15mm shaft bore for motor shaft pass-through, 21 ring-pin through-holes (4.20mm ⌀), 8× M4 counterbore holes (7.4mm ⌀ × 4.5mm deep) on outer face. Inner face has a Ø100mm × 1mm recess inside the ring-pin circle to remove unneeded material; M3 motor-bolt heads sit flush with this recessed floor.
-2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (4.20mm ⌀, 31mm deep, chamfered entry), output bearing seat bore, 8× M4 clearance through-holes. No shoulder ring — 6814 bearings retained by press-fit + output cap
+2. **Ring gear body** — Main cylinder with 21 ring-pin blind holes (4.20mm ⌀, 31mm deep, chamfered entry), output bearing seat bore, 8× M4 clearance through-holes. Reveal windows span the full body height (input face to output cap), leaving only 8 trapezoidal pillars — one per M4 bolt — as the outer wall in the bore zone. The motor plate seats directly on the 8 pillar top faces; there is no continuous rim. Lateral pin retention is provided by the motor plate (10mm through-holes) plus 4mm engagement at the bearing-zone end. No shoulder ring — 6814 bearings retained by press-fit + output cap.
 3. **Output cap** — Retains output bearings, seals housing, 8× hex nut pockets (7.2mm AF × 4.0mm deep) on outer face
 
 Parts joined with 8× M4 × 60mm socket head cap screws on a 125mm bolt circle. Bolt heads sit in counterbores on the motor plate; M4 hex nuts captured in hex pockets on the output cap.

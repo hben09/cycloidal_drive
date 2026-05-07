@@ -151,14 +151,13 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     result = result.cut(bolt_holes)
 
     # ── 6. Reveal windows — expose ring pins between bolt pillars ──
-    # Cut away the outer wall from just below the input rim down through
-    # the bearing zone, keeping only trapezoidal pillars around each
-    # housing bolt and a solid rim at the input face.  The 58mm inner
+    # Cut away the outer wall over the full body height, keeping only
+    # trapezoidal pillars around each housing bolt.  The motor plate seats
+    # against the 8 pillar top faces (no continuous rim).  The 58mm inner
     # cut radius leaves the 90.15mm bearing seat (45.075mm radius) ringed
     # by ~13mm of PETG, preserving press-fit retention of the 6814s.
-    rim_h = 0.0  # rim eliminated; reveal windows extend to input face
-    window_z_start = rim_h
-    window_h = body_height - rim_h  # 44mm — spans disc zone + bearing zone
+    window_z_start = 0.0
+    window_h = body_height  # 47mm — spans full input face to output cap
 
     # Trapezoidal pillar: wider at bore, narrower at housing OD.
     # Radial bounds overshoot bore/OD by 1mm so the bore and base-cylinder

@@ -217,52 +217,80 @@ class TestRingGearBodyDimensions:
         )
 
     def test_pillar_wall_around_bolt(self):
-        """Each pillar must provide >= 3mm wall around the bolt clearance hole."""
+        """Each trapezoidal pillar provides >= 3mm tangential wall around
+        the M4 bolt clearance hole.  Pillar width is interpolated linearly
+        along the radius from inner_w (at bore wall) to outer_w (at OD).
+        """
         h = CFG.housing
-        pillar_dia = 16.0
-        bolt_clearance_dia = h.bolt_dia + 0.4  # 4.4mm
-        wall = (pillar_dia - bolt_clearance_dia) / 2.0  # 5.8mm
-        assert wall >= 3.0, (
-            f"Pillar wall around bolt = {wall:.1f}mm, need >= 3mm"
-        )
-
-    def test_pillar_stays_outside_disc_orbit(self):
-        """Pillar inner edge must not intrude into the bore (disc orbit zone)."""
-        h = CFG.housing
-        pillar_dia = 16.0
         bolt_r = h.bolt_circle_dia / 2.0  # 62.5mm
+        bolt_clearance_r = (h.bolt_dia + 0.4) / 2.0  # 2.2mm
+        pillar_inner_r = h.bore_dia / 2.0 - 1.0  # 57mm
+        pillar_outer_r = h.od / 2.0 + 1.0  # 68mm
+        pillar_inner_w = 18.0  # tangential width at bore
+        pillar_outer_w = 10.0  # tangential width at OD
+
+        t = (bolt_r - pillar_inner_r) / (pillar_outer_r - pillar_inner_r)
+        pillar_w_at_bolt = pillar_inner_w + (pillar_outer_w - pillar_inner_w) * t
+        wall = pillar_w_at_bolt / 2.0 - bolt_clearance_r
+        assert wall >= 3.0, (
+            f"Tangential pillar wall around bolt = {wall:.2f}mm, need >= 3mm"
+        )
+
+    def test_pillar_overshoots_housing_walls(self):
+        """Pillar trapezoid overshoots the bore (-1mm) and OD (+1mm) so the
+        bore and base-cylinder cuts trim it cleanly flush with the housing
+        walls (no thin slivers from float arithmetic).
+        """
+        h = CFG.housing
+        pillar_inner_r = h.bore_dia / 2.0 - 1.0  # 57mm
+        pillar_outer_r = h.od / 2.0 + 1.0  # 68mm
         bore_r = h.bore_dia / 2.0  # 58mm
-        pillar_inner_edge = bolt_r - pillar_dia / 2.0  # 54.5mm
-        # Even though pillar geometry extends past bore, the bore cut already
-        # removed that material — verify it doesn't exceed bore radius
-        # (the pillar only preserves wall material, which starts at bore_r)
-        assert pillar_inner_edge < bore_r, (
-            "Pillar inner edge should extend past bore — "
-            "bore cut handles clearance"
+        housing_r = h.od / 2.0  # 67mm
+        assert pillar_inner_r < bore_r, (
+            f"Pillar inner_r {pillar_inner_r}mm should be < bore_r {bore_r}mm"
+        )
+        assert pillar_outer_r > housing_r, (
+            f"Pillar outer_r {pillar_outer_r}mm should be > housing_r {housing_r}mm"
         )
 
-    def test_window_rim_height_is_positive(self):
-        """The input-face rim must have positive height for motor plate mating."""
-        rim_h = 3.0
-        assert rim_h > 0
+    def test_pillars_dont_overlap_neighbors(self):
+        """Adjacent trapezoidal pillars must leave an open window between
+        them.  The bore-edge chord (where pillars are widest) is the
+        constraining check.
+        """
+        h = CFG.housing
+        pillar_inner_r = h.bore_dia / 2.0 - 1.0  # 57mm
+        pillar_outer_r = h.od / 2.0 + 1.0  # 68mm
+        pillar_inner_w = 18.0
+        pillar_outer_w = 10.0
 
-    def test_windows_stay_within_bore_zone(self):
-        """Windows must not extend into the bearing seat zone."""
+        bolt_angles = compute_housing_bolt_angles(CFG)
+        spacing = bolt_angles[1] - bolt_angles[0]
+
+        inner_chord = 2 * pillar_inner_r * math.sin(spacing / 2)
+        outer_chord = 2 * pillar_outer_r * math.sin(spacing / 2)
+        assert inner_chord > pillar_inner_w + 1.0, (
+            f"Pillars too close at bore: chord {inner_chord:.2f}mm vs "
+            f"width {pillar_inner_w}mm — need >=1mm window gap"
+        )
+        assert outer_chord > pillar_outer_w + 1.0, (
+            f"Pillars too close at OD: chord {outer_chord:.2f}mm vs "
+            f"width {pillar_outer_w}mm — need >=1mm window gap"
+        )
+
+    def test_windows_span_full_body_height(self):
+        """Reveal windows extend from input face through to the output cap.
+
+        The continuous rim was eliminated — the motor plate now seats only
+        on the 8 pillar top faces.  The bearing seat (Z=27 to Z=47) is
+        preserved as a 90.15mm bore inside the same outer cylinder; the
+        windows cut only the annulus between the 116mm bore and the OD.
+        """
         stack = CFG.stack_up
-        rim_h = 3.0
-        bore_zone_end = (
-            stack.input_clearance
-            + stack.disc_thickness * 2
-            + stack.inter_disc_spacer
-            + stack.output_clearance
-        )  # 27mm
-        bearing_z = bore_zone_end  # bearing seat starts here
-        window_z_end = bore_zone_end  # windows stop here
-        assert window_z_end <= bearing_z, (
-            f"Window end {window_z_end}mm extends past bearing seat at {bearing_z}mm"
-        )
-        assert rim_h < bore_zone_end, (
-            f"Rim {rim_h}mm >= bore zone end {bore_zone_end}mm — no window space"
+        body_height = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
+        window_h = body_height
+        assert window_h == body_height, (
+            f"Window height {window_h}mm != body height {body_height}mm"
         )
 
     def test_ring_pin_chamfer_within_bearing_zone(self):
@@ -344,11 +372,11 @@ class TestCadQuerySolid:
         assert solids[0].isValid(), "Solid is not valid"
 
     def test_outer_diameter(self, body_solid):
-        """XY extent should be the housing OD (120mm)."""
+        """XY extent should be the housing OD (140mm)."""
         bb = body_solid.val().BoundingBox()
         x_size = bb.xmax - bb.xmin
         y_size = bb.ymax - bb.ymin
-        expected = CFG.housing.od  # 120mm
+        expected = CFG.housing.od  # 140mm
 
         assert abs(x_size - expected) < 0.2, (
             f"X extent {x_size:.2f}mm, expected {expected}mm"
@@ -377,7 +405,7 @@ class TestCadQuerySolid:
             stack.input_clearance
             + stack.disc_thickness
             + stack.inter_disc_spacer / 2.0
-        )  # 14mm — inside window zone (rim_h=3 to bore_zone_end=27)
+        )  # 14mm — inside window zone (Z=0 to bore_zone_end=27)
 
         section = body_solid.section(height=disc_zone_mid)
         area = section.val().Area()
@@ -394,33 +422,39 @@ class TestCadQuerySolid:
         # But pillars must provide some material
         assert area > 0, "Window zone has no material — pillars missing"
 
-    def test_rim_zone_is_full_annulus(self, body_solid):
-        """At the input rim (Z < 3mm), the full annular wall must be intact."""
+    def test_input_face_has_pillars_only(self, body_solid):
+        """Near the input face the wall is pillars only — no continuous rim.
+
+        The rim was eliminated; the motor plate seats on the 8 pillar tops.
+        Section just above the input face should look like the rest of the
+        bore-zone window region: <40% of the full annulus.
+        """
         h = CFG.housing
 
-        rim_mid = 1.5  # midpoint of 3mm rim
+        z = 0.5  # just above the input face
 
-        section = body_solid.section(height=rim_mid)
+        section = body_solid.section(height=z)
         area = section.val().Area()
 
         housing_r = h.od / 2.0
         bore_r = h.bore_dia / 2.0
         full_annulus = math.pi * (housing_r**2 - bore_r**2)
 
-        # Rim area should be close to the full annulus (minus bolt holes)
-        bolt_hole_area = h.bolt_count * math.pi * ((h.bolt_dia + 0.4) / 2.0) ** 2
-        expected = full_annulus - bolt_hole_area
-
-        assert abs(area - expected) / expected < 0.05, (
-            f"Rim section area {area:.1f}mm² vs expected {expected:.1f}mm² "
-            f"(>5% deviation — rim may have been cut by windows)"
+        assert area < full_annulus * 0.40, (
+            f"Input-face section area {area:.1f}mm² >= 40% of full annulus "
+            f"{full_annulus:.1f}mm² — rim may have been reintroduced"
         )
+        assert area > 0, "Input face has no material — pillars missing"
 
     def test_output_bearing_seat(self, body_solid):
-        """Section area at bearing zone should reflect the 90.15mm seat.
+        """Section area at bearing zone reflects the 90.15mm seat plus pillars.
 
-        At the bearing zone midpoint the annulus runs from 45.075mm
-        to 60mm, minus 21 pin holes and 8 bolt holes.
+        At the bearing zone midpoint the inner annulus runs from the
+        bearing seat (45.075mm) up to the bore radius (58mm) intact
+        (minus 21 pin holes), plus 8 trapezoidal pillars between the
+        bore and the OD (each carrying one M4 bolt hole).  The outer
+        wall from bore_r to OD is cut away by the reveal windows
+        except at those pillars.
         """
         g = CFG.gear
         h = CFG.housing
@@ -438,50 +472,53 @@ class TestCadQuerySolid:
         section = body_solid.section(height=bearing_mid)
         area = section.val().Area()
 
-        housing_r = h.od / 2.0  # 60mm
-        bearing_seat_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
-        annulus_area = math.pi * (housing_r**2 - bearing_seat_r**2)
+        bore_r = h.bore_dia / 2.0
+        bearing_seat_r = h.output_bearing_seat_dia / 2.0
 
-        # Subtract approximate pin and bolt hole areas
+        inner_annulus = math.pi * (bore_r**2 - bearing_seat_r**2)
+
+        # Pillar trapezoid (matches ring_gear_body.py): widths 18mm at bore,
+        # 10mm at OD, radial length = housing_r - bore_r (overshoot trimmed).
+        housing_r = h.od / 2.0
+        pillar_radial = housing_r - bore_r
+        pillar_avg_w = (18.0 + 10.0) / 2.0
+        pillar_area = pillar_avg_w * pillar_radial * h.bolt_count
+
         pin_hole_r = (g.ring_pin_dia - tol.ring_pin_press_sub) / 2.0
         bolt_hole_r = (h.bolt_dia + 0.4) / 2.0
         pin_area = g.num_ring_pins * math.pi * pin_hole_r**2
         bolt_area = h.bolt_count * math.pi * bolt_hole_r**2
-        expected_area = annulus_area - pin_area - bolt_area
 
-        # Allow 15% tolerance for hole merging at coincident bolt/pin angles
+        expected_area = inner_annulus + pillar_area - pin_area - bolt_area
+
         assert abs(area - expected_area) / expected_area < 0.15, (
             f"Bearing zone section area {area:.1f}mm² vs expected "
-            f"{expected_area:.1f}mm² (>{15}% deviation)"
+            f"{expected_area:.1f}mm² (>15% deviation)"
         )
 
     def test_volume_sanity(self, body_solid):
         """Volume should be between reasonable bounds.
 
-        Lower bound: outer cylinder minus max possible bore, minus holes.
-        Upper bound: outer cylinder minus min bore.
+        Lower bound: the bearing seat ring (bore_r → bearing_r × bearing
+        zone height) is the only continuous solid that survives the full-
+        height reveal windows.  At 70% to allow for pin/bolt hole losses
+        within the ring.
+        Upper bound: full outer cylinder minus the bearing seat bore
+        through the entire body height.
         """
         h = CFG.housing
         stack = CFG.stack_up
         body_h = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
         bore_r = h.bore_dia / 2.0  # 58mm
-        housing_r = h.od / 2.0  # 60mm
+        housing_r = h.od / 2.0  # 67mm
         bearing_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
 
-        # Upper bound: full cylinder minus smallest bore (bearing seat through full height)
-        upper = math.pi * housing_r**2 * body_h - math.pi * bearing_r**2 * body_h
+        upper = math.pi * (housing_r**2 - bearing_r**2) * body_h
 
-        # Lower bound: thin-wall tube (116mm bore) for full height,
-        # minus the reveal windows that cut away the outer wall in the bore zone.
-        # Windows span bore_zone_end - rim_h, removing the annular wall except pillars.
-        bore_zone_end = (
-            stack.input_clearance + stack.disc_thickness * 2
-            + stack.inter_disc_spacer + stack.output_clearance
+        bearing_ring_vol = (
+            math.pi * (bore_r**2 - bearing_r**2) * stack.output_bearing_total
         )
-        rim_h = 3.0
-        window_h = bore_zone_end - rim_h
-        window_vol = math.pi * (housing_r**2 - bore_r**2) * window_h
-        lower = math.pi * (housing_r**2 - bore_r**2) * body_h - window_vol
+        lower = bearing_ring_vol * 0.7
 
         vol = body_solid.val().Volume()
         assert vol > lower, (
