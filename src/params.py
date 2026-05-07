@@ -44,6 +44,7 @@ class DiscParams:
     output_pin_dia: float = 4.0  # mm (4mm × 45mm h6 ground steel dowel, captured in blind hub holes)
     output_pin_length: float = 45.0  # mm, h6 ground steel dowel
     output_pin_hole_dia: float = 8.0  # mm (4mm + 2*1.5mm ecc + 1mm clearance)
+    lobe_chamfer: float = 1.0  # mm, 45° chamfer on outer epitrochoid edge (assembly lead-in, hides elephant foot)
 
 
 @dataclass(frozen=True)

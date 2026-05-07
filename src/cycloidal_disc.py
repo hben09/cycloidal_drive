@@ -41,6 +41,11 @@ def build_cycloidal_disc(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     solid = cq.Solid.extrudeLinear(face, cq.Vector(0, 0, disc.thickness))
     result = cq.Workplane("XY").add(solid)
 
+    # Chamfer outer lobe edges before holes — top+bottom faces only carry the
+    # epitrochoid boundary at this point, so the selector is unambiguous.
+    result = result.faces(">Z").edges().chamfer(disc.lobe_chamfer)
+    result = result.faces("<Z").edges().chamfer(disc.lobe_chamfer)
+
     # Center bore for 6003 bearing
     result = result.faces(">Z").workplane().hole(disc.center_bore_dia)
 

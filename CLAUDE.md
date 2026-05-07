@@ -35,6 +35,7 @@
 | Approximate OD | ~108mm | Defined by epitrochoid profile |
 | Center bore ⌀ | 35.10mm | 35mm bearing OD + 0.10mm clearance (PETG) |
 | Disc thickness | 10.00mm | Matched to 6003-2RS bearing width |
+| Lobe chamfer | 1.00mm × 45° | Both Z faces of outer epitrochoid; assembly lead-in past ring pins, hides elephant foot. Symmetric so disc has no "wrong side". Costs ~20% lobe contact length. |
 | Inter-disc spacer | 2.00mm | Separates the two discs |
 | Output pin holes | 4× equally spaced | See Section 1.3 |
 

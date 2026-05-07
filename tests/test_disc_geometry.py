@@ -389,6 +389,47 @@ class TestCadQuerySolid:
             f"Z extent {z_size:.2f}mm, expected {CFG.disc.thickness}mm"
         )
 
+    def test_lobe_chamfer_applied(self, disc_solid):
+        """Bottom face max radial extent should be `chamfer` smaller than the
+        disc's overall extent. At 45°, going down by `chamfer` in Z reduces
+        the radius by `chamfer`. Catches silent CadQuery chamfer failures.
+        """
+        chamfer = CFG.disc.lobe_chamfer
+        if chamfer <= 0:
+            pytest.skip("Chamfer disabled")
+
+        disc_bb = disc_solid.val().BoundingBox()
+        disc_max = max(abs(disc_bb.xmin), abs(disc_bb.xmax),
+                       abs(disc_bb.ymin), abs(disc_bb.ymax))
+
+        bottom_bb = disc_solid.faces("<Z").val().BoundingBox()
+        bottom_max = max(abs(bottom_bb.xmin), abs(bottom_bb.xmax),
+                         abs(bottom_bb.ymin), abs(bottom_bb.ymax))
+
+        delta = disc_max - bottom_max
+        assert abs(delta - chamfer) < 0.1, (
+            f"Bottom-face radial reduction = {delta:.3f}mm, "
+            f"expected chamfer = {chamfer}mm"
+        )
+
+    def test_lobe_chamfer_symmetric(self, disc_solid):
+        """Top and bottom faces should have equal max radial extent so the
+        disc has no 'wrong side up' (both discs share one printed part).
+        """
+        if CFG.disc.lobe_chamfer <= 0:
+            pytest.skip("Chamfer disabled")
+
+        top_bb = disc_solid.faces(">Z").val().BoundingBox()
+        bot_bb = disc_solid.faces("<Z").val().BoundingBox()
+        top_max = max(abs(top_bb.xmin), abs(top_bb.xmax),
+                      abs(top_bb.ymin), abs(top_bb.ymax))
+        bot_max = max(abs(bot_bb.xmin), abs(bot_bb.xmax),
+                      abs(bot_bb.ymin), abs(bot_bb.ymax))
+        assert abs(top_max - bot_max) < 0.05, (
+            f"Top extent {top_max:.3f}mm != bottom extent {bot_max:.3f}mm "
+            f"(chamfer not symmetric)"
+        )
+
     def test_volume_sanity(self, disc_solid):
         """Volume should be between reasonable bounds.
 
