@@ -39,6 +39,7 @@ import cadquery as cq
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.params import DriveConfig, DEFAULT_CONFIG, compute_housing_bolt_angles
+from src.helpers.housing_profile import build_reveal_window_cutter
 
 
 def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
@@ -153,54 +154,9 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # ── 6. Reveal windows — expose ring pins between bolt pillars ──
     # Cut away the outer wall over the full body height, keeping only
     # trapezoidal pillars around each housing bolt.  The motor plate seats
-    # against the 8 pillar top faces (no continuous rim).  The 58mm inner
-    # cut radius leaves the 90.15mm bearing seat (45.075mm radius) ringed
-    # by ~13mm of PETG, preserving press-fit retention of the 6814s.
-    window_z_start = 0.0
-    window_h = body_height  # 47mm — spans full input face to output cap
-
-    # Trapezoidal pillar: wider at bore, narrower at housing OD.
-    # Radial bounds overshoot bore/OD by 1mm so the bore and base-cylinder
-    # cuts trim each pillar flush with the housing walls.
-    pillar_inner_r = bore_r - 1.0  # 57mm
-    pillar_outer_r = housing_r + 1.0  # 68mm
-    pillar_inner_w = 18.0  # mm, tangential width at bore
-    pillar_outer_w = 10.0  # mm, tangential width at housing OD
-
-    # Full annular wall section to remove
-    wall_removal = (
-        cq.Workplane("XY")
-        .workplane(offset=window_z_start)
-        .circle(housing_r + 0.1)
-        .circle(bore_r)
-        .extrude(window_h)
-    )
-
-    # Subtract trapezoidal pillars (preserved material) from wall_removal
-    for a in bolt_angles:
-        cos_a = math.cos(a)
-        sin_a = math.sin(a)
-        # Local frame: x = radial along bolt angle, y = tangential
-        local_pts = [
-            (pillar_inner_r, -pillar_inner_w / 2.0),
-            (pillar_outer_r, -pillar_outer_w / 2.0),
-            (pillar_outer_r, +pillar_outer_w / 2.0),
-            (pillar_inner_r, +pillar_inner_w / 2.0),
-        ]
-        world_pts = [
-            (lx * cos_a - ly * sin_a, lx * sin_a + ly * cos_a)
-            for lx, ly in local_pts
-        ]
-        pillar = (
-            cq.Workplane("XY")
-            .workplane(offset=window_z_start)
-            .polyline(world_pts)
-            .close()
-            .extrude(window_h)
-        )
-        wall_removal = wall_removal.cut(pillar)
-
-    result = result.cut(wall_removal)
+    # against the 8 pillar top faces (no continuous rim).  Shared with the
+    # output cap so both parts present the same outer silhouette.
+    result = result.cut(build_reveal_window_cutter(cfg, body_height))
 
     return result
 

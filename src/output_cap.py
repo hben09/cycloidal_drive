@@ -25,6 +25,7 @@ import cadquery as cq
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.params import DriveConfig, DEFAULT_CONFIG, compute_housing_bolt_angles
+from src.helpers.housing_profile import build_reveal_window_cutter
 
 
 def build_output_cap(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
@@ -75,7 +76,14 @@ def build_output_cap(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(bolt_holes)
 
-    # ── 4. Hex nut pockets (outer face, Z = cap_thickness side) ─────
+    # ── 4. Reveal windows — match ring gear body's outer profile ────
+    # Cut the outer wall (between pillar_inner_r=57mm and the OD) into 8
+    # trapezoidal pillars aligned with the housing bolts.  The central
+    # annulus (43.075→57mm radius) is untouched, so the 2mm lip retaining
+    # the 6814 bearings remains intact.
+    result = result.cut(build_reveal_window_cutter(cfg, cap_thickness))
+
+    # ── 5. Hex nut pockets (outer face, Z = cap_thickness side) ─────
     # Each hex oriented with a flat facing radially outward to maximise
     # wall thickness toward the housing perimeter.
     nut_circ_dia = h.bolt_nut_af / math.cos(math.radians(30))  # ~8.31mm

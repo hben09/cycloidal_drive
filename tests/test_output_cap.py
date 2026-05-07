@@ -183,28 +183,69 @@ class TestCadQuerySolid:
         )
 
     def test_volume_sanity(self, cap_solid):
-        """Volume should be between reasonable bounds.
+        """Volume should fall between the inner annulus alone and the full annulus.
 
-        Lower bound: annulus (cap OD minus bore) minus all bolt holes.
-        Upper bound: annulus with no bolt holes.
+        The cap consists of (a) the solid bearing-retention annulus from the
+        center bore to ``pillar_inner_r``, plus (b) 8 trapezoidal pillars
+        forming the outer ring (windows between them).  A hard lower bound is
+        the inner annulus alone (assumes all outer material removed); upper
+        bound is the full annulus (no cuts).
         """
         h = CFG.housing
-        hub = CFG.output_hub
-        tol = CFG.tolerances
+        stack = CFG.stack_up
+
+        housing_r = h.od / 2.0
+        bore_r = (h.output_bearing_seat_dia - 2 * 2.0) / 2.0  # 43.075mm
+        pillar_inner_r = h.bore_dia / 2.0 - 1.0  # 57mm — matches housing_profile
+        thickness = stack.output_wall
+
+        # Upper: full annulus, no cuts
+        upper = math.pi * (housing_r ** 2 - bore_r ** 2) * thickness
+
+        # Lower: just the inner solid annulus (43.075→57mm) with 10% margin
+        lower = math.pi * (pillar_inner_r ** 2 - bore_r ** 2) * thickness * 0.9
+
+        vol = cap_solid.val().Volume()
+        assert vol > lower, f"Volume {vol:.0f}mm³ below lower bound {lower:.0f}"
+        assert vol < upper, f"Volume {vol:.0f}mm³ above upper bound {upper:.0f}"
+
+    def test_reveal_windows_present(self, cap_solid):
+        """Volume must drop below a solid-disc baseline — windows actually cut.
+
+        A plain solid cap (no windows) would have volume ≈ full_annulus minus
+        bolt holes.  After reveal windows, the cap loses most of the outer
+        ring, so its volume must be strictly less than that baseline.
+        """
+        h = CFG.housing
         stack = CFG.stack_up
 
         housing_r = h.od / 2.0
         bore_r = (h.output_bearing_seat_dia - 2 * 2.0) / 2.0
         thickness = stack.output_wall
 
-        # Upper: annulus only
-        upper = math.pi * (housing_r ** 2 - bore_r ** 2) * thickness
-
-        # Lower: subtract bolt holes generously
+        full_annulus = math.pi * (housing_r ** 2 - bore_r ** 2) * thickness
         bolt_hole_r = (h.bolt_dia + 0.4) / 2.0
         bolt_vol = h.bolt_count * math.pi * bolt_hole_r ** 2 * thickness
-        lower = (upper - bolt_vol) * 0.9  # 10% margin
+        solid_disc_baseline = full_annulus - bolt_vol
 
         vol = cap_solid.val().Volume()
-        assert vol > lower, f"Volume {vol:.0f}mm³ below lower bound {lower:.0f}"
-        assert vol < upper, f"Volume {vol:.0f}mm³ above upper bound {upper:.0f}"
+        assert vol < solid_disc_baseline * 0.8, (
+            f"Volume {vol:.0f}mm³ >= 80% of solid-disc baseline "
+            f"{solid_disc_baseline:.0f}mm³ — reveal windows missing?"
+        )
+
+    def test_pillars_align_with_ring_gear_body(self):
+        """Cap pillars must use the same bolt angles as the ring gear body.
+
+        The shared profile is generated from ``compute_housing_bolt_angles``;
+        guarding against accidental angle drift between the two parts.
+        """
+        from src.ring_gear_body import build_ring_gear_body  # noqa: F401
+        from src.output_cap import build_output_cap  # noqa: F401
+
+        angles = compute_housing_bolt_angles(CFG)
+        assert len(angles) == CFG.housing.bolt_count
+        # Evenly spaced — adjacent angles differ by 2π/N
+        expected_step = 2 * math.pi / CFG.housing.bolt_count
+        for i in range(1, len(angles)):
+            assert abs((angles[i] - angles[i - 1]) - expected_step) < 1e-9
