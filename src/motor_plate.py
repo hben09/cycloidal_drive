@@ -25,6 +25,7 @@ import cadquery as cq
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from src.params import DriveConfig, DEFAULT_CONFIG, compute_housing_bolt_angles
+from src.helpers.housing_profile import build_reveal_window_cutter
 
 
 def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
@@ -157,6 +158,13 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(h.bolt_counterbore_depth)
     )
     result = result.cut(counterbores)
+
+    # ── 8. Reveal windows — match shared housing profile ────────────
+    # Cuts the outer ring (58→70mm radius) into 8 trapezoidal pillars
+    # aligned with the ring gear body and output cap pillars.  The
+    # central disc (motor mount, pilot, ring-pin holes, inner pocket)
+    # is untouched.
+    result = result.cut(build_reveal_window_cutter(cfg, plate_thickness))
 
     return result
 
