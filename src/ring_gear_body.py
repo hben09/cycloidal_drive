@@ -160,13 +160,13 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     window_z_start = rim_h
     window_h = body_height - rim_h  # 44mm — spans disc zone + bearing zone
 
-    # Trapezoidal pillar: wider at housing OD, narrower at bore (buttress).
+    # Trapezoidal pillar: wider at bore, narrower at housing OD.
     # Radial bounds overshoot bore/OD by 1mm so the bore and base-cylinder
     # cuts trim each pillar flush with the housing walls.
     pillar_inner_r = bore_r - 1.0  # 57mm
     pillar_outer_r = housing_r + 1.0  # 68mm
-    pillar_inner_w = 10.0  # mm, tangential width at bore
-    pillar_outer_w = 18.0  # mm, tangential width at housing OD
+    pillar_inner_w = 18.0  # mm, tangential width at bore
+    pillar_outer_w = 10.0  # mm, tangential width at housing OD
 
     # Full annular wall section to remove
     wall_removal = (
