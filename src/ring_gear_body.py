@@ -165,8 +165,8 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # cuts trim each pillar flush with the housing walls.
     pillar_inner_r = bore_r - 1.0  # 57mm
     pillar_outer_r = housing_r + 1.0  # 68mm
-    pillar_inner_w = 12.0  # mm, tangential width at bore
-    pillar_outer_w = 22.0  # mm, tangential width at housing OD
+    pillar_inner_w = 10.0  # mm, tangential width at bore
+    pillar_outer_w = 18.0  # mm, tangential width at housing OD
 
     # Full annular wall section to remove
     wall_removal = (
