@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "cadquery>=2.7.0",
     "numpy>=2.4.2",
-    "ocp-vscode>=3.1.2",
+    "ocp-vscode>=3.3.4",
 ]
 
 [dependency-groups]
