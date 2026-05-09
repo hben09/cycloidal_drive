@@ -1,6 +1,6 @@
 """Motor plate — mounts the NEMA 17 and supports the input shaft.
 
-3D-printed PETG housing part. Sits at Z=0 (outer/motor face) to Z=10mm
+3D-printed PETG housing part. Sits at Z=0 (outer/motor face) to Z=9mm
 (inner face). Features:
   - Motor pilot recess and M3 bolt pattern on the outer face
   - Central shaft bore for motor shaft pass-through (direct D-shaft engagement)
@@ -38,7 +38,7 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     tol = cfg.tolerances
     stack = cfg.stack_up
 
-    plate_thickness = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 10mm
+    plate_thickness = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 9mm
     housing_r = h.od / 2.0  # 67mm
 
     # ── 1. Base disc ────────────────────────────────────────────────
@@ -84,10 +84,12 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(motor_bolts)
 
-    # ── 4a. Counterbore pockets for M3 bolt heads (inner face, Z=10mm) ──
-    # Recesses bolt heads so they sit inside the plate, not in the disc zone.
+    # ── 4a. Counterbore pockets for M3 bolt heads (inner face, Z=9mm) ──
+    # Recesses bolt heads flush with the inner face so they don't intrude
+    # into the input clearance zone.  With a 9mm plate the formula yields
+    # 3mm — bolt head (3mm tall) sits flush, no extra pocket above.
     m3_cb_dia = m.motor_bolt_head_dia + 0.4  # 5.7mm clearance
-    m3_cb_depth = plate_thickness - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))  # 4mm
+    m3_cb_depth = plate_thickness - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))  # 3mm
     motor_bolt_cb = (
         cq.Workplane("XY")
         .workplane(offset=plate_thickness)
@@ -96,20 +98,6 @@ def build_motor_plate(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(-m3_cb_depth)
     )
     result = result.cut(motor_bolt_cb)
-
-    # ── 4b. Inner-face recess inside ring-pin circle ───────────────
-    # Thins the inner face inside the ring-pin circle. Local thickness
-    # drops from 10mm to 9mm; M3 bolt heads sit flush with the new floor.
-    # Outer ring of plate around the pin holes stays full thickness.
-    inner_pocket_dia = stack.motor_plate_inner_pocket_dia
-    inner_pocket_depth = stack.motor_plate_inner_pocket_depth
-    inner_pocket = (
-        cq.Workplane("XY")
-        .workplane(offset=plate_thickness)
-        .circle(inner_pocket_dia / 2.0)
-        .extrude(-inner_pocket_depth)
-    )
-    result = result.cut(inner_pocket)
 
     # ── 5. Ring-pin through-holes (21×, clearance fit) ─────────────
     # Through-holes let pins be inserted one at a time from the outer

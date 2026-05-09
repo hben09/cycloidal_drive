@@ -174,10 +174,8 @@ class StackUp:
     """
 
     motor_plate_wall: float = 5.0
-    motor_plate_inner_wall: float = 5.0  # inner wall thickness of motor plate
-    motor_plate_inner_pocket_dia: float = 100.0  # mm; recess inside ring-pin circle
-    motor_plate_inner_pocket_depth: float = 1.0  # mm; depth of inner-face recess
-    input_clearance: float = 3.0  # gap between motor plate inner face and disc 1
+    motor_plate_inner_wall: float = 4.0  # inner wall thickness of motor plate
+    input_clearance: float = 4.0  # gap between motor plate inner face and disc 1
     disc_thickness: float = 10.0
     inter_disc_spacer: float = 2.0
     output_clearance: float = 2.0
@@ -186,16 +184,16 @@ class StackUp:
 
     @property
     def z_motor_plate_inner(self) -> float:
-        return self.motor_plate_wall + self.motor_plate_inner_wall  # 10mm
+        return self.motor_plate_wall + self.motor_plate_inner_wall  # 9mm
 
     @property
     def disc_zone(self) -> float:
-        """Total axial span of the two discs + spacer (25mm)."""
+        """Axial span from motor plate inner face to disc 2 outer face (26mm)."""
         return self.input_clearance + 2 * self.disc_thickness + self.inter_disc_spacer
 
     @property
     def z_disc1(self) -> float:
-        return self.z_motor_plate_inner + self.input_clearance  # 13mm
+        return self.z_motor_plate_inner + self.input_clearance  # 13mm (9 + 4)
 
     @property
     def z_disc2(self) -> float:

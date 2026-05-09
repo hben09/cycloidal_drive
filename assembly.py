@@ -68,13 +68,13 @@ shaft = build_eccentric_shaft()
 show_object(shaft, name="eccentric_shaft", options={"color": "silver"})
 
 # ── Ring pins ──────────────────────────────────────────────────
-# Symmetric engagement: 4mm in motor plate inner end + 27mm open
-# bore zone (disc zone 25mm + output clearance 2mm) + 4mm in ring
-# gear body bearing-zone wall = 35mm.  Outer 6mm of motor plate
+# Symmetric engagement: 3.5mm in motor plate inner end + 28mm open
+# bore zone (disc zone 26mm + output clearance 2mm) + 3.5mm in ring
+# gear body bearing-zone wall = 35mm.  Outer 5.5mm of motor plate
 # through-hole sits empty above the pin.
-bore_zone = stack.disc_zone + stack.output_clearance  # 27mm
-pin_engagement = (cfg.gear.ring_pin_length - bore_zone) / 2.0  # 4mm
-z_pins = stack.z_motor_plate_inner - pin_engagement  # 6mm
+bore_zone = stack.disc_zone + stack.output_clearance  # 28mm
+pin_engagement = (cfg.gear.ring_pin_length - bore_zone) / 2.0  # 3.5mm
+z_pins = stack.z_motor_plate_inner - pin_engagement  # 5.5mm
 pins = build_ring_pins()
 pins = pins.translate((0, 0, z_pins))
 show_object(pins, name="ring_pins", options={"color": "gray"})

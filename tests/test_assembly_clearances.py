@@ -51,7 +51,7 @@ class TestAxialStackUp:
         )
 
     def test_total_depth_is_65mm(self):
-        """Housing depth: 10mm plate + 47mm body + 8mm cap = 65mm."""
+        """Housing depth: 9mm plate + 48mm body + 8mm cap = 65mm."""
         assert abs(CFG.stack_up.total_housing_depth - 65.0) < 0.01
 
     def test_disc1_before_disc2(self):
@@ -96,15 +96,15 @@ class TestHousingAlignment:
     def test_motor_plate_inner_face(self):
         """Motor plate inner face at Z=10mm."""
         s = CFG.stack_up
-        expected = s.motor_plate_wall + s.motor_plate_inner_wall  # 5+5=10mm
+        expected = s.motor_plate_wall + s.motor_plate_inner_wall  # 5+4=9mm
         assert abs(s.z_motor_plate_inner - expected) < 0.01
 
     def test_ring_gear_body_height(self):
         """Ring gear body spans from motor plate inner face to output cap."""
         s = CFG.stack_up
         body_height = s.z_output_cap - s.z_motor_plate_inner
-        assert abs(body_height - 47.0) < 0.01, (
-            f"Ring gear body height {body_height}mm != 47mm"
+        assert abs(body_height - 48.0) < 0.01, (
+            f"Ring gear body height {body_height}mm != 48mm"
         )
 
     def test_all_housing_parts_same_od(self):
@@ -405,11 +405,11 @@ class TestRingPinSpan:
         """Spec defines ring pin length as 35mm."""
         assert CFG.gear.ring_pin_length == 35.0
 
-    def test_disc_zone_is_25mm(self):
-        """Disc zone (input clearance + 2 discs + spacer) should be 25mm."""
+    def test_disc_zone_is_26mm(self):
+        """Disc zone (input clearance + 2 discs + spacer) should be 26mm."""
         s = CFG.stack_up
         disc_zone = s.input_clearance + s.disc_thickness * 2 + s.inter_disc_spacer
-        assert abs(disc_zone - 25.0) < 0.01
+        assert abs(disc_zone - 26.0) < 0.01
 
 
 # ===================================================================
