@@ -28,7 +28,7 @@ class TestRingGearBodyDimensions:
     def test_body_height_matches_stackup(self):
         """Body height must equal z_output_cap - z_motor_plate_inner."""
         stack = CFG.stack_up
-        expected = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
+        expected = stack.z_output_cap - stack.z_motor_plate_inner  # 48mm
         actual = (
             stack.input_clearance
             + stack.disc_thickness * 2
@@ -282,12 +282,12 @@ class TestRingGearBodyDimensions:
         """Reveal windows extend from input face through to the output cap.
 
         The continuous rim was eliminated — the motor plate now seats only
-        on the 8 pillar top faces.  The bearing seat (Z=27 to Z=47) is
+        on the 8 pillar top faces.  The bearing seat (Z=28 to Z=48) is
         preserved as a 90.15mm bore inside the same outer cylinder; the
         windows cut only the annulus between the 116mm bore and the OD.
         """
         stack = CFG.stack_up
-        body_height = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
+        body_height = stack.z_output_cap - stack.z_motor_plate_inner  # 48mm
         window_h = body_height
         assert window_h == body_height, (
             f"Window height {window_h}mm != body height {body_height}mm"
@@ -297,7 +297,7 @@ class TestRingGearBodyDimensions:
         """Ring pin entry chamfer must not extend into the bearing seat.
 
         Pins enter solid material at the bore/bearing-seat transition
-        (Z=27, local).  The chamfer widens the entry and must stay
+        (Z=28, local).  The chamfer widens the entry and must stay
         within the pin engagement depth.
         """
         g = CFG.gear
@@ -308,7 +308,7 @@ class TestRingGearBodyDimensions:
             + stack.inter_disc_spacer
             + stack.output_clearance
         )
-        pin_engagement = (g.ring_pin_length - bore_zone_end) / 2.0  # 4mm
+        pin_engagement = (g.ring_pin_length - bore_zone_end) / 2.0  # 3.5mm
         chamfer_depth = 1.0  # mm (matches ring_gear_body.py)
         assert chamfer_depth <= pin_engagement, (
             f"Chamfer depth {chamfer_depth}mm > pin engagement "
@@ -386,11 +386,11 @@ class TestCadQuerySolid:
         )
 
     def test_height(self, body_solid):
-        """Z height should match the stack-up (47mm)."""
+        """Z height should match the stack-up (48mm)."""
         bb = body_solid.val().BoundingBox()
         z_size = bb.zmax - bb.zmin
         stack = CFG.stack_up
-        expected = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
+        expected = stack.z_output_cap - stack.z_motor_plate_inner  # 48mm
 
         assert abs(z_size - expected) < 0.1, (
             f"Z extent {z_size:.2f}mm, expected {expected:.2f}mm"
@@ -405,7 +405,7 @@ class TestCadQuerySolid:
             stack.input_clearance
             + stack.disc_thickness
             + stack.inter_disc_spacer / 2.0
-        )  # 14mm — inside window zone (Z=0 to bore_zone_end=27)
+        )  # 15mm — inside window zone (Z=0 to bore_zone_end=28)
 
         section = body_solid.section(height=disc_zone_mid)
         area = section.val().Area()
@@ -467,7 +467,7 @@ class TestCadQuerySolid:
             + stack.inter_disc_spacer
             + stack.output_clearance
             + stack.output_bearing_total / 2.0
-        )  # 37mm
+        )  # 38mm local (z_output_bearings - z_motor_plate_inner + half-bearing)
 
         section = body_solid.section(height=bearing_mid)
         area = section.val().Area()
@@ -508,7 +508,7 @@ class TestCadQuerySolid:
         """
         h = CFG.housing
         stack = CFG.stack_up
-        body_h = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
+        body_h = stack.z_output_cap - stack.z_motor_plate_inner  # 48mm
         bore_r = h.bore_dia / 2.0  # 58mm
         housing_r = h.od / 2.0  # 67mm
         bearing_r = h.output_bearing_seat_dia / 2.0  # 45.075mm

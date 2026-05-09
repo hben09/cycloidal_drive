@@ -1,12 +1,12 @@
 """Ring gear body — main housing cylinder with bearing seat and pin retention.
 
 3D-printed PETG housing part.  Spans from the motor plate inner face
-(global Z=10mm) to the output cap (global Z=57mm).  Local Z=0 at the
+(global Z=9mm) to the output cap (global Z=57mm).  Local Z=0 at the
 input face.
 
 Stepped internal bore:
-  Z=0  to Z=27  — 116mm bore (disc orbit clearance + 2mm output gap)
-  Z=27 to Z=47  — 90.15mm bore (press-fit seat for 2× 6814-2RS output
+  Z=0  to Z=28  — 116mm bore (disc orbit clearance + 2mm output gap)
+  Z=28 to Z=48  — 90.15mm bore (press-fit seat for 2× 6814-2RS output
                    bearings)
 
 Bearing axial retention relies on press-fit into the 90.15mm seat and
@@ -15,13 +15,13 @@ ring is used — the disc envelope (~108mm) exceeds the 6814 OD (90mm),
 so a shoulder cannot simultaneously clear the disc and block the bearing.
 
 Ring-pin retention (dual-end):
-  35mm pins press 5mm into the motor plate (blind holes) and 4mm into
-  the ring gear body bearing zone.  The middle 27mm spans the disc +
-  clearance zone (116mm bore — pins in air).  Blind holes (31mm deep)
+  35mm pins sit 3.5mm in motor plate through-holes and 3.5mm into the
+  ring gear body bearing zone.  The middle 28mm spans the disc +
+  clearance zone (116mm bore — pins in air).  Blind holes (31.5mm deep)
   from the input face avoid cutting through the bearing seat wall.
 
 Other features:
-  - 21 ring-pin blind holes on 108mm circle (4.20mm clearance dia, 31mm deep)
+  - 21 ring-pin blind holes on 108mm circle (4.20mm clearance dia, 31.5mm deep)
   - 8 M4 housing-bolt through-holes on 125mm circle
 
 Assembly: insert ring pins through the motor plate's through-holes,
@@ -53,7 +53,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     stack = cfg.stack_up
 
     # ── Dimensions ────────────────────────────────────────────────
-    body_height = stack.z_output_cap - stack.z_motor_plate_inner  # 47mm
+    body_height = stack.z_output_cap - stack.z_motor_plate_inner  # 48mm
     housing_r = h.od / 2.0  # 67mm
     bore_r = h.bore_dia / 2.0  # 58mm (116mm bore)
     bearing_seat_r = h.output_bearing_seat_dia / 2.0  # 45.075mm
@@ -63,9 +63,9 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         stack.input_clearance
         + stack.disc_thickness * 2
         + stack.inter_disc_spacer
-    )  # 25mm
-    bore_zone_end = disc_zone_end + stack.output_clearance  # 27mm (2mm disc clearance)
-    bearing_z = bore_zone_end  # 27mm
+    )  # 26mm
+    bore_zone_end = disc_zone_end + stack.output_clearance  # 28mm (2mm disc clearance)
+    bearing_z = bore_zone_end  # 28mm
     bearing_h = stack.output_bearing_total  # 20mm
 
     # Pin hole dimensions
@@ -79,7 +79,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
         .extrude(body_height)
     )
 
-    # ── 2. Main bore: Z=0 to Z=27 (116mm, disc orbit + clearance) ─
+    # ── 2. Main bore: Z=0 to Z=28 (116mm, disc orbit + clearance) ─
     main_bore = (
         cq.Workplane("XY")
         .circle(bore_r)
@@ -87,7 +87,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
     result = result.cut(main_bore)
 
-    # ── 3. Output bearing seat: Z=27 to Z=47 (90.15mm) ──────────
+    # ── 3. Output bearing seat: Z=28 to Z=48 (90.15mm) ──────────
     bearing_bore = (
         cq.Workplane("XY")
         .workplane(offset=bearing_z)
@@ -97,11 +97,11 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     result = result.cut(bearing_bore)
 
     # ── 4. Ring-pin blind holes (21×, press-fit) ──────────────────
-    # Holes go from Z=0 (input face) through the bore zone (27mm,
-    # air at 54mm radius inside 58mm bore) plus 4mm of press-fit
-    # engagement into the bearing zone.  Total depth 31mm.
-    pin_engagement = (g.ring_pin_length - bore_zone_end) / 2.0  # 4mm
-    pin_hole_depth = bore_zone_end + pin_engagement  # 31mm
+    # Holes go from Z=0 (input face) through the bore zone (28mm,
+    # air at 54mm radius inside 58mm bore) plus 3.5mm of press-fit
+    # engagement into the bearing zone.  Total depth 31.5mm.
+    pin_engagement = (g.ring_pin_length - bore_zone_end) / 2.0  # 3.5mm
+    pin_hole_depth = bore_zone_end + pin_engagement  # 31.5mm
     pin_pts = [
         (
             pin_circle_r * math.cos(2 * math.pi * i / g.num_ring_pins),
@@ -118,7 +118,7 @@ def build_ring_gear_body(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     result = result.cut(pin_holes)
 
     # Chamfer at bore/bearing transition — pins are in air (116mm bore)
-    # from Z=0 to Z=27, then enter solid bearing-zone material.
+    # from Z=0 to Z=28, then enter solid bearing-zone material.
     chamfer_depth = 1.0  # mm
     chamfer_dia = pin_hole_dia + 1.0  # mm, funnel entry
     for pt in pin_pts:

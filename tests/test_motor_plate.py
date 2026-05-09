@@ -125,8 +125,8 @@ class TestMotorPlateDimensions:
     def test_plate_thickness_matches_stackup(self):
         """Plate thickness must equal motor_plate_wall + inner wall."""
         stack = CFG.stack_up
-        expected = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 10mm
-        assert expected == 10.0, f"Plate thickness {expected}mm != 10mm"
+        expected = stack.motor_plate_wall + stack.motor_plate_inner_wall  # 9mm
+        assert expected == 9.0, f"Plate thickness {expected}mm != 9mm"
 
     def test_motor_bolt_counterbore_fits_in_plate(self):
         """M3 counterbore depth must be less than plate thickness."""
@@ -190,42 +190,6 @@ class TestMotorPlateDimensions:
             "clearance fit expected for through-holes"
         )
 
-    def test_inner_pocket_inside_ring_pin_circle(self):
-        """Inner-face pocket diameter must stay inside the ring-pin circle."""
-        g = CFG.gear
-        stack = CFG.stack_up
-        assert stack.motor_plate_inner_pocket_dia < g.ring_pin_circle_dia, (
-            f"Pocket Ø {stack.motor_plate_inner_pocket_dia}mm "
-            f">= ring-pin circle Ø {g.ring_pin_circle_dia}mm"
-        )
-
-    def test_inner_pocket_clears_ring_pins(self):
-        """Inner-face pocket must leave a wall to the ring-pin holes."""
-        g = CFG.gear
-        tol = CFG.tolerances
-        stack = CFG.stack_up
-        pin_hole_dia = g.ring_pin_dia - tol.ring_pin_press_sub  # 4.20mm
-        pin_hole_inner_r = (g.ring_pin_circle_dia - pin_hole_dia) / 2.0  # 51.9mm
-        pocket_r = stack.motor_plate_inner_pocket_dia / 2.0
-        wall = pin_hole_inner_r - pocket_r
-        assert wall >= 1.5, (
-            f"Pocket-to-pin-hole wall {wall:.2f}mm < 1.5mm minimum"
-        )
-
-    def test_inner_pocket_preserves_m3_head_recess(self):
-        """After the pocket cut, M3 counterbore must still recess the head."""
-        m = CFG.motor
-        stack = CFG.stack_up
-        plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
-        cb_depth = plate_t - (m.motor_bolt_thread_length - (m.bolt_hole_depth - 0.5))
-        effective_recess = cb_depth - stack.motor_plate_inner_pocket_depth
-        assert effective_recess >= m.motor_bolt_head_height, (
-            f"After pocket: effective recess {effective_recess}mm "
-            f"< head height {m.motor_bolt_head_height}mm"
-        )
-
-
-
 # ===================================================================
 # 2. CadQuery solid validation
 # ===================================================================
@@ -260,7 +224,7 @@ class TestCadQuerySolid:
         )
 
     def test_bounding_box_z(self, plate_solid):
-        """Z height should be 10mm (motor_plate_wall + inner wall)."""
+        """Z height should be 9mm (motor_plate_wall + inner wall)."""
         bb = plate_solid.val().BoundingBox()
         z_size = bb.zmax - bb.zmin
         expected = CFG.stack_up.motor_plate_wall + CFG.stack_up.motor_plate_inner_wall
@@ -283,7 +247,7 @@ class TestCadQuerySolid:
         full_disc_vol = math.pi * (h.od / 2.0) ** 2 * plate_t
         inner_disc_r = h.bore_dia / 2.0  # 58mm — matches helper's pillar_inner cut
         inner_disc_vol = math.pi * inner_disc_r ** 2 * plate_t
-        floor = inner_disc_vol * 0.85  # margin for pocket + pin holes etc.
+        floor = inner_disc_vol * 0.85  # margin for pin holes, shaft bore, M3 cb
 
         vol = plate_solid.val().Volume()
         assert vol > floor, (
@@ -296,23 +260,18 @@ class TestCadQuerySolid:
     def test_reveal_windows_present(self, plate_solid):
         """Volume must drop below the solid-disc baseline — windows actually cut.
 
-        A plate without reveal windows would have volume ≈ full_disc minus
-        the inner pocket.  After windows, most of the outer ring is gone, so
-        the volume must be strictly below that baseline.
+        A plate without reveal windows would have volume ≈ full_disc.
+        After windows, most of the outer ring is gone, so the volume must
+        be strictly below that baseline.
         """
         h = CFG.housing
         stack = CFG.stack_up
         plate_t = stack.motor_plate_wall + stack.motor_plate_inner_wall
 
         full_disc_vol = math.pi * (h.od / 2.0) ** 2 * plate_t
-        pocket_vol = (
-            math.pi * (stack.motor_plate_inner_pocket_dia / 2.0) ** 2
-            * stack.motor_plate_inner_pocket_depth
-        )
-        baseline = full_disc_vol - pocket_vol
 
         vol = plate_solid.val().Volume()
-        assert vol < baseline * 0.85, (
+        assert vol < full_disc_vol * 0.85, (
             f"Volume {vol:.0f}mm³ >= 85% of solid-plate baseline "
-            f"{baseline:.0f}mm³ — reveal windows missing?"
+            f"{full_disc_vol:.0f}mm³ — reveal windows missing?"
         )
