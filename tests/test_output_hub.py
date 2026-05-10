@@ -39,13 +39,13 @@ class TestOutputHubDimensions:
             f"by {delta:.3f}mm (>0.5mm)"
         )
 
-    def test_hub_od_is_light_press(self):
-        """As-designed hub OD must be close to the bearing bore (within 0.3mm)."""
+    def test_hub_od_is_press_fit(self):
+        """As-designed hub OD must be close to the bearing bore (within 0.5mm)."""
         hub = CFG.output_hub
         b = CFG.bearings
         gap = abs(b.out_bore - hub.od)
-        assert gap < 0.3, (
-            f"Hub-to-bearing gap {gap:.3f}mm too large for light press"
+        assert gap < 0.5, (
+            f"Hub-to-bearing gap {gap:.3f}mm too large for press fit"
         )
 
     def test_hub_height_matches_bearing_stack(self):
@@ -161,12 +161,12 @@ class TestCadQuerySolid:
         assert solids[0].isValid(), "Solid is not valid"
 
     def test_outer_diameter(self, hub_solid):
-        """XY extent should match hub OD (70.2mm)."""
+        """XY extent should match hub OD (70.4mm)."""
         bb = hub_solid.val().BoundingBox()
         x_size = bb.xmax - bb.xmin
         y_size = bb.ymax - bb.ymin
         hub = CFG.output_hub
-        expected = hub.od  # 70.2mm
+        expected = hub.od  # 70.4mm
 
         assert abs(x_size - expected) < 0.2, (
             f"X extent {x_size:.2f}mm, expected {expected}mm"

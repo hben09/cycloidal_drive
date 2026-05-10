@@ -30,7 +30,7 @@ class TestOutputCapDimensions:
         hub = CFG.output_hub
         h = CFG.housing
         bore_dia = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
-        hub_od = hub.od  # 70.2mm
+        hub_od = hub.od  # 70.4mm
         clearance = bore_dia - hub_od
         assert clearance > 0, (
             f"Cap bore {bore_dia}mm <= hub OD {hub_od}mm"

@@ -135,7 +135,7 @@ class MotorParams:
 class OutputHubParams:
     """Output hub/plate dimensions — spec Section 5.3."""
 
-    od: float = 70.2  # mm, 70mm 6814 inner-race bore + 0.2mm interference grip
+    od: float = 70.4  # mm, 70mm 6814 inner-race bore + 0.4mm interference grip
     shaft_clearance_bore: float = 6.0  # mm (5mm pin + 1mm clearance)
     output_hub_pin_ceiling: float = 1.0  # mm, closed-top thickness above blind pin holes
 
