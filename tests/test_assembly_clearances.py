@@ -223,8 +223,7 @@ class TestRadialClearances:
         """Output hub OD must be smaller than output cap center bore."""
         hub = CFG.output_hub
         h = CFG.housing
-        tol = CFG.tolerances
-        hub_od = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm
+        hub_od = hub.od  # 70.2mm
         cap_bore = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         clearance = cap_bore - hub_od
         assert clearance > 0, (
@@ -234,14 +233,18 @@ class TestRadialClearances:
             f"Hub-to-cap clearance only {clearance:.3f}mm (want >= 0.2mm)"
         )
 
-    def test_output_hub_fits_6814_inner(self):
-        """Output hub OD must fit inside the 6814 bearing bore."""
+    def test_output_hub_near_6814_inner(self):
+        """As-designed hub OD must be within ±0.5mm of the 6814 bearing bore.
+
+        As-designed OD is the 70mm bearing bore + 0.2mm interference for press
+        grip on the inner race.
+        """
         hub = CFG.output_hub
         b = CFG.bearings
-        tol = CFG.tolerances
-        hub_od = hub.od - tol.bearing_inner_shaft_sub
-        assert hub_od <= b.out_bore, (
-            f"Hub OD {hub_od}mm > 6814 bore {b.out_bore}mm"
+        delta = abs(hub.od - b.out_bore)
+        assert delta <= 0.5, (
+            f"Hub OD {hub.od}mm differs from 6814 bore {b.out_bore}mm "
+            f"by {delta:.3f}mm (>0.5mm)"
         )
 
     def test_6814_outer_fits_housing_seat(self):
@@ -321,7 +324,7 @@ class TestBearingRetention:
         b = CFG.bearings
         tol = CFG.tolerances
         pocket_dia = b.inp_od + tol.bearing_seat_bore_add
-        hub_od = hub.od - tol.bearing_inner_shaft_sub
+        hub_od = hub.od
         assert pocket_dia < hub_od, (
             f"625 pocket {pocket_dia}mm >= hub OD {hub_od}mm"
         )

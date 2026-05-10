@@ -254,7 +254,7 @@ Parts joined with 8× M4 × 60mm socket head cap screws on a 125mm bolt circle. 
 A separate printed PETG part (3D-printed; an aluminum version is also viable) that:
 
 - Has 4× blind clearance holes (4.20mm × 19mm deep) on the 60mm pin circle for 4mm dowel pins, closed by a 1mm ceiling on the output-cap side
-- Passes through the 2× 6814 bearing inner races (hub OD = 70mm nominal → 69.925mm as designed for light press)
+- Passes through the 2× 6814 bearing inner races (hub OD = 70.2mm; 70mm bearing inner race + 0.2mm interference grip)
 - Top (output-cap-side) face sits flush at z=57mm and is exposed through the output cap's Ø86.15mm bore — this is the surface to which the next arm link attaches. As-designed, this face has no tapped holes; add mounting features (tapped holes, integrated coupling, etc.) to suit the specific arm-link interface
 - Houses a 625 bearing seat (Ø16.075mm × 5mm) on the inner-face side to support the eccentric shaft output end
 

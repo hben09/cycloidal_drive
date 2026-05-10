@@ -29,9 +29,8 @@ class TestOutputCapDimensions:
         """Center bore must be larger than the output hub OD."""
         hub = CFG.output_hub
         h = CFG.housing
-        tol = CFG.tolerances
         bore_dia = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
-        hub_od = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm
+        hub_od = hub.od  # 70.2mm
         clearance = bore_dia - hub_od
         assert clearance > 0, (
             f"Cap bore {bore_dia}mm <= hub OD {hub_od}mm"

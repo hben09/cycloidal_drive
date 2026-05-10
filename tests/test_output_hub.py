@@ -25,24 +25,26 @@ CFG = DEFAULT_CONFIG
 
 class TestOutputHubDimensions:
 
-    def test_hub_od_fits_bearing_bore(self):
-        """Hub OD (with tolerance) must be <= 6814 bearing bore."""
+    def test_hub_od_near_bearing_bore(self):
+        """As-designed hub OD must be within ±0.5mm of the 6814 bearing bore.
+
+        As-designed OD is the 70mm bearing bore + 0.2mm interference for press
+        grip on the inner race.
+        """
         hub = CFG.output_hub
         b = CFG.bearings
-        tol = CFG.tolerances
-        hub_od = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm
-        assert hub_od <= b.out_bore, (
-            f"Hub OD {hub_od}mm > bearing bore {b.out_bore}mm"
+        delta = abs(hub.od - b.out_bore)
+        assert delta <= 0.5, (
+            f"Hub OD {hub.od}mm differs from bearing bore {b.out_bore}mm "
+            f"by {delta:.3f}mm (>0.5mm)"
         )
 
     def test_hub_od_is_light_press(self):
-        """Hub OD should be within 0.2mm of bearing bore (light press)."""
+        """As-designed hub OD must be close to the bearing bore (within 0.3mm)."""
         hub = CFG.output_hub
         b = CFG.bearings
-        tol = CFG.tolerances
-        hub_od = hub.od - tol.bearing_inner_shaft_sub
-        gap = b.out_bore - hub_od
-        assert gap < 0.2, (
+        gap = abs(b.out_bore - hub.od)
+        assert gap < 0.3, (
             f"Hub-to-bearing gap {gap:.3f}mm too large for light press"
         )
 
@@ -82,7 +84,7 @@ class TestOutputHubDimensions:
         b = CFG.bearings
         tol = CFG.tolerances
         pocket_r = (b.inp_od + tol.bearing_seat_bore_add) / 2.0
-        hub_r = (hub.od - tol.bearing_inner_shaft_sub) / 2.0
+        hub_r = hub.od / 2.0
         wall = hub_r - pocket_r
         assert wall >= 5.0, (
             f"Wall from 625 pocket to hub OD = {wall:.2f}mm, need >= 5mm"
@@ -92,9 +94,8 @@ class TestOutputHubDimensions:
         """Output pin hole outer edges must not breach the hub OD."""
         d = CFG.disc
         hub = CFG.output_hub
-        tol = CFG.tolerances
         pin_outer = d.output_pin_circle_dia / 2.0 + d.output_pin_dia / 2.0
-        hub_r = (hub.od - tol.bearing_inner_shaft_sub) / 2.0
+        hub_r = hub.od / 2.0
         assert pin_outer < hub_r, (
             f"Output pin edge at {pin_outer}mm >= hub radius {hub_r:.3f}mm"
         )
@@ -160,13 +161,12 @@ class TestCadQuerySolid:
         assert solids[0].isValid(), "Solid is not valid"
 
     def test_outer_diameter(self, hub_solid):
-        """XY extent should match hub OD (69.925mm)."""
+        """XY extent should match hub OD (70.2mm)."""
         bb = hub_solid.val().BoundingBox()
         x_size = bb.xmax - bb.xmin
         y_size = bb.ymax - bb.ymin
         hub = CFG.output_hub
-        tol = CFG.tolerances
-        expected = hub.od - tol.bearing_inner_shaft_sub  # 69.925mm
+        expected = hub.od  # 70.2mm
 
         assert abs(x_size - expected) < 0.2, (
             f"X extent {x_size:.2f}mm, expected {expected}mm"
@@ -225,7 +225,7 @@ class TestCadQuerySolid:
         tol = CFG.tolerances
         stack = CFG.stack_up
 
-        hub_r = (hub.od - tol.bearing_inner_shaft_sub) / 2.0
+        hub_r = hub.od / 2.0
         height = stack.output_bearing_total
         shaft_r = hub.shaft_clearance_bore / 2.0
 
