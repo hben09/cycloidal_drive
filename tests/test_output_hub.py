@@ -73,7 +73,7 @@ class TestOutputHubDimensions:
         hub = CFG.output_hub
         b = CFG.bearings
         tol = CFG.tolerances
-        pocket_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.075mm
+        pocket_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.2mm
         assert pocket_dia > hub.shaft_clearance_bore, (
             f"625 pocket {pocket_dia}mm <= shaft bore {hub.shaft_clearance_bore}mm"
         )

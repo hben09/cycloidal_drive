@@ -148,7 +148,7 @@ class PETGTolerances:
     Applied to nominal dimensions in part builders. Midpoints of spec ranges.
     """
 
-    bearing_seat_bore_add: float = 0.075  # +0.05 to +0.10mm
+    bearing_seat_bore_add: float = 0.2  # 625 outer-race seat offset; prints to ~16.0–16.1mm (slip-to-light press)
     bearing_inner_shaft_sub: float = 0.075  # -0.05 to -0.10mm
     ring_pin_press_sub: float = -0.20  # subtractive: 4.0 - (-0.20) = 4.20mm clearance holes
     sliding_clearance_add: float = 0.25  # +0.20 to +0.30mm

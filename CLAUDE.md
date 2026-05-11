@@ -256,7 +256,7 @@ A separate printed PETG part (3D-printed; an aluminum version is also viable) th
 - Has 4× blind clearance holes (4.20mm × 19mm deep) on the 60mm pin circle for 4mm dowel pins, closed by a 1mm ceiling on the output-cap side
 - Passes through the 2× 6814 bearing inner races (hub OD = 70.3mm; 70mm bearing inner race + 0.3mm interference grip)
 - Top (output-cap-side) face sits flush at z=57mm and is exposed through the output cap's Ø86.15mm bore — this is the surface to which the next arm link attaches. As-designed, this face has no tapped holes; add mounting features (tapped holes, integrated coupling, etc.) to suit the specific arm-link interface
-- Houses a 625 bearing seat (Ø16.075mm × 5mm) on the inner-face side to support the eccentric shaft output end
+- Houses a 625 bearing seat (Ø16.2mm × 5mm) on the inner-face side to support the eccentric shaft output end
 
 ---
 
@@ -265,14 +265,14 @@ A separate printed PETG part (3D-printed; an aluminum version is also viable) th
 **Important context:** PETG holes print **0.10–0.20mm undersized** vs. the design value due to cooling shrinkage, elephant foot, and arc overshoot at the top of round holes. The positive offsets in the table below are **print compensation** — they shift the as-printed dimension back toward nominal. As a result:
 
 - A "+0.20mm" pin hole (designed 4.20mm, printed ~4.00–4.10mm) lands at a **slip-to-light-press fit** on a 4mm dowel — the pin is held primarily by friction, with surrounding capture features (closed ends, adjacent parts) acting as backup retention.
-- A "+0.15mm" bearing seat (designed 90.15mm for the 6814 outer race, printed ~90.00mm or slightly under) lands at a **firm press fit**. The smaller 625 outer race seat uses a tighter +0.075mm offset (designed 16.075mm).
+- A "+0.15mm" bearing seat (designed 90.15mm for the 6814 outer race, printed ~90.00mm or slightly under) lands at a **firm press fit**. The smaller 625 outer race seat in the output hub uses a looser +0.20mm offset (designed 16.2mm, printed ~16.00–16.10mm) — a **slip-to-light-press fit** to ease assembly of the small bearing in PETG.
 - Designing a hole *smaller* than the steel part (negative offset) is unsafe — print shrinkage stacks on top and the joint either won't assemble or splits the PETG.
 
 In short: **everything ends up a press fit on a real print**; the offset just controls *how tight*. The "clearance" / "press" labels below are design-relative, not as-printed.
 
 | Fit Type | Nominal Adjustment | Application |
 |---|---|---|
-| Bearing outer race → housing | +0.075 to +0.15mm on bore ⌀ | 625 outer race seat (+0.075mm), 6814 outer race seat in ring gear body (+0.15mm) |
+| Bearing outer race → housing | +0.15 to +0.20mm on bore ⌀ | 625 outer race seat in output hub (+0.20mm), 6814 outer race seat in ring gear body (+0.15mm) |
 | Bearing inner race → shaft/hub | −0.05 to −0.10mm on shaft ⌀ | Output hub through 6814 inner race |
 | Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, through-holes (slip-press as printed) |
 | Ring & output pin holes (gear body / hub) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, blind holes (slip-press as printed) |

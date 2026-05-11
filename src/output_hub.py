@@ -42,7 +42,7 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     shaft_bore_dia = hub.shaft_clearance_bore  # 6.0mm
 
     # 625 bearing pocket (outer race press-fit seat on inner face)
-    bearing_pocket_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.075mm
+    bearing_pocket_dia = b.inp_od + tol.bearing_seat_bore_add  # 16.2mm
     bearing_pocket_depth = b.inp_width  # 5mm
 
     # Output pin blind clearance holes (ring-pin convention)
