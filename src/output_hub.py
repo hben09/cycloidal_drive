@@ -37,7 +37,7 @@ def build_output_hub(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     stack = cfg.stack_up
 
     # ── Dimensions ──────────────────────────────────────────────────
-    hub_od = hub.od  # 70.4mm (0.4mm interference grip on the 70mm 6814 inner race)
+    hub_od = hub.od  # 70.3mm (0.3mm interference grip on the 70mm 6814 inner race)
     hub_height = stack.output_bearing_total  # 20mm (2× 6814 width)
     shaft_bore_dia = hub.shaft_clearance_bore  # 6.0mm
 

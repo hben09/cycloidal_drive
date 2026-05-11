@@ -223,7 +223,7 @@ class TestRadialClearances:
         """Output hub OD must be smaller than output cap center bore."""
         hub = CFG.output_hub
         h = CFG.housing
-        hub_od = hub.od  # 70.4mm
+        hub_od = hub.od  # 70.3mm
         cap_bore = h.output_bearing_seat_dia - 2 * 2.0  # 86.15mm
         clearance = cap_bore - hub_od
         assert clearance > 0, (

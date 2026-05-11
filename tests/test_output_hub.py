@@ -161,12 +161,12 @@ class TestCadQuerySolid:
         assert solids[0].isValid(), "Solid is not valid"
 
     def test_outer_diameter(self, hub_solid):
-        """XY extent should match hub OD (70.4mm)."""
+        """XY extent should match hub OD (70.3mm)."""
         bb = hub_solid.val().BoundingBox()
         x_size = bb.xmax - bb.xmin
         y_size = bb.ymax - bb.ymin
         hub = CFG.output_hub
-        expected = hub.od  # 70.4mm
+        expected = hub.od  # 70.3mm
 
         assert abs(x_size - expected) < 0.2, (
             f"X extent {x_size:.2f}mm, expected {expected}mm"
