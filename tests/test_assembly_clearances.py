@@ -338,17 +338,19 @@ class TestBearingRetention:
 class TestShaftReach:
     """Verify shaft engagement at both ends."""
 
-    def test_motor_shaft_reaches_through_plate(self):
-        """Motor shaft (20mm) must be long enough to pass through the motor plate
-        and engage the eccentric shaft D-bore.
+    def test_motor_shaft_does_not_bottom_in_d_bore(self):
+        """Motor shaft tip must not contact the D-bore floor — needs clearance
+        so the eccentric shaft seats correctly against the motor plate inner face.
         """
         m = CFG.motor
         s = CFG.stack_up
-        plate_thickness = s.motor_plate_wall + s.motor_plate_inner_wall  # 10mm
-        remaining = m.shaft_length - plate_thickness  # 22 - 10 = 12mm
-        d_bore_depth = CFG.shaft.d_bore_depth  # 10mm
-        assert remaining >= d_bore_depth, (
-            f"Motor shaft only {remaining}mm past plate, D-bore needs {d_bore_depth}mm"
+        plate_thickness = s.motor_plate_wall + s.motor_plate_inner_wall  # 9mm
+        shaft_past_plate = m.shaft_length - plate_thickness  # 22 - 9 = 13mm
+        d_bore_depth = CFG.shaft.d_bore_depth  # 14mm
+        clearance = d_bore_depth - shaft_past_plate
+        assert clearance >= 0.5, (
+            f"Motor shaft ({shaft_past_plate}mm past plate) bottoms in D-bore "
+            f"({d_bore_depth}mm deep); need >=0.5mm clearance, got {clearance}mm"
         )
 
     def test_eccentric_shaft_pin_reaches_625_bearing(self):

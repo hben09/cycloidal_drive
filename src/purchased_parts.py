@@ -84,7 +84,7 @@ def build_nema17_motor(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
 
     # Shaft: full 5mm round base section (bottom 2mm), then D-cut section
-    round_length = m.shaft_length - m.shaft_dcut_length  # 2mm round base
+    round_length = m.shaft_length - m.shaft_dcut_length  # 4mm round base
     shaft_round = (
         cq.Workplane("XY")
         .circle(shaft_r)

@@ -69,15 +69,15 @@
 | Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
 | D-bore ⌀ | 5.10mm | Receives motor shaft directly (5.00mm + 2×0.05mm clearance) |
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
-| D-bore depth | 12.00mm | Motor shaft engagement length |
+| D-bore depth | 14.00mm | Provides 13mm motor shaft engagement + 1mm bottom clearance (motor shaft 22mm − motor plate 9mm = 13mm) |
 | Support pin hole ⌀ | 5.15mm | Blind hole for 5mm steel dowel clearance fit (5.00 + 2×0.075mm) |
-| Support pin hole depth | 12.00mm | Through lobe 2 into bridge zone |
+| Support pin hole depth | 11.00mm | Through lobe 2 + 1mm into bridge; shortened from 12mm to keep 1mm wall to deepened D-bore |
 | Support pin | 5mm × 20mm ground steel dowel, h6 | Press-fit into shaft, supports 625 bearing |
 | Material | PETG | 3D printed; use 100% infill, 0.16mm layer height |
 
 The eccentric shaft has two lobes offset 180° from each other, one per disc. Each lobe is a cylindrical section with center offset 1.5mm from the shaft axis. The input end has a D-bore socket that receives the motor shaft directly (no coupler). A 10mm OD collar at the input provides wall thickness around the D-bore.
 
-The output end has a blind hole (5.15mm × 12mm deep) centered on the shaft axis, extending from the output face of lobe 2 through into the bridge zone. A 5mm × 20mm ground steel dowel pin (h6) is pressed into this hole and extends through the 2mm clearance gap into the 625 bearing in the output hub, providing rigid radial support for the shaft's free end. Pin breakdown: 12mm insertion + 2mm gap + 5mm bearing + 1mm proud = 20mm.
+The output end has a blind hole (5.15mm × 11mm deep) centered on the shaft axis, extending from the output face of lobe 2 through into the bridge zone. A 5mm × 20mm ground steel dowel pin (h6) is pressed into this hole and extends through the 2mm clearance gap into the 625 bearing in the output hub, providing rigid radial support for the shaft's free end. Pin breakdown: 11mm insertion + 2mm gap + 5mm bearing + 2mm proud = 20mm.
 
 The bridge between the two lobes (spanning the 2mm inter-disc spacer zone) is enlarged to 23.10mm OD (lobe OD + 6mm, 3mm radial flange per side) and acts as a bearing retention flange, preventing the two 6003 bearings from sliding toward each other. The bridge is a ruled loft that transitions the eccentric center from (+e, 0) to (−e, 0).
 

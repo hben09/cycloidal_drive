@@ -34,7 +34,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     collar_r = shaft.input_collar_od / 2.0
 
     # Z positions from stack-up
-    z_start = stack.z_motor_plate_inner  # 10mm — shaft starts at motor plate inner face
+    z_start = stack.z_motor_plate_inner  # 9mm — shaft starts at motor plate inner face
     z_lobe1 = stack.z_disc1  # 13mm
     z_lobe2 = stack.z_disc2  # 25mm
     z_end = z_lobe2 + disc_t  # 35mm (steel dowel pin extends beyond)
@@ -49,7 +49,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     )
 
     # ── Input collar: enlarged section for D-bore wall thickness ────
-    collar_length = z_lobe1 - z_start  # 3mm (input_clearance)
+    collar_length = z_lobe1 - z_start  # 4mm (input_clearance)
     collar = (
         cq.Workplane("XY")
         .workplane(offset=z_start)
@@ -113,7 +113,7 @@ def build_eccentric_shaft(cfg: DriveConfig = DEFAULT_CONFIG) -> cq.Workplane:
     # Round bore + D-flat key matching the motor shaft profile
     bore_dia = shaft.d_bore_dia + tol.d_bore_clearance_add * 2  # 5.10mm
     bore_r = bore_dia / 2.0
-    bore_depth = shaft.d_bore_depth  # 12mm
+    bore_depth = shaft.d_bore_depth  # 14mm
 
     d_bore_round = (
         cq.Workplane("XY")

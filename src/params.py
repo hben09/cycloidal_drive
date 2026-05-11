@@ -57,12 +57,12 @@ class ShaftParams:
     # Steel dowel pin replaces printed output stub for 625 bearing support
     support_pin_dia: float = 5.0  # mm, ground steel dowel pin h6
     support_pin_length: float = 20.0  # mm, ground steel dowel pin h6
-    support_pin_hole_depth: float = 12.0  # mm, blind hole extending through lobe 2 into bridge
+    support_pin_hole_depth: float = 11.0  # mm, shortened by 1mm so D-bore (now 14mm) keeps a 1mm wall to the pin hole; pin protrudes 2mm proud instead of 1mm
     # Direct D-shaft engagement with motor shaft
     input_collar_od: float = 10.0  # mm, enlarged input section for D-bore wall
     d_bore_dia: float = 5.0  # mm, matches motor shaft (tolerance applied in builder)
     d_bore_flat: float = 4.5  # mm, D-flat width (matches motor shaft D-cut)
-    d_bore_depth: float = 12.0  # mm, motor shaft engagement length
+    d_bore_depth: float = 14.0  # mm, deepened to clear 22mm motor shaft past 9mm motor plate (13mm engagement + 1mm bottom clearance)
 
 
 @dataclass(frozen=True)
