@@ -152,7 +152,7 @@ class PETGTolerances:
     bearing_inner_shaft_sub: float = 0.075  # -0.05 to -0.10mm
     ring_pin_press_sub: float = -0.20  # subtractive: 4.0 - (-0.20) = 4.20mm clearance holes
     sliding_clearance_add: float = 0.25  # +0.20 to +0.30mm
-    d_bore_clearance_add: float = 0.075  # +0.15mm diametral clearance for motor shaft D-bore
+    d_bore_clearance_add: float = 0.0625  # +0.125mm diametral clearance for motor shaft D-bore
     dowel_bore_clearance_add: float = 0.075  # clearance fit for steel dowel in PETG
     mating_surface_add: float = 0.15  # +0.15mm
 

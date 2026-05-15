@@ -67,7 +67,7 @@
 | Eccentricity | 1.50mm | Offset between shaft center and bearing seat center |
 | Spine OD | 5.00mm | Between lobes |
 | Input collar OD | 10.00mm | Enlarged input section for D-bore wall |
-| D-bore ⌀ | 5.15mm | Receives motor shaft directly (5.00mm + 2×0.075mm clearance) |
+| D-bore ⌀ | 5.125mm | Receives motor shaft directly (5.00mm + 2×0.0625mm clearance) |
 | D-bore flat | 4.50mm | Matches motor shaft D-cut |
 | D-bore depth | 14.00mm | Provides 13mm motor shaft engagement + 1mm bottom clearance (motor shaft 22mm − motor plate 9mm = 13mm) |
 | Support pin hole ⌀ | 5.15mm | Blind hole for 5mm steel dowel clearance fit (5.00 + 2×0.075mm) |
@@ -277,7 +277,8 @@ In short: **everything ends up a press fit on a real print**; the offset just co
 | Ring pin holes (motor plate) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, through-holes (slip-press as printed) |
 | Ring & output pin holes (gear body / hub) | +0.20mm on hole ⌀ (4.20mm) | 4mm pins, blind holes (slip-press as printed) |
 | Sliding / clearance fit | +0.20 to +0.30mm on hole ⌀ | Output pin holes in disc, disc center bore |
-| Dowel clearance bore | +0.075mm on bore ⌀ (5.15mm for 5mm pin) | Steel dowel pin hole in eccentric shaft (firm press as printed) |
+| Motor shaft D-bore | +0.0625mm on bore ⌀ (5.125mm for 5mm motor shaft) | Eccentric shaft D-bore receiving NEMA 17 shaft (slip-to-light press as printed) |
+| Support pin clearance bore | +0.075mm on bore ⌀ (5.15mm for 5mm pin) | Steel dowel pin hole in eccentric shaft output end (firm press as printed) |
 | General mating surfaces | +0.15mm clearance | Housing halves, spacers |
 
 **Notes:**
