@@ -414,7 +414,7 @@ class TestCadQuerySolid:
 
     def test_lobe_chamfer_symmetric(self, disc_solid):
         """Top and bottom faces should have equal max radial extent so the
-        disc has no 'wrong side up' (both discs share one printed part).
+        disc has no 'wrong side up' for printing.
         """
         if CFG.disc.lobe_chamfer <= 0:
             pytest.skip("Chamfer disabled")
@@ -533,4 +533,142 @@ class TestDiscFitment:
         vol = interference.val().Volume()
         assert vol < 1.0, (
             f"Bearing/disc interference volume = {vol:.1f}mm³ (should be ~0)"
+        )
+
+
+# ===================================================================
+# 6. Assembly-level meshing — both discs at their orbit positions
+# ===================================================================
+
+
+class TestAssemblyMeshing:
+    """Both discs as built (with profile rotation) must clear all ring pins
+    at their static assembly orbit positions. Point-cloud based: pure numpy
+    on the rotated epitrochoid, no CadQuery booleans needed.
+    """
+
+    def _disc_points_in_housing(self, phase_offset_deg, orbit_xy):
+        pts = compute_epitrochoid(
+            R=CFG.gear.ring_pin_circle_radius,
+            r=CFG.gear.ring_pin_radius,
+            N=CFG.gear.num_ring_pins,
+            e=CFG.gear.eccentricity,
+            num_points=CFG.profile.num_points,
+        )
+        if phase_offset_deg != 0.0:
+            a = math.radians(phase_offset_deg)
+            c, s = math.cos(a), math.sin(a)
+            pts = [(c * x - s * y, s * x + c * y) for x, y in pts]
+        return np.array(pts) + np.array(orbit_xy)
+
+    def test_disc2_phase_value(self):
+        assert math.isclose(CFG.gear.disc2_phase_deg, -9.0)
+
+    def test_disc1_no_ring_pin_overlap(self):
+        e = CFG.gear.eccentricity
+        pin_r = CFG.gear.ring_pin_radius
+        pts = self._disc_points_in_housing(0.0, (e, 0))
+        for pc in _ring_pin_centers():
+            d = _min_distances_to_profile(pc, pts)
+            assert d >= pin_r - 0.15
+
+    def test_disc2_no_ring_pin_overlap(self):
+        """Regression test: catches the original bug where disc 2's lobes
+        penetrate ring pins because the 180° assembly rotation is a no-op
+        for an N_lobes=20 disc (180° = 10·18° = 10 lobe pitches).
+        """
+        e = CFG.gear.eccentricity
+        pin_r = CFG.gear.ring_pin_radius
+        pts = self._disc_points_in_housing(
+            CFG.gear.disc2_phase_deg, (-e, 0)
+        )
+        for pc in _ring_pin_centers():
+            d = _min_distances_to_profile(pc, pts)
+            assert d >= pin_r - 0.15
+
+    def test_disc2_output_holes_clear_pins(self):
+        """Disc 2's output holes (at disc-local 0/90/180/270) must
+        accommodate the stationary output pins (at housing 0/90/180/270)
+        when disc 2 is translated to (-e, 0).
+        """
+        d = CFG.disc
+        e = CFG.gear.eccentricity
+        pin_r = d.output_pin_dia / 2.0
+        hole_r = d.output_pin_hole_dia / 2.0
+        pin_circle_r = d.output_pin_circle_dia / 2.0
+        for k in range(d.output_pin_count):
+            a = math.radians(k * 360.0 / d.output_pin_count)
+            pin_xy = (pin_circle_r * math.cos(a),
+                      pin_circle_r * math.sin(a))
+            hole_xy = (pin_circle_r * math.cos(a) - e,
+                       pin_circle_r * math.sin(a))
+            center_dist = math.hypot(pin_xy[0] - hole_xy[0],
+                                     pin_xy[1] - hole_xy[1])
+            margin = hole_r - pin_r - center_dist
+            assert margin >= 0.4, (
+                f"Pin {k}/disc-2 hole margin {margin:.2f}mm < 0.4mm"
+            )
+
+
+class TestAssemblyInterference:
+    """CadQuery-level boolean test: as-built discs + ring pins must not
+    meaningfully overlap. Complements the point-cloud tests in
+    TestAssemblyMeshing by validating the actual extruded geometry
+    (including chamfers).
+    """
+
+    @pytest.fixture(scope="class")
+    def disc1_built(self):
+        pytest.importorskip("cadquery")
+        from src.cycloidal_disc import build_cycloidal_disc
+
+        e = CFG.gear.eccentricity
+        z = CFG.stack_up.z_disc1
+        return build_cycloidal_disc().translate((e, 0, z))
+
+    @pytest.fixture(scope="class")
+    def disc2_built(self):
+        pytest.importorskip("cadquery")
+        from src.cycloidal_disc import build_cycloidal_disc
+
+        e = CFG.gear.eccentricity
+        z = CFG.stack_up.z_disc2
+        return build_cycloidal_disc(
+            phase_offset_deg=CFG.gear.disc2_phase_deg
+        ).translate((-e, 0, z))
+
+    @pytest.fixture(scope="class")
+    def ring_pins(self):
+        pytest.importorskip("cadquery")
+        from src.purchased_parts import build_ring_pins
+
+        s = CFG.stack_up
+        bore_zone = s.disc_zone + s.output_clearance
+        pin_engagement = (CFG.gear.ring_pin_length - bore_zone) / 2.0
+        z_pins = s.z_motor_plate_inner - pin_engagement
+        return build_ring_pins().translate((0, 0, z_pins))
+
+    def test_disc1_no_pin_interference(self, disc1_built, ring_pins):
+        vol = disc1_built.intersect(ring_pins).val().Volume()
+        assert vol < 1.0, f"Disc 1 / ring-pin overlap = {vol:.2f}mm³"
+
+    def test_disc2_no_pin_interference(self, disc2_built, ring_pins):
+        """Regression: buggy code produced multi-mm³ overlap here."""
+        vol = disc2_built.intersect(ring_pins).val().Volume()
+        assert vol < 1.0, f"Disc 2 / ring-pin overlap = {vol:.2f}mm³"
+
+    def test_discs_are_distinct_parts(self, disc1_built, disc2_built):
+        """Disc 1 and disc 2 must not be identical (the bug was treating
+        them as the same part). After undoing their orbit translations,
+        their epitrochoid profiles must be visibly rotated relative to
+        each other (~half a lobe pitch), so a boolean cut leaves a
+        non-trivial residual.
+        """
+        e = CFG.gear.eccentricity
+        d1 = disc1_built.translate((-e, 0, 0))
+        d2 = disc2_built.translate((e, 0, 0))
+        diff = d1.cut(d2).val().Volume()
+        assert diff > 10.0, (
+            f"Disc 1 and disc 2 appear identical (cut volume {diff:.2f}mm³); "
+            "phase_offset_deg may not have been applied"
         )

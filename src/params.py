@@ -31,6 +31,18 @@ class GearParams:
     def gear_ratio(self) -> int:
         return self.num_lobes
 
+    @property
+    def disc2_phase_deg(self) -> float:
+        """Disc-2 epitrochoid phase offset relative to disc 1, in degrees.
+
+        At orbit angle φ=π (disc 2's position, opposite disc 1's φ=0), the
+        meshing kinematics require disc rotation = -π/N_lobes = -180°/N_lobes.
+        Applied as a profile-only rotation in build_cycloidal_disc so the
+        output-pin holes stay at standard disc-local angles and align with
+        the stationary output pins after the (-e, 0) orbital translation.
+        """
+        return -180.0 / self.num_lobes
+
 
 @dataclass(frozen=True)
 class DiscParams:

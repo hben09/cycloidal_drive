@@ -44,9 +44,9 @@ bearing_6003_1 = bearing_6003_1.translate((e, 0, stack.z_disc1))
 show_object(disc1, name="disc_1", options={"color": "steelblue", "alpha": 0.6})
 show_object(bearing_6003_1, name="bearing_6003_1", options={"color": "orange"})
 
-# ── Disc 2 + its 6003 bearing (180° offset) ────────────────────
-disc2 = build_cycloidal_disc()
-disc2 = disc2.rotateAboutCenter((0, 0, 1), 180).translate((-e, 0, stack.z_disc2))
+# ── Disc 2 + its 6003 bearing (kinematic phase offset, no assembly rotation) ──
+disc2 = build_cycloidal_disc(phase_offset_deg=cfg.gear.disc2_phase_deg)
+disc2 = disc2.translate((-e, 0, stack.z_disc2))
 
 bearing_6003_2 = build_bearing_6003()
 bearing_6003_2 = bearing_6003_2.translate((-e, 0, stack.z_disc2))

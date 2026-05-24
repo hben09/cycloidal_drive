@@ -31,7 +31,7 @@
 | Parameter | Value | Notes |
 |---|---|---|
 | Number of lobes | 20 | Sets the ratio |
-| Disc count | 2 | Offset 180° to cancel vibration |
+| Disc count | 2 | Orbit centers 180° apart to cancel vibration; disc 2's epitrochoid profile is phase-rotated by −180°/N_lobes = −9° relative to disc 1 so lobes mesh correctly with ring pins. Output-pin hole positions are identical between the two discs (disc-local 0°/90°/180°/270° on a 60 mm circle); only the profile is rotated. Disc 1 and disc 2 are **not interchangeable** printed parts — see `cfg.gear.disc2_phase_deg`. |
 | Approximate OD | ~108mm | Defined by epitrochoid profile |
 | Center bore ⌀ | 35.10mm | 35mm bearing OD + 0.10mm clearance (PETG) |
 | Disc thickness | 10.00mm | Matched to 6003-2RS bearing width |

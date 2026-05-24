@@ -50,9 +50,8 @@ def build_assembly() -> cq.Assembly:
     disc1 = build_cycloidal_disc()
     assy.add(disc1, name="disc_1", loc=cq.Location((e, 0, stack.z_disc1)))
 
-    # Disc 2 (180° offset)
-    disc2 = build_cycloidal_disc()
-    disc2 = disc2.rotateAboutCenter((0, 0, 1), 180)
+    # Disc 2 (phase-shifted profile, no assembly rotation)
+    disc2 = build_cycloidal_disc(phase_offset_deg=cfg.gear.disc2_phase_deg)
     assy.add(disc2, name="disc_2", loc=cq.Location((-e, 0, stack.z_disc2)))
 
     # 6003 eccentric bearings
@@ -116,7 +115,10 @@ def main() -> None:
 
     # Individual parts
     parts = {
-        "cycloidal_disc": build_cycloidal_disc(),
+        "cycloidal_disc_1": build_cycloidal_disc(),
+        "cycloidal_disc_2": build_cycloidal_disc(
+            phase_offset_deg=DEFAULT_CONFIG.gear.disc2_phase_deg
+        ),
         "eccentric_shaft": build_eccentric_shaft(),
         "motor_plate": build_motor_plate(),
         "ring_gear_body": build_ring_gear_body(),
